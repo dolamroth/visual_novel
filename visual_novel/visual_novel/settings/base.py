@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import json
+
+from django.core.exceptions import ImproperlyConfigured
 
 # JSON-based secrets module
 secrets_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'secrets.json')
@@ -50,9 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	
-	'corsheaders',
-	
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken'	
 ]
@@ -65,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'visual_novel.urls'
@@ -94,8 +95,12 @@ WSGI_APPLICATION = 'visual_novel.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': get_secret(section='DATABASE', setting='HOST'),
+        'PORT': get_secret(section='DATABASE', setting='PORT'),
+        'NAME': get_secret(section='DATABASE', setting='NAME'),
+        'USER': get_secret(section='DATABASE', setting='USER'),
+        'PASSWORD': get_secret(section='DATABASE', setting='PASSWORD'),
     }
 }
 
