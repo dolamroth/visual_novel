@@ -99,3 +99,13 @@ visual_novel_env/
 
 # mypy
 .mypy_cache/
+
+### Django ###
+**/*.log
+**/*.pot
+**/*.pyc
+**/__pycache__/
+**/local_settings.py
+secrets.json
+**/db.sqlite3
+**/media
