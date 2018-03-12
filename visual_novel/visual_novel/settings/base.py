@@ -32,9 +32,9 @@ def get_secret(setting, section=None, secrets=secrets):
         error_message = 'Secrets: {} key not found in secrets.json.'.format(key)
         raise ImproperlyConfigured(error_message)
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '..'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -42,7 +42,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_secret('SECRET_KEY')
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS
+ONTIME_DOMAIN = get_secret('DOMAIN')
+ONTIME_PROTOCOL = get_secret('PROTOCOL')
+ONTIME_HTTPS_DOMAIN = ONTIME_PROTOCOL + '://' + ONTIME_DOMAIN
+ALLOWED_HOSTS = [ONTIME_DOMAIN]
 
 # Application definition
 
@@ -76,7 +80,9 @@ ROOT_URLCONF = 'visual_novel.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -141,6 +147,13 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
