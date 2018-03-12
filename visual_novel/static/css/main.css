@@ -1,0 +1,166 @@
+.main-search{
+	margin-top: 8px; 
+	width: 350px;
+}
+
+.search-form{
+	margin-right: 10px;
+}
+
+.main-footer{
+	margin: 0px 0px 5px 0px !important;
+}
+
+.poster-img{
+	height: 350px !important;
+	width: auto !important;
+}
+
+.vnhome-poster{
+	height: 450px !important;
+	width: auto !important;
+}
+
+.vn-header-title{
+	margin-top: 5px !important;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	line-height: 19px;     /* fallback */
+	height: 38px;      /* fallback */
+	-webkit-line-clamp: 2; /* number of lines to show */
+	-webkit-box-orient: vertical;
+}
+
+.p-main-vn-links{
+	margin-top: 15px;
+	margin-bottom: -5px;
+}
+
+.sh-desc{
+	font-style: italic;
+	font-size: 10pt;
+}
+
+.vn-params{
+	font-size: 9pt;
+	margin: 0px !important;
+}
+
+.vn-genres{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	line-height: 16px;     /* fallback */
+	height: 32px;      /* fallback */
+	-webkit-line-clamp: 2; /* number of lines to show */
+	-webkit-box-orient: vertical;
+}
+
+.vn-desc{
+	text-align: justify;
+}
+
+.vn-desc-full{
+	font-size: 9pt;
+}
+
+.main-sort{
+	margin-bottom: 10px;
+}
+
+a:hover{
+	text-decoration: none;
+}
+
+.vnhome-genre{
+	margin: 5px 0px !important;
+}
+
+.vnhome-title{
+	margin-bottom: 15px;
+}
+
+.vnhome-desc{
+	margin-bottom: 15px;
+}
+
+.vn-desc-unwrap, .vn-desc-wrap{
+	margin-bottom: 5px;
+}
+
+.bottom-nav-footer{
+	background-color: #fff; 
+	min-height:10px !important;
+	font-size: 8pt;
+}
+
+.admin-link-div{
+	white-space: nowrap !important;
+	display: inline-block !important;
+	color:#FFFFFF;
+}
+
+.admin-link:link, .admin-link:visited{
+	color:#FFFFFF;
+}
+
+.admin-link:hover, .admin-link:active{
+	color:#686868;
+}
+
+.steam-img{
+	height:20px !important;
+	width:auto;
+}
+
+.steam-a{
+	vertical-align: middle;
+}
+
+.p-column{
+	padding:0px;
+}
+
+.m-column{
+	margin-left:0px;
+}
+
+textarea{
+	resize: none;
+}
+
+.vn-table{
+	width: 100%;
+	border: 1px solid black;
+}
+td, th{
+	padding: 5px;
+	text-align: left;
+	border: 1px solid black;
+}
+.white-popup {
+	position: relative;
+	background: #FFF;
+	padding: 20px;
+	width: auto;
+	max-width: 500px;
+	margin: 20px auto;
+}
+.hidden-option{
+	display: none;
+}
+
+.gallery-item{
+	margin: 3px;
+	display: inline-block;
+	height: 150px;
+	width: auto;
+}
+
+
+@media screen and (max-width: 640px){
+    .bottom-nav-footer{
+        display: none;
+    }
+}

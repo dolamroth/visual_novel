@@ -5,7 +5,7 @@ Django==2.0.2
 django-cors-headers==2.1.0
 django-imagekit==4.0.1
 django-timezone-field==2.0
-djangorestframework==3.6.4
+djangorestframework==3.7.7
 python-dateutil==2.6.1
 pytz==2017.2
 requests==2.18.4
