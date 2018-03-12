@@ -43,10 +43,10 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.
 SECRET_KEY = get_secret('SECRET_KEY')
 
 # ALLOWED_HOSTS
-ONTIME_DOMAIN = get_secret('DOMAIN')
-ONTIME_PROTOCOL = get_secret('PROTOCOL')
-ONTIME_HTTPS_DOMAIN = ONTIME_PROTOCOL + '://' + ONTIME_DOMAIN
-ALLOWED_HOSTS = [ONTIME_DOMAIN]
+VN_DOMAIN = get_secret('DOMAIN')
+VN_PROTOCOL = get_secret('PROTOCOL')
+VN_HTTP_DOMAIN = VN_PROTOCOL + '://' + VN_DOMAIN
+ALLOWED_HOSTS = [VN_DOMAIN]
 
 # Application definition
 
