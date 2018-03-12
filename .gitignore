@@ -109,3 +109,7 @@ visual_novel_env/
 secrets.json
 **/db.sqlite3
 **/media
+
+# static files
+/static/admin
+/static/rest_framework
