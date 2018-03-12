@@ -111,5 +111,5 @@ secrets.json
 **/media
 
 # static files
-/static/admin
-/static/rest_framework
+**/static/admin
+**/static/rest_framework
