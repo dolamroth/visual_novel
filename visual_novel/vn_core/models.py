@@ -24,6 +24,7 @@ class VisualNovel(PublishModel):
     tags = models.ManyToManyField(Tag, through='VNTag', verbose_name='тэги')
     studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии')
     staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели')
+    alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='')
 
     class Meta:
         db_table = 'vncore'
