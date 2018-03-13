@@ -8,7 +8,7 @@ class Staff(PublishModel):
 
     class Meta:
         db_table = 'staffs'
-        verbose_name = 'Стафф'
+        verbose_name = 'Персоналия'
         verbose_name_plural = 'Персоналии'
 
     def __str__(self):
