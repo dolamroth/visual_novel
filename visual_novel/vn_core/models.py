@@ -3,6 +3,7 @@ import os
 from django.db import models
 
 from core.models import PublishModel
+from cinfo.models import Longevity
 
 def posters_directory_path(instance, filename):
     return os.path.join('vn_poster', filename)
@@ -17,6 +18,8 @@ class VisualNovel(PublishModel):
     date_of_release = models.DateField(verbose_name='дата релиза')
     vndb_id = models.IntegerField(verbose_name='id на VNDb')
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
+    longevity = models.ForeignKey(Longevity, verbose_name='продолжительность', on_delete=models.PROTECT,
+                                  null=True, blank=True)
 
     class Meta:
         db_table = 'vncore'
