@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     'core.apps.CoreConfig',
-    'cinfo.apps.CinfoConfig'
+    'cinfo.apps.CinfoConfig',
+    'vn_core.apps.VnCoreConfig'
 ]
 
 MIDDLEWARE = [
