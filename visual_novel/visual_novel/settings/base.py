@@ -63,7 +63,8 @@ INSTALLED_APPS = [
 
     'core.apps.CoreConfig',
     'cinfo.apps.CinfoConfig',
-    'vn_core.apps.VnCoreConfig'
+    'vn_core.apps.VnCoreConfig',
+    'chart.apps.ChartConfig'
 ]
 
 MIDDLEWARE = [

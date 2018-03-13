@@ -3,7 +3,7 @@ import os
 from django.db import models
 
 from core.models import PublishModel
-from cinfo.models import Longevity
+from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
 def posters_directory_path(instance, filename):
     return os.path.join('vn_poster', filename)
@@ -20,6 +20,10 @@ class VisualNovel(PublishModel):
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
     longevity = models.ForeignKey(Longevity, verbose_name='продолжительность', on_delete=models.PROTECT,
                                   null=True, blank=True)
+    genres = models.ManyToManyField(Genre, through='VNGenre', verbose_name='жанры')
+    tags = models.ManyToManyField(Tag, through='VNTag', verbose_name='тэги')
+    studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии')
+    staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели')
 
     class Meta:
         db_table = 'vncore'
@@ -28,3 +32,60 @@ class VisualNovel(PublishModel):
 
     def __str__(self):
         return self.title
+
+
+class VNGenre(models.Model):
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
+    genre = models.ForeignKey(Genre, on_delete=models.PROTECT, related_name='genres_set')
+    weight = models.IntegerField(verbose_name='вес', default=0)
+
+    class Meta:
+        db_table = 'vns_to_genres'
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        return self.genre.title
+
+
+class VNTag(models.Model):
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
+    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, related_name='tags_set')
+    weight = models.IntegerField(verbose_name='вес', default=0)
+
+    class Meta:
+        db_table = 'vns_to_tags'
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+
+    def __str__(self):
+        return self.tag.title
+
+
+class VNStudio(models.Model):
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
+    studio = models.ForeignKey(Studio, on_delete=models.PROTECT, related_name='studios_set')
+    weight = models.IntegerField(verbose_name='вес', default=0)
+
+    class Meta:
+        db_table = 'vns_to_studios'
+        verbose_name = 'Студия'
+        verbose_name_plural = 'Студии'
+
+    def __str__(self):
+        return self.studio.title
+
+
+class VNStaff(models.Model):
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
+    staff = models.ForeignKey(Staff, on_delete=models.PROTECT, related_name='staff_set')
+    role = models.ForeignKey(StaffRole, on_delete=models.PROTECT)
+    weight = models.IntegerField(verbose_name='вес', default=0)
+
+    class Meta:
+        db_table = 'vns_to_staff'
+        verbose_name = 'Создатель'
+        verbose_name_plural = 'Создатели'
+
+    def __str__(self):
+        return self.staff.title
