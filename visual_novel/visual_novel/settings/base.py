@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'mptt',
+    'sanitizer',
 
     'core.apps.CoreConfig',
     'cinfo.apps.CinfoConfig',

@@ -3,6 +3,7 @@ from django.db import models
 from core.models import PublishModel
 from vn_core.models import VisualNovel
 
+
 class TranslationItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
 
