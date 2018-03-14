@@ -26,7 +26,7 @@ class StaffInline(admin.TabularInline):
 class VisualNovelAdmin(admin.ModelAdmin):
     inlines = (GenreInline, TagInline, StudioInline, StaffInline, )
     list_display = (
-        'title', 'alternative_title', 'photo', 'description', 'date_of_release', 'longevity',
+        'title', 'is_published', 'alternative_title', 'photo', 'description', 'date_of_release', 'longevity',
         'vndb_id', 'steam_link', 'alias'
     )
 

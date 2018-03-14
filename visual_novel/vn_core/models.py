@@ -5,8 +5,13 @@ from django.db import models
 from core.models import PublishModel
 from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
+
 def posters_directory_path(instance, filename):
     return os.path.join('vn_poster', filename)
+
+
+def screenshots_directory_path(instance, filename):
+    return os.path.join('vn_screenshot', filename)
 
 
 class VisualNovel(PublishModel):
@@ -20,10 +25,10 @@ class VisualNovel(PublishModel):
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
     longevity = models.ForeignKey(Longevity, verbose_name='продолжительность', on_delete=models.PROTECT,
                                   null=True, blank=True)
-    genres = models.ManyToManyField(Genre, through='VNGenre', verbose_name='жанры')
-    tags = models.ManyToManyField(Tag, through='VNTag', verbose_name='тэги')
-    studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии')
-    staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели')
+    genres = models.ManyToManyField(Genre, through='VNGenre', verbose_name='жанры', blank=True)
+    tags = models.ManyToManyField(Tag, through='VNTag', verbose_name='тэги', blank=True)
+    studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии', blank=True)
+    staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели', blank=True)
     alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='')
 
     class Meta:
@@ -90,3 +95,14 @@ class VNStaff(models.Model):
 
     def __str__(self):
         return self.staff.title
+
+
+class VNScreenshot(PublishModel):
+    title = models.CharField(verbose_name='подпись', max_length=256)
+    image = models.ImageField(verbose_name='фотография', upload_to=screenshots_directory_path,
+                              null=False, blank=False)
+
+    class Meta:
+        db_table = 'vn_screenshot'
+        verbose_name = 'Скриншот'
+        verbose_name_plural = 'Скриншоты'
