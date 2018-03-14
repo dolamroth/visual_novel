@@ -8,6 +8,7 @@ from vn_core.models import VisualNovel
 class TranslationItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
     statistics = models.ForeignKey('TranslationStatistics', on_delete=models.PROTECT, null=True, blank=True)
+    beta_patches = models.ManyToManyField('TranslationBetaLink', blank=True)
 
     class Meta:
         db_table = 'translation_items'
@@ -47,3 +48,22 @@ class TranslationStatisticsChapter(MPTTModel):
 
     def __str__(self):
         return self.script_title
+
+
+class TranslationBetaLink(PublishModel):
+    title = models.CharField(max_length=50, default='')
+    url = models.CharField(max_length=200, default='')
+    comment = models.TextField(max_length=2000, default='')
+
+    class Meta:
+        db_table = 'statistics_betalink'
+
+    def __str__(self):
+        return self.url
+
+    def delete(self, force=False):
+        if force:
+            super(TranslationBetaLink, self).delete()
+        else:
+            self.is_published = False
+            super(TranslationBetaLink, self).save()
