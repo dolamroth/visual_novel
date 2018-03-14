@@ -98,7 +98,7 @@ class VNStaff(models.Model):
 
 
 class VNScreenshot(PublishModel):
-    title = models.CharField(verbose_name='подпись', max_length=256)
+    title = models.CharField(verbose_name='подпись', max_length=256, null=True, blank=True)
     image = models.ImageField(verbose_name='фотография', upload_to=screenshots_directory_path,
                               null=False, blank=False)
 
