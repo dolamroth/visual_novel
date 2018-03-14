@@ -181,6 +181,14 @@ def add_tags(apps, schema_editor):
     )
 
 
+def add_staff_roles(apps, schema_editor):
+    StaffRole = apps.get_model('cinfo', 'StaffRole')
+    screenwriter, _ = StaffRole.objects.get_or_create(title='сценарист')
+    composer, _ = StaffRole.objects.get_or_create(title='композитор')
+    painter, _ = StaffRole.objects.get_or_create(title='художник')
+    chardiz, _ = StaffRole.objects.get_or_create(title='чардиз')
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -188,5 +196,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_genres, add_tags),
+        migrations.RunPython(add_genres, add_tags, add_staff_roles),
     ]
