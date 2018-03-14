@@ -189,6 +189,135 @@ def add_staff_roles(apps, schema_editor):
     chardiz, _ = StaffRole.objects.get_or_create(title='чардиз')
 
 
+def add_studios(apps, schema_editor):
+    Studio = apps.get_model('cinfo', 'Studio')
+    visual_atrskey, _ = Studio.objects.get_or_create(
+        title='Visual Art\'s/Key',
+        description="""Студия, основанная выходцами компании <i>Tactics</i>: Маэдой Дзюном, Орито Синдзи и Хиноуэ 
+                        Итару,&nbsp;&#8211; и продолжившая развитие жанра <i>накиге</i>, благодаря которому стала 
+                        одной из самых значимых студий ВН.""",
+        alias='visual-atrskey'
+    )
+    le_chocolat, _ = Studio.objects.get_or_create(
+        title='Le.Chocolat',
+        alias='le-chocolat'
+    )
+    liar_soft, _ = Studio.objects.get_or_create(
+        title='Liar-soft',
+        description="""Liar-soft (ライアーソフト)&nbsp;&#8211; японский разработчик эроге, дебютировавший в 1999 году с 
+                        игрой "Cho~Ita ~Subarashiki Chounouryoku Jinsei~". Студия стала известна благодаря работам 
+                        сценариста Хошизоры Метеора ("Кусарихиме", "Forest", "Seven-Bridge"), в последствии снискала 
+                        славу за серию "What a..." от сценариста Сакурай Хикару. Отличительной чертой игр компании 
+                        можно отметить необычную подачу сюжета и особый графический стиль. Ныне компания продолжает 
+                        выпускать игры, а также мангу, ранобе и сборники иллюстраций.""",
+        alias='liar-soft'
+    )
+    akabei_soft2, _ = Studio.objects.get_or_create(
+        title='Akabei Soft2',
+        description="""Akabei Soft2 (あかべぇそふとつぅ)&nbsp;&#8211; один из самых крупных японских разработчиков эроге, 
+                        выросший из додзинси-кружка Akabei Soft. Компания выпускает множество эроге в самых разных 
+                        жанрах, самые известные из её игр&nbsp;&#8211; серия "Sharin no Kuni" и "G-senjou no Maou".""",
+        alias='akabei-soft2'
+    )
+    trumple, _ = Studio.objects.get_or_create(
+        title='Trumple',
+        description="""Trumple&nbsp;&#8211; японская компания, разрабатывающая эроге, основанная выходцами из 
+                        обанкротившейся компании Abhar. Выпустив свою единственную эроге, 
+                        "Ushinawareta Mirai o Motomete", компания изменила название на Polarstar.""",
+        alias='trumple'
+    )
+    nitroplus, _ = Studio.objects.get_or_create(
+        title='Nitroplus',
+        description="""Nitroplus (ニトロプラス, Nitro+)&nbsp;&#8211; японский разработчик эроге и визуальных новелл. 
+                        Их первый же проект, "Phantom of Inferno", за авторством ныне именитого Уробучи Гена принёс 
+                        им славу и почёт. Игры этой студии отличает наличие мрачных и хорошо проработанных сюжетов.""",
+        alias='nitroplus'
+    )
+    shiba_satomi, _ = Studio.objects.get_or_create(
+        title='Shiba Satomi',
+        description="""Индивидуальный разработчик ВН. Под крылом Arc System Works выпустил True Remembrance 
+                        ("Истина Памяти").""",
+        alias='shiba-satomi'
+    )
+    games_5bp, _ = Studio.objects.get_or_create(
+        title='5pb. Games',
+        description="""5pb. Games&nbsp;&#8211; японский разработчик игр и визуальных новелл, стоящий под началом
+                        крупного издателя игр и аниме-музыки 5pb. Был образован в 2006 году выходцами из компании KID. 
+                        Наиболее известные игры: "Chaos;Head", "Steins;Gate", "Psycho-Pass".""",
+        alias='games-5bp'
+    )
+    expansion_07, _ = Studio.objects.get_or_create(
+        title='07th Expansion',
+        description="""07th Expansion&nbsp;&#8211; японский додзинси-кружок, специализирующийся на создании 
+                        визуальных новелл. Известность им принесла эроге "Higurashi no Naku Koro ni" за авторством 
+                        Ryuukishi07, а закрепили они её игрой "Umineko no Naku Koro ni". На данный момент 
+                        является крупной компанией, продолжающей разрабатывать и выпускать эроге.""",
+        alias='expansion_07'
+    )
+    kid, _ = Studio.objects.get_or_create(
+        title='KID',
+        description="""KID&nbsp;&#8211; крупная японская компания второй половины 90-х, начала 00-х годов, 
+                        специализировавшаяся на разработке и портировании визуальных новелл и игр. В 2006 году 
+                        объявили о банкротстве, но были подобраны компанией CyberFront. Знаменитые игры: "Ever17 
+                        -The Out of Infinity-", "Remember11 -The Age of Infinity-".""",
+        alias='KID'
+    )
+    type_moon, _ = Studio.objects.get_or_create(
+        title='Type-Moon',
+        description="""Одна из самых известных студий ВН, Type-Moon выросла из додзинси-кружка, основанного Киноко
+                        Насу (сценарист) и Такэучи Такаши (писатель). Прославились после выпуска ВН "Tsukihime", 
+                        однако мировую известность им принесла их следующая новелла&nbsp;&#8211; "Fate/Stay Night". 
+                        Эти произведения, а также их первая работа, ранобе "Kara no Kyoukai", происходят в единой 
+                        вселенной.""",
+        alias='type-moon'
+    )
+    stage_nana, _ = Studio.objects.get_or_create(
+        title='Stage-nana',
+        alias='stage-nana'
+    )
+    flying_shine, _ = Studio.objects.get_or_create(
+        title='FlyingShine',
+        alias='flying-shine'
+    )
+    innocent_grey, _ = Studio.objects.get_or_create(
+        title='Innocent Grey',
+        description="""Innocent Grey (inogrey)&nbsp;&#8211; основанная в 2005 году художницей Мики Сугиной студия, 
+                        известная за свои исторические эроге в жанре детектив ("Cartagra", серия "Kara no Shoujo"). 
+                        До недавнего времени отличительной особенностью игр было большое количество чрезмерной
+                         жестокости и ангста, но выход первой части игры "Flowers" положил этому конец.""",
+        alias='innocent-grey'
+    )
+    d_o, _ = Studio.objects.get_or_create(
+        title='D.O.',
+        alias='do'
+    )
+    willplus_and_ruf, _ = Studio.objects.get_or_create(
+        title='WillPlus & rúf',
+        alias='willplus-and-ruf'
+    )
+    leaf, _ = Studio.objects.get_or_create(
+        title='Leaf',
+        description="""Leaf&nbsp;&#8211; японская студия, разрабатывающая визуальные новеллы и эроге под издательством 
+                        медиакомпании AQUAPLUS. В начале своей деятельности в конце 90-х, в начале 2000-х годов прямо 
+                        конкурировала с известной ныне студией Key. Отличительными играми того периода можно назвать 
+                        Kizuato, To Heart, White Album и Utawarerumono. В последние года студия занята развитием 
+                        своих самых успешных проектов: White Album и Utawarerumono.""",
+        alias='leaf'
+    )
+    novectacle, _ = Studio.objects.get_or_create(
+        title='Novectacle',
+        alias='novectacle'
+    )
+    alice_soft, _ = Studio.objects.get_or_create(
+        title='Alice Soft',
+        alias='alice-soft'
+    )
+    keroq, _ = Studio.objects.get_or_create(
+        title='KeroQ',
+        alias='keroq'
+    )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -196,5 +325,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_genres, add_tags, add_staff_roles),
+        migrations.RunPython(add_genres, add_tags, add_staff_roles, add_studios),
     ]
