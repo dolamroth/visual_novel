@@ -318,6 +318,110 @@ def add_studios(apps, schema_editor):
     )
 
 
+def add_staffs(apps, schema_editor):
+    Staff = apps.get_model('cinfo', 'Staff')
+    maeda_dzun, _ = Staff.objects.get_or_create(
+        title='Маэда Дзюн',
+        alias='maeda-dzun'
+    )
+    orito_sindzi, _ = Staff.objects.get_or_create(
+        title='Орито Синдзи',
+        alias='orito-sindzi'
+    )
+    hinou_itau, _ = Staff.objects.get_or_create(
+        title='Хиноуэ Итару',
+        alias='hinou-itau'
+    )
+    kagami_esihoki, _ = Staff.objects.get_or_create(
+        title='Кагами Ёсихико (Kashida Leo)',
+        alias='kagami-esihoki'
+    )
+    kai, _ = Staff.objects.get_or_create(
+        title='Kai',
+        alias='kai'
+    )
+    naga, _ = Staff.objects.get_or_create(
+        title='Na-Ga',
+        alias='na-ga'
+    )
+    ryuukishi07, _ = Staff.objects.get_or_create(
+        title='Ryuukishi07',
+        alias='ryuukishi07'
+    )
+    tanaka_romeo, _ = Staff.objects.get_or_create(
+        title='Танака Ромэо',
+        alias='tanaka-romeo'
+    )
+    tonokava_yto, _ = Staff.objects.get_or_create(
+        title='Тонокава Юто',
+        alias='tonokava-yto'
+    )
+    setoguchi_renya, _ = Staff.objects.get_or_create(
+        title='Setoguchi Ren\'ya',
+        description="""Японский автор и бывший сценарист игр для взрослых. В число его работ входят 
+                        Swan Song и Kira☆Kira.""",
+        alias='setoguchi-renya'
+    )
+    hoshizora_meteor, _ = Staff.objects.get_or_create(
+        title='Hoshizora Meteor',
+        alias='hoshizora-meteor'
+    )
+    hisaya_naoki, _ = Staff.objects.get_or_create(
+        title='Хисая Наоки',
+        description="""Урожденный Хаяши Наоки. Японский сценарист, работавший в студиях Tactics, Key и Siesta, 
+                        позднее занялся фрилансом. Прежде всего известен как главный сценарист игры Kanon при 
+                        работе в составе студии Visual Art's/Key.""",
+        alias='hisaya-naoki'
+    )
+    esitpsi_abe, _ = Staff.objects.get_or_create(
+        title='Ёситоси Абэ',
+        alias='esitpsi-abe'
+    )
+    suzumoto_uichi, _ = Staff.objects.get_or_create(
+        title='Сузумото Юичи',
+        alias='suzumoto-uichi'
+    )
+    takeshi_abo, _ = Staff.objects.get_or_create(
+        title='Такэши Або',
+        alias='takeshi-abo'
+    )
+    haiasi_naotaka, _ = Staff.objects.get_or_create(
+        title='Хаяси Наотака',
+        description="""Один из сценаристов студии 5pb, главный сценарист Steins;Gate, Steins;Gate 0, 
+                        Chaos Child и др.""",
+        alias='haiasi-naotaka'
+    )
+    urobuchi_gen, _ = Staff.objects.get_or_create(
+        title='Уробучи Гэн',
+        description="""／人 ⌒ ‿‿ ⌒ 人＼""",
+        alias='urobuchi-gen'
+    )
+    nasu_kinoko, _ = Staff.objects.get_or_create(
+        title='Насу Киноко',
+        alias='nasu-kinoko'
+    )
+    takauchi_takasho, _ = Staff.objects.get_or_create(
+        title='Такэучи Такаши',
+        alias='takauchi-takasho'
+    )
+    kataro_uchikoshi, _ = Staff.objects.get_or_create(
+        title='Котаро Учикоши',
+        alias='kataro-uchikoshi'
+    )
+    nakazava_takumi, _ = Staff.objects.get_or_create(
+        title='Наказава Такуми',
+        alias='nakazava-takumi'
+    )
+    sakurai_hikaru, _ = Staff.objects.get_or_create(
+        title='Сакурай Хикару',
+        alias='sakurai-hikaru'
+    )
+    scaji, _ = Staff.objects.get_or_create(
+        title='SCA-Ji',
+        alias='scaji'
+    )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -325,5 +429,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_genres, add_tags, add_staff_roles, add_studios),
+        migrations.RunPython(add_genres, add_tags, add_staff_roles, add_studios, add_staffs),
     ]
