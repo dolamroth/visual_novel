@@ -127,7 +127,7 @@ def add_tags(apps, schema_editor):
     )
     kiarage, _ = Tag.objects.get_or_create(
         title='кяраге',
-        decription="""От "character" и "game". Вид визуальных новелл, в которых акцент делается на взаимоотношениях 
+        description="""От "character" и "game". Вид визуальных новелл, в которых акцент делается на взаимоотношениях 
                         персонажей. Часто пересекается с моэге.""",
         alias='kiarage'
     )
@@ -422,6 +422,13 @@ def add_staffs(apps, schema_editor):
     )
 
 
+def create_data(apps, schema_editor):
+    add_genres(apps, schema_editor)
+    add_staff_roles(apps, schema_editor)
+    add_staffs(apps, schema_editor)
+    add_tags(apps, schema_editor)
+    add_studios(apps, schema_editor)
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -429,5 +436,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_genres, add_tags, add_staff_roles, add_studios, add_staffs),
+        migrations.RunPython(create_data, migrations.RunPython.noop),
     ]
