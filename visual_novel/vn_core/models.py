@@ -1,5 +1,7 @@
 import os
+from PIL import Image
 
+from django.conf import settings
 from django.db import models
 
 from core.models import PublishModel
@@ -7,11 +9,15 @@ from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
 
 def posters_directory_path(instance, filename):
-    return os.path.join('vn_poster', filename)
+    return os.path.join(settings.MEDIA_VN_POSTER_DIRECTORY, filename)
 
 
 def screenshots_directory_path(instance, filename):
-    return os.path.join('vn_screenshot', filename)
+    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_DIRECTORY, filename)
+
+
+def screenshots_mini_directory_path(instance, filename):
+    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, filename)
 
 
 class VisualNovel(PublishModel):
@@ -100,9 +106,74 @@ class VNStaff(models.Model):
 class VNScreenshot(PublishModel):
     title = models.CharField(verbose_name='подпись', max_length=256, null=True, blank=True)
     image = models.ImageField(verbose_name='фотография', upload_to=screenshots_directory_path,
-                              null=False, blank=False)
+        null=True, blank=True)
+    miniature = models.ImageField(verbose_name='миниатюра', upload_to=screenshots_mini_directory_path,
+        null=True, blank=True, editable=False)
 
     class Meta:
         db_table = 'vn_screenshot'
         verbose_name = 'Скриншот'
         verbose_name_plural = 'Скриншоты'
+
+    def old_miniature_path_if_changed(self):
+        try:
+            old_miniature = VNScreenshot.objects.get(pk=self.pk).image
+            if self.image != old_miniature:
+                return old_miniature.path
+        except VNScreenshot.DoesNotExist:
+            pass
+        except ValueError:
+            pass
+        return None
+
+    def update_miniature(self, mini_width=150):
+        if not self.image:
+            return
+        filename = os.path.basename(self.image.name)
+        path = os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, filename)
+        new_path = os.path.join(settings.MEDIA_ROOT, path)
+        if os.path.isfile(new_path):
+            return
+        image = Image.open(self.image.path)
+        th_image = image.copy()
+        size = (mini_width, int(float(mini_width) * float(self.image.height) / float(self.image.width)))
+        th_image.thumbnail(size, Image.ANTIALIAS)
+        th_image.save(new_path)
+        self.miniature = path
+        return path
+
+    def delete_images(self):
+        try:
+            obj = VNScreenshot.objects.get(pk=self.pk)
+        except VNScreenshot.DoesNotExist:
+            return
+        # Delete miniature from file system
+        try:
+            path_mini = obj.miniature.path
+            if os.path.isfile(path_mini):
+                os.remove(path_mini)
+        except ValueError:
+            pass
+        # Delete main image from file system
+        try:
+            path = obj.image.path
+            if os.path.isfile(path):
+                os.remove(path)
+        except ValueError:
+            pass
+
+    def save(self, *args, **kwargs):
+        old_miniature = self.old_miniature_path_if_changed()
+        if old_miniature:
+            self.delete_images()
+        super(VNScreenshot, self).save(*args, **kwargs)
+        self.update_miniature()
+        super(VNScreenshot, self).save(*args, **kwargs)
+
+    def delete(self, force=True):
+        if force:
+            self.delete_images()
+            super(VNScreenshot, self).delete()
+        else:
+            self.is_published = False
+            super(VNScreenshot, self).save()
