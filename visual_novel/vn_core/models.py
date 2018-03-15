@@ -1,3 +1,4 @@
+import uuid
 import os
 from PIL import Image
 
@@ -9,15 +10,33 @@ from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
 
 def posters_directory_path(instance, filename):
-    return os.path.join(settings.MEDIA_VN_POSTER_DIRECTORY, filename)
+    fileName, fileExtension = os.path.splitext(filename)
+    while True:
+        newFileName = str(uuid.uuid4()) + fileExtension
+        if os.path.isfile(os.path.join(settings.MEDIA_VN_POSTER_DIRECTORY, newFileName)):
+            continue
+        break
+    return os.path.join(settings.MEDIA_VN_POSTER_DIRECTORY, newFileName)
 
 
 def screenshots_directory_path(instance, filename):
-    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_DIRECTORY, filename)
+    fileName, fileExtension = os.path.splitext(filename)
+    while True:
+        newFileName = str(uuid.uuid4()) + fileExtension
+        if os.path.isfile(os.path.join(settings.MEDIA_VN_SCREENSHOTS_DIRECTORY, newFileName)):
+            continue
+        break
+    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_DIRECTORY, newFileName)
 
 
 def screenshots_mini_directory_path(instance, filename):
-    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, filename)
+    fileName, fileExtension = os.path.splitext(filename)
+    while True:
+        newFileName = str(uuid.uuid4()) + fileExtension
+        if os.path.isfile(os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, newFileName)):
+            continue
+        break
+    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, newFileName)
 
 
 class VisualNovel(PublishModel):
