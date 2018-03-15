@@ -64,6 +64,44 @@ class VisualNovel(PublishModel):
     def __str__(self):
         return self.title
 
+    def delete_poster(self):
+        try:
+            obj = VisualNovel.objects.get(pk=self.pk)
+        except VisualNovel.DoesNotExist:
+            return
+        # Delete poster
+        try:
+            path = obj.photo.path
+            if os.path.isfile(path):
+                os.remove(path)
+        except ValueError:
+            pass
+
+    def old_poster_path_if_changed(self):
+        try:
+            old_poster = VisualNovel.objects.get(pk=self.pk).photo
+            if self.photo != old_poster:
+                return old_poster.path
+        except VisualNovel.DoesNotExist:
+            pass
+        except ValueError:
+            pass
+        return None
+
+    def save(self, *args, **kwargs):
+        old_poster = self.old_poster_path_if_changed()
+        if old_poster:
+            self.delete_poster()
+        super(VisualNovel, self).save(*args, **kwargs)
+
+    def delete(self, force=True):
+        if force:
+            self.delete_poster()
+            super(VisualNovel, self).delete()
+        else:
+            self.is_published = False
+            super(VisualNovel, self).save()
+
 
 class VNGenre(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
