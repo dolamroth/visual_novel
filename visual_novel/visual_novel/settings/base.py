@@ -163,3 +163,9 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
+
+MEDIA_VN_POSTER_DIRECTORY = 'vn_poster'
+MEDIA_VN_SCREENSHOTS_DIRECTORY = 'vn_screenshot'
+MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY = 'vn_screenshot_mini'
+
+os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
