@@ -44,7 +44,7 @@ class VisualNovel(PublishModel):
     alternative_title = models.CharField(verbose_name='альтернативные названия', max_length=500, default='')
     description = models.TextField(verbose_name='описание', max_length=8000, default='')
     photo = models.ImageField(verbose_name='фотография', upload_to=posters_directory_path,
-                              null=False, blank=False)
+                              null=True, blank=True)
     date_of_release = models.DateField(verbose_name='дата релиза')
     vndb_id = models.IntegerField(verbose_name='id на VNDb')
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
