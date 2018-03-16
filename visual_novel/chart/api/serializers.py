@@ -1,4 +1,7 @@
 from rest_framework import serializers
+
+from django.conf import settings
+
 from cinfo.models import Studio, StaffRole, Staff, Tag, Genre
 from vn_core.models import VisualNovel, VNStaff, VNStudio, VNTag, VNGenre
 
@@ -18,7 +21,7 @@ class StaffSerializer(serializers.ModelSerializer):
         fields = ('roles', 'title')
 
     def get_roles(self, obj):
-        vnstaffs = VNStaff.objects.filter(staff=obj).order_by('weight')
+        vnstaffs = VNStaff.objects.filter(staff=obj).order_by('-weight')
         roles = [vnstaffs[i].role for i in range(len(vnstaffs))]
         serializer = StaffRoleSerializer(roles, many=True)
         return serializer.data
@@ -48,7 +51,7 @@ class StudioSerializers(serializers.ModelSerializer):
 class VisualNovelSerializer(serializers.ModelSerializer):
 
     studios = serializers.SerializerMethodField()
-    photo_poster = serializers.CharField(source='photo.url')
+    photo = serializers.SerializerMethodField()
     staff = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -56,7 +59,7 @@ class VisualNovelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VisualNovel
-        fields = ('title', 'description', 'studios', 'photo_poster', 'staff', 'genres', 'tags', 'date_of_release',
+        fields = ('title', 'description', 'studios', 'photo', 'staff', 'genres', 'tags', 'date_of_release',
                   'vndb_id', 'steam_link', 'longevity')
 
     def get_staff(self, obj):
@@ -64,16 +67,21 @@ class VisualNovelSerializer(serializers.ModelSerializer):
         return StaffSerializer(staffs, many=True).data
 
     def get_studios(self, obj):
-        vnstudios = VNStudio.objects.filter(visual_novel=obj).order_by('weight')
+        vnstudios = VNStudio.objects.filter(visual_novel=obj).order_by('-weight')
         studios = [vnstudios[i].studio for i in range(len(vnstudios))]
         return StudioSerializers(studios, many=True).data
 
     def get_genres(self, obj):
-        vngenres = VNGenre.objects.filter(visual_novel=obj).order_by('weight')
+        vngenres = VNGenre.objects.filter(visual_novel=obj).order_by('-weight')
         genres = [vngenres[i].genre for i in range(len(vngenres))]
         return GenreSerializer(genres, many=True).data
 
     def get_tags(self, obj):
-        vntags = VNTag.objects.filter(visual_novel=obj).order_by('weight')
+        vntags = VNTag.objects.filter(visual_novel=obj).order_by('-weight')
         tags = [vntags[i].tag for i in range(len(vntags))]
         return TagSerializer(tags, many=True).data
+
+    def get_photo(self, obj):
+        if not obj.photo:
+            return settings.POSTER_STOPPER_URL
+        return obj.photo.url

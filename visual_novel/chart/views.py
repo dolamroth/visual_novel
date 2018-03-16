@@ -48,10 +48,9 @@ def chart_index_page(request):
             rows.append(row)
             row = list()
 
-        if len(row) < settings.CHART_NUMBER_OF_VN_IN_ROW:
-            rows.append(row)
+    if len(row) < settings.CHART_NUMBER_OF_VN_IN_ROW:
+        rows.append(row)
 
     context['rows'] = rows
-    print(context)
 
     return render(request, 'chart/index.html', context)
