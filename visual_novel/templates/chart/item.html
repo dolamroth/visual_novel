@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     Визуальная новелла такая-то
@@ -6,4 +7,172 @@
 
 {% block content %}
     <p>Main page</p>
+    <div class="row">
+                <div class="col-lg-12 p-column">
+                    <h3 class="vnhome-title">
+                        <a href="/">Главная</a> {{title}}
+                    </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-5 col-sm-6 p-column">
+                    <img src= {{ photo_poster }}  class="vnhome-poster">
+
+                </div>
+                <div class="col-lg-8 col-md-7 col-sm-6 p-column">
+                    <p class="vnhome-genre">
+                        <span class="sh-desc">Другие названия:&nbsp;</span>{{alternative_title}}
+                    </p>
+                    <p class="vnhome-genre">
+                        <span class="sh-desc">
+                            <strong>Разработка игры</strong>
+                    </p>
+                        <p class="vnhome-genre">
+                            <span class="sh-desc">Студия:&nbsp;</span>
+                                {% for studio in studios %}
+                                <a class="tip" title="{{ studio.description }}"> {{ studio.title }}
+                                </a>
+                                {% endfor %}
+                        </p>
+                        <p class="vnhome-genre">
+                            <span class="sh-desc">В том числе:&nbsp;</span>
+                            <a href="/?staff=5">Kai</a> (сценарист, композитор),
+                            <a href="/?staff=2">Орито Синдзи</a> (композитор),
+                            <a href="/?staff=3">Хиноуэ Итару</a> (художник, чардиз)
+                        </p>
+                        <p class="vnhome-genre">
+                            <span class="sh-desc">
+                                <strong>Информация</strong>
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Жанры:&nbsp;</span>
+                                <a href="/?genre=1">драма</a>,
+                                <a href="/?genre=8">постапокалиптика</a>,
+                                <a href="/?genre=14">научная фантастика</a>
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Тэги:&nbsp;</span>
+                                <a href="/?tag=1" class="tip" data-tip="Накиге (от 泣きゲ, буквально &quot;плачущая игра&quot;)&nbsp;&#8211; подвид визуальных новелл, основанный на идее заставить игрока сопереживать героям, испытать сильные душевные переживания. Такие игры следуют традиционной формуле: первая комедийная часть игры раскрывает персонажей, в то время как в основе второй лежат глубоко эмоциональные, пробивающие на слезу истории.">накиге</a>,
+                                <a href="/?tag=23" class="tip" data-tip="Игра содержит целиком линейный сюжет, и привычные для визуальных новелл руты (сюжетные арки) отсутствуют. Это не значит, что в новелле вообще не может быть выборов, но, если есть, они не оказывают большого воздействия на сюжет.">линейный сюжет</a>,
+                                <a href="/?tag=5">для всех возрастов (all)</a>,
+                                <a href="/?tag=10" class="tip" data-tip="Обозначение для новелл, в которых текстовая панель занимает большую часть экрана.">NVL</a>
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Дата выхода:&nbsp;</span>23 сентября 2016 года
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Оценка на VNDb:&nbsp;</span>
+                                <strong>7.15</strong>
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">
+                                    <strong>
+                                        <a href="https://vndb.org/v16510" target="_blank">Страница на VNDb</a>
+                                    </strong>
+                                </span>
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Продолжительность:&nbsp;</span>
+                                <a href="/?duration=2">короткая (от 2 до 10 часов)</a>
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Перевод на русский:&nbsp;</span>
+                                <a href="/?tranteam=1" class="tip" data-tip="Команда, основанная
+                                    <i>Erizo</i> в 2013 году для перевода новеллы Clannad.
+                                    <br>
+                                    <a href=&quot;https://vk.com/littlebustersvn&quot;>Группа ВК</a>&nbsp;|&nbsp;
+                                    <a href=&quot;http://enthusiasts-ts.ru/&quot;>Сайт</a>">Энтузиасты Team
+                                </a> (EN &rarr; RU)
+                            </p>
+                            <p class="vnhome-genre">
+                                <span class="sh-desc">Дата выхода перевода:&nbsp;</span>31 декабря 2017 года
+                            </p>
+                            <p class="vnhome-genre">
+                                <strong>
+                                    <span class="sh-desc">
+                                        <img src="/img/icons/steam.png" class="steam-img">&nbsp;
+                                        <a href="http://store.steampowered.com/app/421660/" class="steam-a" target="_blank">Есть в Steam</a>
+                                    </span>
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row vnhome-desc-title">
+                        <div class="col-lg-12 p-column">
+                            <h4>Описание:</h4>
+                        </div>
+                    </div>
+                    <div class="row vnhome-desc">Это история об очень далёком будущем. Мир пережил ужасную войну. Население Земли сильно сократилось.
+                        <br />
+                        <br />
+На разрушенном заводе в себя приходит фироид. Фироиды&nbsp;&#8211; плоды довоенной науки&nbsp;&#8211; наделённые эмоциями роботы. Они были созданы в качестве спутников для людей и призваны облегчить их жизнь. Однако этот фироид быстро понимает, что у него эмоции отсутствуют. Вероятно, его не доделали. Он отправляется в путешествие по миру, чтобы найти людей и научиться чувствам, которых он лишён.
+                    </div>
+                    <div class="row vnhome-desc-title">
+                        <div class="col-lg-12 p-column">
+                            <h4>Комментарий:</h4>
+                        </div>
+                    </div>
+                    <div class="row vnhome-desc">
+                        <b>Патч с русским переводом для Steam-версии</b>:
+                        <a href="https://yadi.sk/d/oKD8r6N83QwvZ3">Яндекс</a>,
+                        <a href="https://drive.google.com/file/d/1DL_ebdWRJ2oZ_Usv9dg2SGya-lcej-6e/view">Google</a>
+                        <br />
+                        <b>Установка</b>:
+                        <br />
+1) Распаковать содержимое архива в папку с игрой, согласившись на замену (&nbsp;%ваша_папка_Steam%&#47;steamapps&#47;common&#47;Harmonia&nbsp;)
+                        <br />
+2) При первом запуске игра ругается на шрифт. Нажимаем "Да", выбираем шрифт
+                        <i>Consolas</i> и играем.
+                        <br />
+                        <br />
+                        <b>Русская версия игры</b>:
+                        <a href="https://yadi.sk/d/RcpirM0Z3Qww89">Яндекс</a>
+                        <br />
+                        <b>Установка</b>: распаковать архив, играть.
+                    </div>
+                    <div class="row vnhome-desc-title">
+                        <div class="col-lg-12 p-column">
+                            <h4>Скриншоты:</h4>
+                        </div>
+                    </div>
+                    <div class="row vnhome-desc gallery">
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia01.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia01.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia02.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia02.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia03.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia03.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia04.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia04.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia05.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia05.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia06.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia06.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia07.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia07.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia08.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia08.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia09.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia09.png">
+                        </a>
+                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia10.png" class="gallery-item">
+                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia10.png">
+                        </a>
+                    </div>
+                    <div class="row vnhome-desc">&nbsp;
+                        <br>&nbsp;
+                    </div>
+                    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+                    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+                    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+                    <script src="{% static 'js/jquery-ui.js' %}"></script>
+                    <script src="{% static 'js/custom.js' %}"></script>
 {% endblock %}
