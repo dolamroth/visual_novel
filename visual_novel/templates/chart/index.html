@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Чарт визуальных новелл
+{% endblock %}
+
+{% block content %}
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="col-lg-12">
+            <h3>Чарт</h3>
+        </div>
+    </div>
+
+    {% for row in rows %}
+        <div class="row text-center">
+            {% for visual_novel in row %}
+                <div class="col-md-3 col-sm-6 hero-feature vn-block">
+                    <div class="thumbnail vn-thumbnail">
+                        <a href="{{ visual_novel.chart_link }}"><img src="{{ visual_novel.poster_url }}" alt="Sengoku Rance" class="poster-img"></a>
+                        <div class="caption">
+                            <h4 class="vn-header-title" title="{{ visual_novel.title }}">{{ visual_novel.title }}</h4>
+                            <div class="vn-desc vn-desc-unwrap"><a href="#" class="vn-desc-enlarge">Развернуть описание</a></div>
+                            <div class="vn-desc hidden-option vn-desc-full">{{ visual_novel.description }}</div>
+                            <div class="vn-desc hidden-option vn-desc-wrap"><a href="#" class="vn-desc-enlarge">Cвернуть описание</a></div>
+                            <div class="vn-genres vn-params">
+                                <span class="sh-desc">Жанры:&nbsp;</span>
+                                {% for genre in visual_novel.genres %}
+                                    <a href="{{ genre.link }}">{{ genre.title }}</a>{% include "includes/comma.html" %}
+                                {% endfor %}
+                            </div>
+                            <div class="vn-params">
+                                <span class="sh-desc">Студия:&nbsp;</span>
+                                {% for studio in visual_novel.studios %}
+                                    <a href="{{ studio.link }}">{{ studio.title }}</a>{% include "includes/comma.html" %}
+                                {% endfor %}
+                            </div>
+                            <div class="vn-params">
+                                <span class="sh-desc">Оценка на VNDb:&nbsp;</span><strong>0</strong>
+                            </div>
+                            <div class="p-main-vn-links btn-group btn-group-justified">
+                                <a href="{{ visual_novel.chart_link }}" class="btn btn-xs btn-primary">Подробнее</a>
+                                <a href="https://vndb.org/v{{ visual_novel.vndb_id }}" class="btn btn-xs btn-default" target="_blank">VNDb&nbsp;&nbsp;<i class="glyphicon glyphicon-share"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}
