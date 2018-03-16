@@ -15,13 +15,16 @@ def add_test_visual_novel(apps, schema_editor):
     romance = Genre.objects.get(alias='romance')
     everyday_life = Genre.objects.get(alias='slice-of-life')
     comedy = Genre.objects.get(alias='comedy')
-    mystery, _ = Genre.objects.get_or_create(title='мистика', alias='mystery')
+    mystery = Genre.objects.get(alias='mystery')
+    sci_fi = Genre.objects.get(alias='scifi')
+    fantasy = Genre.objects.get(alias='fantasy')
 
     nakige = Tag.objects.get(alias='nakige')
     all_age = Tag.objects.get(alias='all-age')
     true_end = Tag.objects.get(alias='has-true-ending')
     adv = Tag.objects.get(alias='adv')
-    all_18, _ = Tag.objects.get_or_create(alias='all-18')
+    all_18 = Tag.objects.get(alias='all-18')
+    chuunige = Tag.objects.get(alias='chuunige')
 
     screenwriter = StaffRole.objects.get(title='сценарист')
     composer = StaffRole.objects.get(title='композитор')
@@ -37,6 +40,8 @@ def add_test_visual_novel(apps, schema_editor):
     kagami_esihoki = Staff.objects.get(alias='kashida-leo')
     naga = Staff.objects.get(alias='na-ga')
     kai = Staff.objects.get(alias='kai')
+    ryuukishi07 = Staff.objects.get(alias='ryuukishi07')
+    tanaka_romeo = Staff.objects.get(alias='tanaka-romeo')
 
     very_short = Longevity.objects.get(min_length=None, max_length=2)
     short = Longevity.objects.get(min_length=2, max_length=10)
@@ -95,6 +100,8 @@ def add_test_visual_novel(apps, schema_editor):
         longevity=average
     )
 
+    air.save()
+
     genre, _ = VNGenre.objects.get_or_create(visual_novel=air, genre=comedy, weight=75)
     genre, _ = VNGenre.objects.get_or_create(visual_novel=air, genre=drama, weight=90)
     genre, _ = VNGenre.objects.get_or_create(visual_novel=air, genre=romance, weight=100)
@@ -113,6 +120,41 @@ def add_test_visual_novel(apps, schema_editor):
     staff, _ = VNStaff.objects.get_or_create(visual_novel=air, staff=orito_sindzi, role=composer, weight=75)
     staff, _ = VNStaff.objects.get_or_create(visual_novel=air, staff=hinou_itau, role=painter, weight=60)
     staff, _ = VNStaff.objects.get_or_create(visual_novel=air, staff=hinou_itau, role=chardiz, weight=55)
+
+    # Rewrite
+    rewrite, _ = VisualNovel.objects.get_or_create(
+        title="Rewrite",
+        alternative_title="リライト / Перезапись",
+        description="""Даже в самой благополучной обстановке люди не всегда могут найти себя и своё счастье. Тэннодзи Котаро, учащийся в престижной школе Кадзамацури, самого экологического города мира, стоит на перепутье. С родителями-трудоголиками он видится редко, из друзей у него остались лишь подруга детства, Камбе Котори, и школьный хулиган, Харухико Ёсино, а воспоминания прошлых беззаботных лет пусты и туманны. Не желая упускать юность, Котаро загорается идеей возродить школьный оккультный клуб и затащить туда своих знакомых, где они могли бы выполнять различные квесты, веселиться от души и просто укреплять свою дружбу. Однако, пытаясь обустроить свой идиллический очаг, Котаро начинает ощущать присутствие некой тайны, связывающей его знакомых, Кадзамацури, его собственную мистическую способность "перезаписи" и отрывок воспоминаний, потерянный десять лет назад...""",
+        date_of_release=datetime.date(2011, 9, 30),
+        vndb_id=751,
+        steam_link="",
+        alias="rewrite",
+        longevity=very_long
+    )
+
+    rewrite.save()
+
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=rewrite, genre=sci_fi, weight=100)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=rewrite, genre=fantasy, weight=90)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=rewrite, genre=drama, weight=80)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=rewrite, genre=comedy, weight=70)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=rewrite, genre=mystery, weight=65)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=rewrite, genre=romance, weight=60)
+
+    tag, _ = VNTag.objects.get_or_create(visual_novel=rewrite, tag=chuunige, weight=95)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=rewrite, tag=nakige, weight=60)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=rewrite, tag=all_age, weight=10)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=rewrite, tag=adv, weight=0)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=rewrite, tag=true_end, weight=20)
+
+    studio, _ = VNStudio.objects.get_or_create(visual_novel=rewrite, studio=visual_artskey, weight=100)
+
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=tanaka_romeo, role=screenwriter, weight=100)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=tonokava_yto, role=screenwriter, weight=80)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=ryuukishi07, role=screenwriter, weight=60)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=hinou_itau, role=painter, weight=55)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=hinou_itau, role=chardiz, weight=50)
 
 
 class Migration(migrations.Migration):
