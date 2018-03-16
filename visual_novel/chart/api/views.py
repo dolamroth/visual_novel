@@ -10,8 +10,8 @@ from .serializers import VisualNovelSerializer
 
 
 class ChartView(APIView):
-    #renderer_classes = [TemplateHTMLRenderer]
-    #template_name = 'chart/item.html'
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'chart/item.html'
 
     def get(self, request, vn_alias):
         try:
