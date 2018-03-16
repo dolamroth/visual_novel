@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('chart', '0005_add_screenshot_to_chartitem_as_one_to_many'),
+        ('vn_core',  '0012_test-data-migration'),
     ]
 
     operations = [

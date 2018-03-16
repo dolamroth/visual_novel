@@ -1,0 +1,4 @@
+
+$('.tip').tooltip();
+<style>
+</style>
