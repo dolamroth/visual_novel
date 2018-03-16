@@ -18,6 +18,8 @@ def add_test_visual_novel(apps, schema_editor):
     mystery = Genre.objects.get(alias='mystery')
     sci_fi = Genre.objects.get(alias='scifi')
     fantasy = Genre.objects.get(alias='fantasy')
+    action = Genre.objects.get(alias='action')
+    post_apocalyptic = Genre.objects.get(alias='post-apocalyptic')
 
     nakige = Tag.objects.get(alias='nakige')
     all_age = Tag.objects.get(alias='all-age')
@@ -25,6 +27,13 @@ def add_test_visual_novel(apps, schema_editor):
     adv = Tag.objects.get(alias='adv')
     all_18 = Tag.objects.get(alias='all-18')
     chuunige = Tag.objects.get(alias='chuunige')
+    eroge = Tag.objects.get(alias='eroge')
+    nvl = Tag.objects.get(alias='nvl')
+    utsuge = Tag.objects.get(alias='utsuge')
+    guro = Tag.objects.get(alias='guro')
+    madness = Tag.objects.get(alias='madness')
+    magic = Tag.objects.get(alias='magic')
+    despair = Tag.objects.get(alias='despair')
 
     screenwriter = StaffRole.objects.get(title='сценарист')
     composer = StaffRole.objects.get(title='композитор')
@@ -32,6 +41,7 @@ def add_test_visual_novel(apps, schema_editor):
     chardiz = StaffRole.objects.get(title='чардиз')
 
     visual_artskey = Studio.objects.get(alias='visual-arts-key')
+    le_chocolat = Studio.objects.get(alias='le-chocolat')
 
     maeda_dzun = Staff.objects.get(alias='maeda-jun')
     orito_sindzi = Staff.objects.get(alias='orito-shinji')
@@ -42,6 +52,7 @@ def add_test_visual_novel(apps, schema_editor):
     kai = Staff.objects.get(alias='kai')
     ryuukishi07 = Staff.objects.get(alias='ryuukishi07')
     tanaka_romeo = Staff.objects.get(alias='tanaka-romeo')
+    setoguchi_renya = Staff.objects.get(alias='setoguchi-renya')
 
     very_short = Longevity.objects.get(min_length=None, max_length=2)
     short = Longevity.objects.get(min_length=2, max_length=10)
@@ -155,6 +166,35 @@ def add_test_visual_novel(apps, schema_editor):
     staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=ryuukishi07, role=screenwriter, weight=60)
     staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=hinou_itau, role=painter, weight=55)
     staff, _ = VNStaff.objects.get_or_create(visual_novel=rewrite, staff=hinou_itau, role=chardiz, weight=50)
+
+    # Swan Song
+    swan_song, _ = VisualNovel.objects.get_or_create(
+        title="Swan Song",
+        alternative_title="スワンソング / Лебединая песнь",
+        description="""Небольшой городок в предгорьях. Разгар зимы&nbsp;&#8211; 24 декабря. Все заняты мирной подготовкой к наступающим праздникам.<br><br>Студент местного колледжа Амако Цукаса, ночью выходит на улицу, чтобы купить в автомате бутылку газировки, как вдруг начинается сильнейшее землетрясение, и за считанные минуты весь город превращается буквально в руины. В такой сильной катастрофе можно было выжить только чудом. Однако всё же нескольким людям, так же, как и ему, удалось спастись. Первые, кого он находит,&nbsp;&#8211; девушка, страдающая аутизмом, Сака Ароэ, и её старшая сестра, которую он застаёт уже при смерти. Она просит Цукасу позаботиться об Арое, потому что самой ей не выжить. С трудом они добираются до местной церкви&nbsp;&#8211; единственного более или менее уцелевшего здания в городе. Туда же приходят другие уцелевшие. Начинается долгая борьба за выживание&nbsp;&#8211; без электричества, без света, без отопления, без свежей воды...""",
+        date_of_release=datetime.date(2005, 7, 29),
+        vndb_id=914,
+        steam_link="",
+        alias="swan-song",
+        longevity=average
+    )
+
+    swan_song.save()
+
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=swan_song, genre=action, weight=50)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=swan_song, genre=post_apocalyptic, weight=80)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=swan_song, genre=drama, weight=100)
+
+    tag, _ = VNTag.objects.get_or_create(visual_novel=swan_song, tag=utsuge, weight=100)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=swan_song, tag=guro, weight=50)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=swan_song, tag=madness, weight=80)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=swan_song, tag=despair, weight=85)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=swan_song, tag=eroge, weight=20)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=swan_song, tag=nvl, weight=0)
+
+    studio, _ = VNStudio.objects.get_or_create(visual_novel=swan_song, studio=le_chocolat, weight=100)
+
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=swan_song, staff=setoguchi_renya, role=screenwriter, weight=100)
 
 
 class Migration(migrations.Migration):
