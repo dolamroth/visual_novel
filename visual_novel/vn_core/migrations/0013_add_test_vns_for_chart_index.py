@@ -20,6 +20,8 @@ def add_test_visual_novel(apps, schema_editor):
     fantasy = Genre.objects.get(alias='fantasy')
     action = Genre.objects.get(alias='action')
     post_apocalyptic = Genre.objects.get(alias='post-apocalyptic')
+    surrealism = Genre.objects.get(alias='surrealism')
+    metafiction = Genre.objects.get(alias='metafiction')
 
     nakige = Tag.objects.get(alias='nakige')
     all_age = Tag.objects.get(alias='all-age')
@@ -34,6 +36,7 @@ def add_test_visual_novel(apps, schema_editor):
     madness = Tag.objects.get(alias='madness')
     magic = Tag.objects.get(alias='magic')
     despair = Tag.objects.get(alias='despair')
+    linear_plot = Tag.objects.get(alias='linear-plot')
 
     screenwriter = StaffRole.objects.get(title='сценарист')
     composer = StaffRole.objects.get(title='композитор')
@@ -42,6 +45,7 @@ def add_test_visual_novel(apps, schema_editor):
 
     visual_artskey = Studio.objects.get(alias='visual-arts-key')
     le_chocolat = Studio.objects.get(alias='le-chocolat')
+    liar_soft = Studio.objects.get(alias='liar-soft')
 
     maeda_dzun = Staff.objects.get(alias='maeda-jun')
     orito_sindzi = Staff.objects.get(alias='orito-shinji')
@@ -53,6 +57,7 @@ def add_test_visual_novel(apps, schema_editor):
     ryuukishi07 = Staff.objects.get(alias='ryuukishi07')
     tanaka_romeo = Staff.objects.get(alias='tanaka-romeo')
     setoguchi_renya = Staff.objects.get(alias='setoguchi-renya')
+    hoshizora_meteor = Staff.objects.get(alias='hoshizora-meteor')
 
     very_short = Longevity.objects.get(min_length=None, max_length=2)
     short = Longevity.objects.get(min_length=2, max_length=10)
@@ -195,6 +200,35 @@ def add_test_visual_novel(apps, schema_editor):
     studio, _ = VNStudio.objects.get_or_create(visual_novel=swan_song, studio=le_chocolat, weight=100)
 
     staff, _ = VNStaff.objects.get_or_create(visual_novel=swan_song, staff=setoguchi_renya, role=screenwriter, weight=100)
+
+    # Forest
+    forest, _ = VisualNovel.objects.get_or_create(
+        title="Forest",
+        alternative_title="フォレスト",
+        description="""<i>"Я Алиса. Пожалуйста, расскажи мне сказку."</i><br><br>Тут и там, в переулках между зданиями, глухих закоулках и, быть может, даже под землёй, в наш мир просачивается Лес. Лес&nbsp;&#8211; это запретное место, не подчиняющееся законам нашего мира.<br><br>Наши герои должны противостоять козням Леса, без особой надежды на помощь или понимание со стороны внешнего мира.<br><br>Они сражаются с "загадками", которые на них насылает Лес, используя свои сверхъестественные способности, известные как "дары".<br><br>И, если им будет суждено проиграть, их ждёт то, чего они боятся больше всего на свете,&nbsp;&#8211; изгнание из Синдзюку.""",
+        date_of_release=datetime.date(2004, 2, 13),
+        vndb_id=599,
+        steam_link="",
+        alias="forest",
+        longevity=average
+    )
+
+    forest.save()
+
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=forest, genre=surrealism, weight=80)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=forest, genre=metafiction, weight=90)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=forest, genre=comedy, weight=50)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=forest, genre=fantasy, weight=95)
+
+    tag, _ = VNTag.objects.get_or_create(visual_novel=forest, tag=madness, weight=40)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=forest, tag=magic, weight=60)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=forest, tag=linear_plot, weight=30)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=forest, tag=eroge, weight=20)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=forest, tag=adv, weight=0)
+
+    studio, _ = VNStudio.objects.get_or_create(visual_novel=forest, studio=liar_soft, weight=100)
+
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=forest, staff=hoshizora_meteor, role=screenwriter, weight=100)
 
 
 class Migration(migrations.Migration):
