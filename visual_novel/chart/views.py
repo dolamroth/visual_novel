@@ -2,20 +2,72 @@ import os
 
 from django.shortcuts import render
 from django.conf import settings
+from django.http import Http404
 
-from vn_core.models import VNStaff
+from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
+from cinfo.models import Genre, Tag, Studio, Staff, Longevity
 from core.utils import printable_russian_date
 
 from .models import ChartItem
 
 
-def chart_index_page(request):
+def chart_index_page(
+        request,
+        genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None
+    ):
     context = dict()
+    context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;Чарт'
 
     rows = list()
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
     all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
+
+    # Optional atributes
+    if genre_alias:
+        vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
+        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_genre)
+        try:
+            genre = Genre.objects.get(alias=genre_alias)
+            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'жанр: ' + genre.title
+        except Genre.DoesNotExist:
+            pass
+
+    if tag_alias:
+        vn_with_tag = VNTag.objects.filter(tag__alias=tag_alias).values('visual_novel')
+        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_tag)
+        try:
+            tag = Tag.objects.get(alias=tag_alias)
+            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'тэг: ' + tag.title
+        except Tag.DoesNotExist:
+            pass
+
+    if studio_alias:
+        vn_with_studio = VNStudio.objects.filter(studio__alias=studio_alias).values('visual_novel')
+        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_studio)
+        try:
+            studio = Studio.objects.get(alias=studio_alias)
+            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'студия: ' + studio.title
+        except Studio.DoesNotExist:
+            pass
+
+    if staff_alias:
+        vn_with_staff = VNStaff.objects.filter(staff__alias=staff_alias).values('visual_novel')
+        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_staff)
+        try:
+            staff = Staff.objects.get(alias=staff_alias)
+            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'персона: ' + staff.title
+        except Staff.DoesNotExist:
+            pass
+
+    if duration_alias:
+        all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
+        try:
+            duration = Longevity.objects.get(alias=duration_alias)
+            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'продолжительность: ' + duration.title
+        except Longevity.DoesNotExist:
+            pass
+
     k = 0
     row = list()
     for chart_item in all_chart_items:
@@ -51,17 +103,26 @@ def chart_index_page(request):
             rows.append(row)
             row = list()
 
-    if len(row) < settings.CHART_NUMBER_OF_VN_IN_ROW:
+    if 0 < len(row) < settings.CHART_NUMBER_OF_VN_IN_ROW:
         rows.append(row)
 
     context['rows'] = rows
+    context['no_rows'] = (len(context['rows']) == 0)
+    if context['no_rows']:
+        context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>'
 
     return render(request, 'chart/index.html', context)
 
 
 def chart_page(request, vn_alias):
     vn_context = dict()
-    chart_item = ChartItem.objects.get(is_published=True, visual_novel__is_published=True, visual_novel__alias=vn_alias)
+    try:
+        chart_item = ChartItem.objects.get(
+            is_published=True, visual_novel__is_published=True, visual_novel__alias=vn_alias
+        )
+    except:
+        raise Http404
+
     visual_novel = chart_item.visual_novel
 
     vn_context['title'] = visual_novel.title

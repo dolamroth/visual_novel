@@ -7,7 +7,7 @@
 {% block content %}
     <div class="row" style="margin-bottom: 10px;">
         <div class="col-lg-12">
-            <h3><a href="/">Главная</a>&nbsp;&#47;&nbsp;Чарт</h3>
+            <h3><a href="/">Главная</a>{{ additional_breadcumb|safe }}</h3>
         </div>
     </div>
 
@@ -47,4 +47,9 @@
             {% endfor %}
         </div>
     {% endfor %}
+    {% if no_rows %}
+        <div class="row text-center">
+            <h4>По вашему запросу ничего не найдено.</h4>
+        </div>
+    {% endif %}
 {% endblock %}
