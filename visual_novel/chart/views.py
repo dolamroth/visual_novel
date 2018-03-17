@@ -3,8 +3,10 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 
-from .models import ChartItem
 from vn_core.models import VNStaff
+from core.utils import printable_russian_date
+
+from .models import ChartItem
 
 
 def chart_index_page(request):
@@ -73,8 +75,8 @@ def chart_page(request, vn_alias):
     vn_context['steam_icon'] = settings.STEAM_ICON_URL
     vn_context['longevity'] = visual_novel.longevity.__str__()
     vn_context['longevity_link'] = '/chart/' # TODO: fix
-    vn_context['date_of_release'] = visual_novel.date_of_release
-    vn_context['date_of_translation'] = chart_item.date_of_translation
+    vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
+    vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
     vn_context['vndb_mark'] = 0 # TODO: fix
 
     vn_context['genres'] = list()
