@@ -17,19 +17,20 @@ def chart_index_page(
     ):
     context = dict()
     context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;Чарт'
+    chart_breadcumb_with_link = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;'
 
     rows = list()
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
     all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
 
-    # Optional atributes
+    # Optional endpoint parameters
     if genre_alias:
         vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_genre)
         try:
             genre = Genre.objects.get(alias=genre_alias)
-            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'жанр: ' + genre.title
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
         except Genre.DoesNotExist:
             pass
 
@@ -38,7 +39,7 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_tag)
         try:
             tag = Tag.objects.get(alias=tag_alias)
-            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'тэг: ' + tag.title
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
         except Tag.DoesNotExist:
             pass
 
@@ -47,7 +48,7 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_studio)
         try:
             studio = Studio.objects.get(alias=studio_alias)
-            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'студия: ' + studio.title
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
         except Studio.DoesNotExist:
             pass
 
@@ -56,7 +57,7 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_staff)
         try:
             staff = Staff.objects.get(alias=staff_alias)
-            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'персона: ' + staff.title
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
         except Staff.DoesNotExist:
             pass
 
@@ -64,10 +65,11 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
             duration = Longevity.objects.get(alias=duration_alias)
-            context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;' + 'продолжительность: ' + duration.title
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
             pass
 
+    # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
     for chart_item in all_chart_items:
@@ -148,6 +150,7 @@ def chart_page(request, vn_alias):
     vn_context['comment'] = chart_item.comment
     vn_context['has_comment'] = not not vn_context['comment']
 
+    # Genres list
     vn_context['genres'] = list()
     for genre in visual_novel.vngenre_set.filter(genre__is_published=True).order_by('-weight'):
         vn_context['genres'].append({
@@ -157,6 +160,7 @@ def chart_page(request, vn_alias):
         })
     vn_context['has_genres'] = (len(vn_context['genres']) > 0)
 
+    # Studios list
     vn_context['studios'] = list()
     for studio in visual_novel.vnstudio_set.filter(studio__is_published=True).order_by('-weight'):
         vn_context['studios'].append({
@@ -166,6 +170,7 @@ def chart_page(request, vn_alias):
         })
     vn_context['has_studios'] = (len(vn_context['studios']) > 0)
 
+    # Tags list
     vn_context['tags'] = list()
     for tag in visual_novel.vntag_set.filter(tag__is_published=True).order_by('-weight'):
         vn_context['tags'].append({
@@ -175,6 +180,7 @@ def chart_page(request, vn_alias):
         })
     vn_context['has_tags'] = (len(vn_context['tags']) > 0)
 
+    # Staff list
     vn_context['staffs'] = list()
     staffs_clear = list()
     for staff in visual_novel.vnstaff_set.filter(staff__is_published=True).order_by('-weight'):
@@ -190,6 +196,7 @@ def chart_page(request, vn_alias):
         })
     vn_context['has_staffs'] = (len(vn_context['staffs']) > 0)
 
+    # Screenshots list
     vn_context['screenshots'] = list()
     vn_screenshots = chart_item.chartitemscreenshot_set.filter(
         is_published=True,
@@ -197,13 +204,11 @@ def chart_page(request, vn_alias):
         miniature__isnull=False
     ).order_by('-order')
     for screenshot in vn_screenshots:
-        vn_context['screenshots'].append(
-            {
-                'title': screenshot.title,
-                'image': screenshot.image.url,
-                'miniature': screenshot.miniature.url
-            }
-        )
+        vn_context['screenshots'].append({
+            'title': screenshot.title,
+            'image': screenshot.image.url,
+            'miniature': screenshot.miniature.url
+        })
     vn_context['has_screenshots'] = (len(vn_context['screenshots']) > 0)
 
     return render(request=request, template_name='chart/item.html', context=vn_context)

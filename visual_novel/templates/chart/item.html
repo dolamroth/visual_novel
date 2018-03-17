@@ -40,7 +40,8 @@
                     <p class="vnhome-genre">
                         <span class="sh-desc">В том числе:</span>
                         {% for staff in staffs %}
-                            <a href="{{ staff.link }}">{{ staff.title|safe }}</a>&nbsp;({% for role in staff.roles %}{{ role.title|safe }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
+                            <a href="{{ staff.link }}">{{ staff.title|safe }}</a>
+                            ({% for role in staff.roles %}{{ role.title|safe }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
                         {% endfor %}
                     </p>
                 {% endif %}
