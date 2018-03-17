@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block title %}
-    {{ title }}
+    {{ title|safe }}
 {% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-lg-12 p-column">
             <h3 class="vnhome-title">
-                <a href="/">Главная</a>&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;{{ title }}
+                <a href="/">Главная</a>&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;{{ title|safe }}
             </h3>
         </div>
     </div>
@@ -21,7 +21,7 @@
 
         <div class="col-lg-8 col-md-7 col-sm-6 p-column">
             <p class="vnhome-genre">
-                <span class="sh-desc">Другие названия:</span> {{ alternative_title }}
+                <span class="sh-desc">Другие названия:</span> {{ alternative_title|safe }}
             </p>
 
             {% if has_studios %}
@@ -32,7 +32,7 @@
                 <p class="vnhome-genre">
                     <span class="sh-desc">Студия: </span>
                     {% for studio in studios %}
-                        <a href="{{ studio.link }}" class="tip" title="{{ studio.description }}">{{ studio.title }}</a>
+                        <a href="{{ studio.link }}" class="tip" title="{{ studio.description|safe }}">{{ studio.title|safe }}</a>
                     {% endfor %}
                 </p>
 
@@ -40,7 +40,7 @@
                     <p class="vnhome-genre">
                         <span class="sh-desc">В том числе:</span>
                         {% for staff in staffs %}
-                            <a href="{{ staff.link }}">{{ staff.title }}</a>&nbsp;({% for role in staff.roles %}{{ role.title }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
+                            <a href="{{ staff.link }}">{{ staff.title|safe }}</a>&nbsp;({% for role in staff.roles %}{{ role.title|safe }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
                         {% endfor %}
                     </p>
                 {% endif %}
@@ -53,14 +53,14 @@
             {% if has_genres %}
                 <p class="vnhome-genre">
                     <span class="sh-desc">Жанры:</span>
-                    {% for genre in genres %}<a href="{{ genre.link }}">{{ genre.title }}</a>{% include "includes/comma.html" %}{% endfor %}
+                    {% for genre in genres %}<a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}{% endfor %}
                 </p>
             {% endif %}
 
             {% if has_tags %}
                 <p class="vnhome-genre">
                     <span class="sh-desc">Тэги:</span>
-                    {% for tag in tags%}<a href="{{ tag.link }}" class="tip" title="{{ tag.description }}">{{ tag.title }}</a>{% include "includes/comma.html" %}{% endfor %}
+                    {% for tag in tags%}<a href="{{ tag.link }}" class="tip" title="{{ tag.description|safe }}">{{ tag.title|safe }}</a>{% include "includes/comma.html" %}{% endfor %}
                 </p>
             {% endif %}
 
@@ -69,24 +69,21 @@
             </p>
 
             <p class="vnhome-genre">
-                <span class="sh-desc">Оценка на VNDb:</span>&nbsp;<strong>{{ vndb_mark }}</strong>
+                <span class="sh-desc">Оценка на VNDb:</span> <strong>{{ vndb_mark }}</strong>
             </p>
 
             <p class="vnhome-genre">
                 <span class="sh-desc">
-                    <strong>
-                        <a href="https://vndb.org/v{{ vndb_id }}" target="_blank">Ссылка на VNDb</a>
-                    </strong>
+                    <strong><a href="https://vndb.org/v{{ vndb_id }}" target="_blank">Ссылка на VNDb</a></strong>
                 </span>
             </p>
 
             <p class="vnhome-genre">
-                <span class="sh-desc">Продолжительность:</span>
-                <a href="{{ longevity_link }}">{{ longevity }}</a>
+                <span class="sh-desc">Продолжительность:</span> <a href="{{ longevity_link }}">{{ longevity }}</a>
             </p>
 
             <p class="vnhome-genre">
-                <span class="sh-desc">Дата выхода перевода:</span> {{date_of_translation}}
+                <span class="sh-desc">Дата выхода перевода:</span> {{ date_of_translation }}
             </p>
 
             {% if has_steam %}
