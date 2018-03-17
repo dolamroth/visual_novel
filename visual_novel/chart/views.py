@@ -74,7 +74,7 @@ def chart_page(request, vn_alias):
     vn_context['steam_link'] = visual_novel.steam_link or ''
     vn_context['steam_icon'] = settings.STEAM_ICON_URL
     vn_context['longevity'] = visual_novel.longevity.__str__()
-    vn_context['longevity_link'] = '/chart/' # TODO: fix
+    vn_context['longevity_link'] = os.path.join('/chart/', 'duration', visual_novel.longevity.alias)
     vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
     vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
     vn_context['vndb_mark'] = 0 # TODO: fix
