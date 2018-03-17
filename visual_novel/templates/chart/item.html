@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Визуальная новелла такая-то
+    {{ title }}
 {% endblock %}
 
 {% block content %}
@@ -23,39 +23,55 @@
             <p class="vnhome-genre">
                 <span class="sh-desc">Другие названия:</span> {{ alternative_title }}
             </p>
-            <p class="vnhome-genre">
-                <span class="sh-desc"><strong>Разработка игры</strong></span>
-            </p>
-            <p class="vnhome-genre">
-                <span class="sh-desc">Студия: </span>
-                {% for studio in studios %}
-                    <a href="{{ studio.link }}" class="tip" title="{{ studio.description }}">{{ studio.title }}</a>
-                {% endfor %}
-            </p>
-            <p class="vnhome-genre">
-                <span class="sh-desc">В том числе:</span>
-                {% for staff in staffs %}
-                    <a href="{{ staff.link }}">{{ staff.title }}</a>&nbsp;({% for role in staff.roles %}{{ role.title }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
-                {% endfor %}
-            </p>
+
+            {% if has_studios %}
+                <p class="vnhome-genre">
+                    <span class="sh-desc"><strong>Разработка игры</strong></span>
+                </p>
+
+                <p class="vnhome-genre">
+                    <span class="sh-desc">Студия: </span>
+                    {% for studio in studios %}
+                        <a href="{{ studio.link }}" class="tip" title="{{ studio.description }}">{{ studio.title }}</a>
+                    {% endfor %}
+                </p>
+
+                {% if has_staffs %}
+                    <p class="vnhome-genre">
+                        <span class="sh-desc">В том числе:</span>
+                        {% for staff in staffs %}
+                            <a href="{{ staff.link }}">{{ staff.title }}</a>&nbsp;({% for role in staff.roles %}{{ role.title }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            {% endif %}
+
             <p class="vnhome-genre">
                 <span class="sh-desc"><strong>Информация</strong></span>
             </p>
-            <p class="vnhome-genre">
-                <span class="sh-desc">Жанры:</span>
-                {% for genre in genres %}<a href="{{ genre.link }}">{{ genre.title }}</a>{% include "includes/comma.html" %}{% endfor %}
-            </p>
-            <p class="vnhome-genre">
-                <span class="sh-desc">Тэги:</span>
-                {% for tag in tags%}<a href="{{ tag.link }}" class="tip" title="{{ tag.description }}">{{ tag.title }}</a>{% include "includes/comma.html" %}{% endfor %}
-            </p>
+
+            {% if has_genres %}
+                <p class="vnhome-genre">
+                    <span class="sh-desc">Жанры:</span>
+                    {% for genre in genres %}<a href="{{ genre.link }}">{{ genre.title }}</a>{% include "includes/comma.html" %}{% endfor %}
+                </p>
+            {% endif %}
+
+            {% if has_tags %}
+                <p class="vnhome-genre">
+                    <span class="sh-desc">Тэги:</span>
+                    {% for tag in tags%}<a href="{{ tag.link }}" class="tip" title="{{ tag.description }}">{{ tag.title }}</a>{% include "includes/comma.html" %}{% endfor %}
+                </p>
+            {% endif %}
+
             <p class="vnhome-genre">
                 <span class="sh-desc">Дата выхода:</span> {{ date_of_release }}
             </p>
+
             <p class="vnhome-genre">
-                <span class="sh-desc">Оценка на VNDb:</span>
-                <strong>{{ vndb_mark }}</strong>
+                <span class="sh-desc">Оценка на VNDb:</span>&nbsp;<strong>{{ vndb_mark }}</strong>
             </p>
+
             <p class="vnhome-genre">
                 <span class="sh-desc">
                     <strong>
@@ -63,6 +79,7 @@
                     </strong>
                 </span>
             </p>
+
             <p class="vnhome-genre">
                 <span class="sh-desc">Продолжительность:</span>
                 <a href="{{ longevity_link }}">{{ longevity }}</a>
@@ -71,6 +88,7 @@
             <p class="vnhome-genre">
                 <span class="sh-desc">Дата выхода перевода:</span> {{date_of_translation}}
             </p>
+
             {% if has_steam %}
                 <p class="vnhome-genre">
                     <strong>
@@ -84,33 +102,42 @@
         </div>
     </div>
 
-    <div class="row vnhome-desc-title">
-        <div class="col-lg-12 p-column">
-            <h4>Описание:</h4>
+    {% if has_description %}
+        <div class="row vnhome-desc-title">
+            <div class="col-lg-12 p-column">
+                <h4>Описание:</h4>
+            </div>
         </div>
-    </div>
-    <div class="row vnhome-desc">
-        {{ description|safe }}
-    </div>
+        <div class="row vnhome-desc">
+            {{ description|safe }}
+        </div>
+    {% endif %}
 
-    <div class="row vnhome-desc-title">
-        <div class="col-lg-12 p-column">
-            <h4>Комментарий:</h4>
+    {% if has_comment %}
+        <div class="row vnhome-desc-title">
+            <div class="col-lg-12 p-column">
+                <h4>Комментарий:</h4>
+            </div>
         </div>
-    </div>
+        <div class="row vnhome-desc">
+            {{ comment|safe }}
+        </div>
+    {% endif %}
 
-    <div class="row vnhome-desc-title">
-        <div class="col-lg-12 p-column">
-            <h4>Скриншоты:</h4>
+    {% if has_screenshots %}
+        <div class="row vnhome-desc-title">
+            <div class="col-lg-12 p-column">
+                <h4>Скриншоты:</h4>
+            </div>
         </div>
-    </div>
-    <div class="row vnhome-desc gallery">
-        {% for screenshot in screenshots %}
-            <a href="{{ screenshot.image }}" class="gallery-item">
-                <img src="{{ screenshot.miniature }}">
-            </a>
-        {% endfor %}
-    </div>
+        <div class="row vnhome-desc gallery">
+            {% for screenshot in screenshots %}
+                <a href="{{ screenshot.image }}" class="gallery-item">
+                    <img src="{{ screenshot.miniature }}">
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div class="row vnhome-desc">&nbsp;
         <br>&nbsp;
     </div>

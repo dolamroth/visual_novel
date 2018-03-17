@@ -67,17 +67,25 @@ def chart_page(request, vn_alias):
     vn_context['title'] = visual_novel.title
     vn_context['alternative_title'] = visual_novel.alternative_title
     vn_context['poster_url'] = settings.POSTER_STOPPER_URL if not visual_novel.photo else visual_novel.photo.url
-    vn_context['description'] = visual_novel.description
     vn_context['vndb_id'] = visual_novel.vndb_id
     vn_context['chart_link'] = os.path.join('/chart/', visual_novel.alias)
+
     vn_context['has_steam'] = not not visual_novel.steam_link
     vn_context['steam_link'] = visual_novel.steam_link or ''
     vn_context['steam_icon'] = settings.STEAM_ICON_URL
+
     vn_context['longevity'] = visual_novel.longevity.__str__()
     vn_context['longevity_link'] = os.path.join('/chart/', 'duration', visual_novel.longevity.alias)
+
     vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
     vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
     vn_context['vndb_mark'] = 0 # TODO: fix
+
+    vn_context['description'] = visual_novel.description
+    vn_context['has_description'] = not not vn_context['description']
+
+    vn_context['comment'] = '' # TODO: fix
+    vn_context['has_comment'] = not not vn_context['comment']
 
     vn_context['genres'] = list()
     for genre in visual_novel.vngenre_set.filter(genre__is_published=True).order_by('-weight'):
@@ -135,5 +143,6 @@ def chart_page(request, vn_alias):
                 'miniature': screenshot.miniature.url
             }
         )
+    vn_context['has_screenshots'] = (len(vn_context['screenshots']) > 0)
 
     return render(request=request, template_name='chart/item.html', context=vn_context)
