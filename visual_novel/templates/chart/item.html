@@ -2,127 +2,141 @@
 {% load static %}
 
 {% block title %}
-    Визуальная новелла такая-то
+    {{ title|safe }}
 {% endblock %}
 
 {% block content %}
-    <p>Main page</p>
     <div class="row">
-                <div class="col-lg-12 p-column">
-                    <h3 class="vnhome-title">
-                        <a href="/chart/">Чарт</a>&nbsp;{{ title }} {{screen}}
-                    </h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-5 col-sm-6 p-column">
-                    <img src= {{ poster_url }}  class="vnhome-poster">
+        <div class="col-lg-12 p-column">
+            <h3 class="vnhome-title">
+                <a href="/">Главная</a>&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;{{ title|safe }}
+            </h3>
+        </div>
+    </div>
 
-                </div>
-                <div class="col-lg-8 col-md-7 col-sm-6 p-column">
+    <div class="row">
+        <div class="col-lg-4 col-md-5 col-sm-6 p-column">
+            <img src="{{ poster_url }}" class="vnhome-poster">
+        </div>
+
+        <div class="col-lg-8 col-md-7 col-sm-6 p-column">
+            <p class="vnhome-genre">
+                <span class="sh-desc">Другие названия:</span> {{ alternative_title|safe }}
+            </p>
+
+            {% if has_studios %}
+                <p class="vnhome-genre">
+                    <span class="sh-desc"><strong>Разработка игры</strong></span>
+                </p>
+
+                <p class="vnhome-genre">
+                    <span class="sh-desc">Студия: </span>
+                    {% for studio in studios %}
+                        <a href="{{ studio.link }}" class="tip" title="{{ studio.description|safe }}">{{ studio.title|safe }}</a>
+                    {% endfor %}
+                </p>
+
+                {% if has_staffs %}
                     <p class="vnhome-genre">
-                        <span class="sh-desc">Другие названия:&nbsp;</span>{{alternative_title}}
-                    </p>
-                    <p class="vnhome-genre">
-                        <span class="sh-desc">
-                            <strong>Разработка игры</strong>
-                    </p>
-                        <p class="vnhome-genre">
-                            <span class="sh-desc">Студия:&nbsp;</span>
-                                {% for studio in studios %}
-                                <a href=" {{studio.link}} " class="tip" title="{{ studio.description }}"> {{ studio.title }}
-                                </a>
-                                {% endfor %}
-                        </p>
-                        <p class="vnhome-genre">
-                            <span class="sh-desc">В том числе:&nbsp;</span>
-                            {% for staff in staffs %}
-                            <a href="{{staff.link}}"> {{staff.title}} </a>(
-                                    {% for role in staff.roles %}
-                                    {{role.title}},
-                                    {% endfor %}
-                                    ),
-                            {% endfor %}
-                        </p>
-                        <p class="vnhome-genre">
-                            <span class="sh-desc">
-                                <strong>Информация</strong>
-                            </p>
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">Жанры:&nbsp;</span>
-                                {% for genre in genres %}
-                                <a href="{{genre.link}}">{{genre.title}},
-                                {% endfor %}
-                            </p>
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">Тэги:&nbsp;</span>
-                                {% for tag in tags%}
-                                <a href="{{tag.link}}" class="tip" title="{{tag.description}}">{{tag.title}}</a>,
-                                {% endfor %}
-
-                            </p>
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">Дата выхода:&nbsp;</span> {{date_of_release}}
-                            </p>
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">Оценка на VNDb:&nbsp;</span>
-                                <strong>TODO</strong>
-                            </p>
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">
-                                    <strong>
-                                        <a href="https://vndb.org/v16510" target="_blank">TODO</a>
-                                    </strong>
-                                </span>
-                            </p>
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">Продолжительность:&nbsp;</span>
-                                <a>{{longevity}}</a>
-                            </p>
-
-                            <p class="vnhome-genre">
-                                <span class="sh-desc">Дата выхода перевода:&nbsp;</span>{{date_of_translation}}
-                            </p>
-                            <p class="vnhome-genre">
-                                <strong>
-                                    <span class="sh-desc">
-                                        <img src="/img/icons/steam.png" class="steam-img">&nbsp;
-                                        <a href="{{steam_link}}" class="steam-a" target="_blank">Есть в Steam</a>
-                                    </span>
-                                </strong>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row vnhome-desc-title">
-                        <div class="col-lg-12 p-column">
-                            <h4>Описание:</h4>
-                        </div>
-                    </div>
-                    <div class="row vnhome-desc">{{description}}
-                    </div>
-                    <div class="row vnhome-desc-title">
-                        <div class="col-lg-12 p-column">
-                            <h4>Комментарий:</h4>
-                        </div>
-                    </div>
-                    <div class="row vnhome-desc-title">
-                        <div class="col-lg-12 p-column">
-                            <h4>Скриншоты:</h4>
-                        </div>
-                    </div>
-                    <div class="row vnhome-desc gallery">
-                        {% for screenshot in screenshots %}
-                        <a href="{{screenshot.image}}" class="gallery-item">
-                            <img src="{{screenshot.miniature}}">
-                        </a>
+                        <span class="sh-desc">В том числе:</span>
+                        {% for staff in staffs %}
+                            <a href="{{ staff.link }}">{{ staff.title|safe }}</a>
+                            ({% for role in staff.roles %}{{ role.title|safe }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
                         {% endfor %}
-                    </div>
-                    <div class="row vnhome-desc">&nbsp;
-                        <br>&nbsp;
-                    </div>
-                    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-                    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-                    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-                    <script src="{% static 'js/jquery-ui.js' %}"></script>
-                    <script src="{% static 'js/custom.js' %}"></script>
+                    </p>
+                {% endif %}
+            {% endif %}
+
+            <p class="vnhome-genre">
+                <span class="sh-desc"><strong>Информация</strong></span>
+            </p>
+
+            {% if has_genres %}
+                <p class="vnhome-genre">
+                    <span class="sh-desc">Жанры:</span>
+                    {% for genre in genres %}<a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}{% endfor %}
+                </p>
+            {% endif %}
+
+            {% if has_tags %}
+                <p class="vnhome-genre">
+                    <span class="sh-desc">Тэги:</span>
+                    {% for tag in tags%}<a href="{{ tag.link }}" class="tip" title="{{ tag.description|safe }}">{{ tag.title|safe }}</a>{% include "includes/comma.html" %}{% endfor %}
+                </p>
+            {% endif %}
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">Дата выхода:</span> {{ date_of_release }}
+            </p>
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">Оценка на VNDb:</span> <strong>{{ vndb_mark }}</strong>
+            </p>
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">
+                    <strong><a href="https://vndb.org/v{{ vndb_id }}" target="_blank">Ссылка на VNDb</a></strong>
+                </span>
+            </p>
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">Продолжительность:</span> <a href="{{ longevity_link }}">{{ longevity }}</a>
+            </p>
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">Дата выхода перевода:</span> {{ date_of_translation }}
+            </p>
+
+            {% if has_steam %}
+                <p class="vnhome-genre">
+                    <strong>
+                        <span class="sh-desc">
+                            <img src="{{ steam_icon }}" class="steam-img">&nbsp;
+                            <a href="{{ steam_link }}" class="steam-a" target="_blank">Есть в Steam</a>
+                        </span>
+                    </strong>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if has_description %}
+        <div class="row vnhome-desc-title">
+            <div class="col-lg-12 p-column">
+                <h4>Описание:</h4>
+            </div>
+        </div>
+        <div class="row vnhome-desc">
+            {{ description|safe }}
+        </div>
+    {% endif %}
+
+    {% if has_comment %}
+        <div class="row vnhome-desc-title">
+            <div class="col-lg-12 p-column">
+                <h4>Комментарий:</h4>
+            </div>
+        </div>
+        <div class="row vnhome-desc">
+            {{ comment|safe }}
+        </div>
+    {% endif %}
+
+    {% if has_screenshots %}
+        <div class="row vnhome-desc-title">
+            <div class="col-lg-12 p-column">
+                <h4>Скриншоты:</h4>
+            </div>
+        </div>
+        <div class="row vnhome-desc gallery">
+            {% for screenshot in screenshots %}
+                <a href="{{ screenshot.image }}" class="gallery-item">
+                    <img src="{{ screenshot.miniature }}">
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="row vnhome-desc">&nbsp;
+        <br>&nbsp;
+    </div>
 {% endblock %}

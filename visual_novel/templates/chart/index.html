@@ -7,7 +7,7 @@
 {% block content %}
     <div class="row" style="margin-bottom: 10px;">
         <div class="col-lg-12">
-            <h3>Чарт</h3>
+            <h3><a href="/">Главная</a>{{ additional_breadcumb|safe }}</h3>
         </div>
     </div>
 
@@ -18,20 +18,20 @@
                     <div class="thumbnail vn-thumbnail">
                         <a href="{{ visual_novel.chart_link }}"><img src="{{ visual_novel.poster_url }}" alt="Sengoku Rance" class="poster-img"></a>
                         <div class="caption">
-                            <h4 class="vn-header-title" title="{{ visual_novel.title }}">{{ visual_novel.title }}</h4>
+                            <h4 class="vn-header-title" title="{{ visual_novel.title|safe }}">{{ visual_novel.title|safe }}</h4>
                             <div class="vn-desc vn-desc-unwrap"><a href="#" class="vn-desc-enlarge">Развернуть описание</a></div>
-                            <div class="vn-desc hidden-option vn-desc-full">{{ visual_novel.description }}</div>
+                            <div class="vn-desc hidden-option vn-desc-full">{{ visual_novel.description|safe }}</div>
                             <div class="vn-desc hidden-option vn-desc-wrap"><a href="#" class="vn-desc-enlarge">Cвернуть описание</a></div>
                             <div class="vn-genres vn-params">
                                 <span class="sh-desc">Жанры:&nbsp;</span>
                                 {% for genre in visual_novel.genres %}
-                                    <a href="{{ genre.link }}">{{ genre.title }}</a>{% include "includes/comma.html" %}
+                                    <a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}
                                 {% endfor %}
                             </div>
                             <div class="vn-params">
                                 <span class="sh-desc">Студия:&nbsp;</span>
                                 {% for studio in visual_novel.studios %}
-                                    <a href="{{ studio.link }}">{{ studio.title }}</a>{% include "includes/comma.html" %}
+                                    <a href="{{ studio.link }}">{{ studio.title|safe }}</a>{% include "includes/comma.html" %}
                                 {% endfor %}
                             </div>
                             <div class="vn-params">
@@ -47,4 +47,9 @@
             {% endfor %}
         </div>
     {% endfor %}
+    {% if no_rows %}
+        <div class="row text-center">
+            <h4>По вашему запросу ничего не найдено.</h4>
+        </div>
+    {% endif %}
 {% endblock %}
