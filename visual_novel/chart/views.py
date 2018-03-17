@@ -71,6 +71,7 @@ def chart_page(request, vn_alias):
     vn_context['steam_link'] = visual_novel.steam_link
     vn_context['longevity'] = visual_novel.longevity.__str__()
     vn_context['date_of_release'] = visual_novel.date_of_release
+    vn_context['date_of_translation'] = chart_item.date_of_translation
 
     vn_context['genres'] = list()
     for genre in visual_novel.vngenre_set.all().order_by('-weight'):
@@ -109,5 +110,18 @@ def chart_page(request, vn_alias):
             'link': os.path.join('/chart/', 'staff', staff.alias),
             'roles': roles
         })
+
+    vn_context['screenshots'] = list()
+    vn_screenshots = chart_item.chartitemscreenshot_set.all().order_by('-order')
+    if len(vn_screenshots) == 0:
+        vn_context['screen'] = 'test'
+    for screenshot in vn_screenshots:
+        vn_context['screenshots'].append(
+            {
+                'title': screenshot.title,
+                'image': screenshot.image.url if screenshot.image else settings.POSTER_STOPPER_URL,
+                'miniature': screenshot.miniature.url if screenshot.miniature else settings.POSTER_STOPPER_URL
+            }
+        )
 
     return render(request=request, template_name='chart/item.html', context=vn_context)

@@ -10,7 +10,7 @@
     <div class="row">
                 <div class="col-lg-12 p-column">
                     <h3 class="vnhome-title">
-                        <a href="/chart/">Чарт</a>&nbsp;{{ title }}
+                        <a href="/chart/">Чарт</a>&nbsp;{{ title }} {{screen}}
                     </h3>
                 </div>
             </div>
@@ -50,7 +50,6 @@
                             </p>
                             <p class="vnhome-genre">
                                 <span class="sh-desc">Жанры:&nbsp;</span>
-                                <a href="/?genre=1">драма</a>,
                                 {% for genre in genres %}
                                 <a href="{{genre.link}}">{{genre.title}},
                                 {% endfor %}
@@ -82,7 +81,7 @@
                             </p>
 
                             <p class="vnhome-genre">
-                                <span class="sh-desc">Дата выхода перевода:&nbsp;</span>TODO
+                                <span class="sh-desc">Дата выхода перевода:&nbsp;</span>{{date_of_translation}}
                             </p>
                             <p class="vnhome-genre">
                                 <strong>
@@ -112,36 +111,11 @@
                         </div>
                     </div>
                     <div class="row vnhome-desc gallery">
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia01.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia01.png">
+                        {% for screenshot in screenshots %}
+                        <a href="{{screenshot.image}}" class="gallery-item">
+                            <img src="{{screenshot.miniature}}">
                         </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia02.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia02.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia03.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia03.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia04.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia04.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia05.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia05.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia06.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia06.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia07.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia07.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia08.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia08.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia09.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia09.png">
-                        </a>
-                        <a href="/img/screenshots/v3M5uK4FYBJ57QRKn/harmonia10.png" class="gallery-item">
-                            <img src="/img/screenshots/v3M5uK4FYBJ57QRKn/mini/harmonia10.png">
-                        </a>
+                        {% endfor %}
                     </div>
                     <div class="row vnhome-desc">&nbsp;
                         <br>&nbsp;
