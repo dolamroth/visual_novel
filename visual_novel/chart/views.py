@@ -145,7 +145,7 @@ def chart_page(request, vn_alias):
     vn_context['description'] = visual_novel.description
     vn_context['has_description'] = not not vn_context['description']
 
-    vn_context['comment'] = '' # TODO: fix
+    vn_context['comment'] = chart_item.comment
     vn_context['has_comment'] = not not vn_context['comment']
 
     vn_context['genres'] = list()
