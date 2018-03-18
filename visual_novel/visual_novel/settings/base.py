@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'mptt',
     'sanitizer',
+    'snowpenguin.django.recaptcha2',
 
     'core.apps.CoreConfig',
     'cinfo.apps.CinfoConfig',
@@ -172,3 +173,6 @@ CHART_NUMBER_OF_VN_IN_ROW = 4
 POSTER_STOPPER_URL = '/media/other/file-not-found-rect.jpg'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
+
+RECAPTCHA_PRIVATE_KEY = '6LeFUU0UAAAAAFE4wxl0Bs0D1Ew50GSRB-y0K-fn'
+RECAPTCHA_PUBLIC_KEY = '6LeFUU0UAAAAANcOkM9zp-f9SEaSDq3Gw5PJ_L5_'
