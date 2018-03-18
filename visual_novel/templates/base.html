@@ -16,6 +16,7 @@
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/magnific-popup.css' %}" rel="stylesheet">
+    <link href="{% static 'css/tooltipster.bundle.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
 </head>
 <body>
@@ -61,18 +62,7 @@
 
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'js/tooltipster.bundle.min.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
-    <script>
-        $(document).ready(function() {
-            $('.gallery').magnificPopup({
-                delegate: 'a',
-                type: 'image',
-                gallery: {
-                    enabled:true,
-                    tCounter: '<span class="mfp-counter">%curr% из %total%</span>'
-                }
-            });
-        });
-    </script>
 </body>
 </html>

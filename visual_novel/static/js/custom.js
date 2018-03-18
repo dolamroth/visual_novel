@@ -20,3 +20,14 @@ $(function () {
 		$.magnificPopup.close();
 	});
 });
+
+$(document).ready(function() {
+	$('.gallery').magnificPopup({
+		delegate: 'a',
+		type: 'image',
+		gallery: {
+			enabled:true,
+			tCounter: '<span class="mfp-counter">%curr% из %total%</span>'
+		}
+	});
+});
