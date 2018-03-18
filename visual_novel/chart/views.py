@@ -24,6 +24,12 @@ def chart_index_page(
 
     all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
 
+    context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
+    context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
+    context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
+    context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
+    context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
+
     # Optional endpoint parameters
     if genre_alias:
         vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')

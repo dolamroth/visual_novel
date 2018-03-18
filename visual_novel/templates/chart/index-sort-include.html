@@ -1,0 +1,72 @@
+<div class="row" style="margin-bottom: 10px;">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-sm btn-group-chart-main-page">
+            <div class="btn-group btn-group-sm btn-group-chart-main-page">
+                <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
+                Жанры
+                <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for genre in all_genres %}
+                        <li><a href="/chart/genre/{{ genre.alias }}">{{ genre.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="btn-group btn-group-sm btn-group-chart-main-page">
+                <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
+                Тэги
+                <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for tag in all_tags %}
+                        <li><a href="/chart/tag/{{ tag.alias }}">{{ tag.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="btn-group btn-group-sm btn-group-chart-main-page">
+                <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
+                Продолжительность
+                <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for duration in all_durations %}
+                        <li><a href="/chart/duration/{{ duration.alias }}">{{ duration.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="btn-group btn-group-sm btn-group-chart-main-page">
+                <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
+                Студии
+                <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for studio in all_studios %}
+                        <li><a href="/chart/studio/{{ studio.alias }}">{{ studio.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="btn-group btn-group-sm btn-group-chart-main-page">
+                <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
+                Персоналии
+                <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for staff in all_staff %}
+                        <li><a href="/chart/staff/{{ staff.alias }}">{{ staff.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-bottom: 20px;">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-sm btn-group-chart-main-page">
+            <a class="btn btn-default">По дате перевода</a>
+            <a class="btn btn-default">По оценке</a>
+            <a class="btn btn-default">По названию</a>
+            <a class="btn btn-default">По дате выхода</a>
+        </div>
+    </div>
+</div>
