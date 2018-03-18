@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load recaptcha2 %}
+
+{% recaptcha_init 'ru'%}
+<!-- Codes by HTMLcodes.ws -->
+<div  style="background-image:url(/media/background.png);
+background-repeat:no-repeat;background-position:bottom;repeat-y;">
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+    <form id="form_offer" action="?" method="POST">
+        <section>
+            <br><br>
+        Мы всегда стремимся к самому лучшему, и именно вы можете нам помочь! Если у вас есть идеи, мы их с удовольствием
+        узнаем. Можете высказать свое мнение в формочке ниже. Если вы передумали и хотите продолжить просмотр,
+            нажмите <a href="/">туть</a>.<br>
+        <b>Пожелания:</b><br>
+        <textarea name="offer_text" cols="40" rows="5" placeholder="расскажите нам..."
+        maxlength="5000" form="form_offer"></textarea>
+        <br>
+        <b>Почта для обратной связи:</b>
+        <br>
+        <input type="email" name="email" size="38" placeholder="example@example.com"><br>
+      {% csrf_token %}
+      {{ form }}
+      <input type="submit" class="btn btn-primary" value="Отправить">
+        </section>
+    </form>
+    </div>
+</div>
+</div>
+{% endblock %}
