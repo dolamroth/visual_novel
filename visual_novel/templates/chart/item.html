@@ -32,7 +32,11 @@
                 <p class="vnhome-genre">
                     <span class="sh-desc">Студия: </span>
                     {% for studio in studios %}
-                        <a href="{{ studio.link }}" class="tip" title="{{ studio.description|safe }}">{{ studio.title|safe }}</a>
+                        {% if studio.has_description %}
+                            <a href="{{ studio.link }}" class="tooltip" data-tooltip-content="#{{ studio.alias }}">{{ studio.title|safe }}</a><span class="tooltip_templates"><span id="{{ studio.alias }}">{{ studio.description|safe }}</span></span>{% include "includes/comma.html" %}
+                        {% else %}
+                            <a href="{{ studio.link }}">{{ studio.title|safe }}</a>
+                        {% endif %}
                     {% endfor %}
                 </p>
 
@@ -40,8 +44,12 @@
                     <p class="vnhome-genre">
                         <span class="sh-desc">В том числе:</span>
                         {% for staff in staffs %}
-                            <a href="{{ staff.link }}">{{ staff.title|safe }}</a>
-                            ({% for role in staff.roles %}{{ role.title|safe }}{% include "includes/comma.html" %}{% endfor %}){% include "includes/comma.html" %}
+                            {% if staff.has_description %}
+                                <a href="{{ staff.link }}" class="tooltip" data-tooltip-content="#{{ staff.alias }}">{{ staff.title|safe }}</a><span class="tooltip_templates"><span id="{{ staff.alias }}">{{ staff.description|safe }}</span></span>
+                            {% else %}
+                                <a href="{{ staff.link }}">{{ staff.title|safe }}</a>
+                            {% endif %}
+                            &#40;{% for role in staff.roles %}{{ role.title|safe }}{% include "includes/comma.html" %}{% endfor %}&#41;{% include "includes/comma.html" %}
                         {% endfor %}
                     </p>
                 {% endif %}
@@ -54,14 +62,26 @@
             {% if has_genres %}
                 <p class="vnhome-genre">
                     <span class="sh-desc">Жанры:</span>
-                    {% for genre in genres %}<a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}{% endfor %}
+                    {% for genre in genres %}
+                        {% if genre.has_description %}
+                            <a href="{{ genre.link }}" class="tooltip" data-tooltip-content="#{{ genre.alias }}">{{ genre.title|safe }}<span class="tooltip_templates"><span id="{{ genre.alias }}">{{ genre.description|safe }}</span></span>{% include "includes/comma.html" %}
+                        {% else %}
+                            <a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}
+                        {% endif %}
+                    {% endfor %}
                 </p>
             {% endif %}
 
             {% if has_tags %}
                 <p class="vnhome-genre">
                     <span class="sh-desc">Тэги:</span>
-                    {% for tag in tags%}<a href="{{ tag.link }}" class="tip" title="{{ tag.description|safe }}">{{ tag.title|safe }}</a>{% include "includes/comma.html" %}{% endfor %}
+                    {% for tag in tags %}
+                        {% if tag.has_description %}
+                            <a href="{{ tag.link }}" class="tooltip" data-tooltip-content="#{{ tag.alias }}">{{ tag.title|safe }}</a><span class="tooltip_templates"><span id="{{ tag.alias }}">{{ tag.description|safe }}</span></span>{% include "includes/comma.html" %}
+                        {% else %}
+                            <a href="{{ tag.link }}">{{ tag.title|safe }}</a>{% include "includes/comma.html" %}
+                        {% endif %}
+                    {% endfor %}
                 </p>
             {% endif %}
 

@@ -156,7 +156,9 @@ def chart_page(request, vn_alias):
         vn_context['genres'].append({
             'title': genre.genre.title,
             'description': genre.genre.description,
-            'link': os.path.join('/chart/', 'genre', genre.genre.alias)
+            'link': ('/chart/genre' + genre.genre.alias),
+            'has_description': not not genre.genre.description,
+            'alias': genre.genre.alias
         })
     vn_context['has_genres'] = (len(vn_context['genres']) > 0)
 
@@ -166,7 +168,9 @@ def chart_page(request, vn_alias):
         vn_context['studios'].append({
             'title': studio.studio.title,
             'description': studio.studio.description,
-            'link': os.path.join('/chart/', 'studio', studio.studio.alias)
+            'link': ('/chart/studio' + studio.studio.alias),
+            'has_description': not not studio.studio.description,
+            'alias': studio.studio.alias
         })
     vn_context['has_studios'] = (len(vn_context['studios']) > 0)
 
@@ -175,8 +179,10 @@ def chart_page(request, vn_alias):
     for tag in visual_novel.vntag_set.filter(tag__is_published=True).order_by('-weight'):
         vn_context['tags'].append({
             'title': tag.tag.title,
-            'description': tag.tag.description,
-            'link': os.path.join('/chart/', 'tag', tag.tag.alias)
+            'description': tag.tag.description.replace('\"', '\''),
+            'link': ('/chart/tag/' + tag.tag.alias),
+            'has_description': not not tag.tag.description,
+            'alias': tag.tag.alias
         })
     vn_context['has_tags'] = (len(vn_context['tags']) > 0)
 
@@ -191,9 +197,13 @@ def chart_page(request, vn_alias):
         roles = [vnstaffs[i].role for i in range(len(vnstaffs))]
         vn_context['staffs'].append({
             'title': staff.title,
-            'link': os.path.join('/chart/', 'staff', staff.alias),
-            'roles': roles
+            'link': ('/chart/staff' + staff.alias),
+            'description': staff.description,
+            'has_description': not not staff.description,
+            'roles': roles,
+            'alias': staff.alias
         })
+    print(vn_context['staffs'])
     vn_context['has_staffs'] = (len(vn_context['staffs']) > 0)
 
     # Screenshots list
