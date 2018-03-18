@@ -180,3 +180,15 @@ td, th{
         display: none;
     }
 }
+
+.tooltip_templates{
+	display: none;
+}
+
+a.tooltip{
+	position: static !important;
+	display: inline !important;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-size: inherit !important;
+	opacity: inherit !important;
+}
