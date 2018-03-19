@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'cinfo.apps.CinfoConfig',
     'vn_core.apps.VnCoreConfig',
     'chart.apps.ChartConfig',
+    'offer_service.apps.OfferServiceConfig',
     'translation.apps.TranslationConfig'
 ]
 
