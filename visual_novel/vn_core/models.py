@@ -55,6 +55,7 @@ class VisualNovel(PublishModel):
     studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии', blank=True)
     staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели', blank=True)
     alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='')
+    rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
 
     class Meta:
         db_table = 'vncore'
@@ -63,6 +64,9 @@ class VisualNovel(PublishModel):
 
     def __str__(self):
         return self.title
+
+    def get_rate(self):
+        return "{0:.2f}".format(self.rate)
 
     def delete_poster(self):
         try:
