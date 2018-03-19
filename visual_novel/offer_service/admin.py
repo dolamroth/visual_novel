@@ -23,6 +23,8 @@ class OfferForm(forms.ModelForm):
 
 class OfferAdmin(admin.ModelAdmin):
     form = OfferForm
+    ordering = ('-timestamp',)
+    list_filter = ('is_published', )
 
 
 admin.site.register(Offer, OfferAdmin)

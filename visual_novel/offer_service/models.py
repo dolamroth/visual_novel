@@ -20,3 +20,9 @@ class Offer(PublishModel):
 
     def __str__(self):
         return 'Заявка от %s %s' % (self.email, self.timestamp.strftime("%d/%m/%y %H:%M"))
+
+    def save(self, *args, **kwargs):
+        if self.is_accepted or self.is_rejected:
+            self.is_published = False
+        super(Offer, self).save(*args, **kwargs)
+
