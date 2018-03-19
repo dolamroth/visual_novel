@@ -9,6 +9,8 @@ class OfferForm(forms.ModelForm):
         fields = ('name', 'email', 'offer', 'is_considered', 'is_accepted', 'is_rejected', 'rejected_reasons')
 
     def clean(self):
+        if 'is_considered' in self.changed_data and not self.cleaned_data.get('is_considered'):
+            raise forms.ValidationError('Нельзя убирать заявку из рассмотрения')
         is_considered = self.cleaned_data.get('is_considered')
         is_accepted = self.cleaned_data.get('is_accepted')
         is_rejected = self.cleaned_data.get('is_rejected')
