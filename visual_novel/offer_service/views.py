@@ -3,6 +3,7 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 from django.forms import forms
 from django.urls import reverse
+from .models import Offer
 
 
 class CaptchaForm(forms.Form):
@@ -18,6 +19,7 @@ def send_offer(request, *args, **kwargs):
         if form.is_valid():
             offer_text = request.POST['offer_text']
             email = request.POST['email']
+            offer = Offer.objects.create(email=email, offer=offer_text)
             return HttpResponseRedirect('/')    # redirect if success
         else:
             return HttpResponseRedirect(reverse('send_offer'))  # redirect if fail
