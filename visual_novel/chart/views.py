@@ -128,6 +128,7 @@ def chart_index_page(
         vn_context['genres'] = list()
         vn_context['vndb_id'] = visual_novel.vndb_id
         vn_context['chart_link'] = os.path.join('/chart/', visual_novel.alias)
+        vn_context['vndb_mark'] = visual_novel.get_rate()
 
         for genre in visual_novel.vngenre_set.all().order_by('-weight'):
             vn_context['genres'].append({
@@ -187,7 +188,7 @@ def chart_page(request, vn_alias):
 
     vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
     vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
-    vn_context['vndb_mark'] = 0 # TODO: fix
+    vn_context['vndb_mark'] = visual_novel.get_rate()
 
     vn_context['description'] = visual_novel.description
     vn_context['has_description'] = not not vn_context['description']

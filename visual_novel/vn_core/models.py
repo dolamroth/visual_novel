@@ -65,6 +65,9 @@ class VisualNovel(PublishModel):
     def __str__(self):
         return self.title
 
+    def get_rate(self):
+        return "{0:.2f}".format(self.rate)
+
     def delete_poster(self):
         try:
             obj = VisualNovel.objects.get(pk=self.pk)
