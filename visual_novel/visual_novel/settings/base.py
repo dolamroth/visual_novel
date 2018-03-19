@@ -171,6 +171,7 @@ MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY = 'vn_screenshot_mini'
 
 CHART_NUMBER_OF_VN_IN_ROW = 4
 POSTER_STOPPER_URL = '/media/other/file-not-found-rect.jpg'
+STEAM_ICON_URL = '/media/other/steam-icon.png'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
 

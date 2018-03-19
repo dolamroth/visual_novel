@@ -1,3 +1,19 @@
+body {
+    padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+}
+
+.hero-spacer {
+    margin-top: 50px;
+}
+
+.hero-feature {
+    margin-bottom: 30px;
+}
+
+footer {
+    margin: 50px 0;
+}
+
 .main-search{
 	margin-top: 8px; 
 	width: 350px;
@@ -163,4 +179,16 @@ td, th{
     .bottom-nav-footer{
         display: none;
     }
+}
+
+.tooltip_templates{
+	display: none;
+}
+
+a.tooltip{
+	position: static !important;
+	display: inline !important;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-size: inherit !important;
+	opacity: inherit !important;
 }

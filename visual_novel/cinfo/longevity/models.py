@@ -7,6 +7,7 @@ class Longevity(PublishModel):
     title = models.CharField(verbose_name='название', max_length=100)
     min_length = models.IntegerField(verbose_name='минимальная продолжительность', null=True, blank=True)
     max_length = models.IntegerField(verbose_name='максимальная продолжительность', null=True, blank=True)
+    alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='')
 
     class Meta:
         db_table = 'longevity'
