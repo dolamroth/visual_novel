@@ -175,5 +175,6 @@ STEAM_ICON_URL = '/media/other/steam-icon.png'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
 
-RECAPTCHA_PRIVATE_KEY = '6LeFUU0UAAAAAFE4wxl0Bs0D1Ew50GSRB-y0K-fn'
-RECAPTCHA_PUBLIC_KEY = '6LeFUU0UAAAAANcOkM9zp-f9SEaSDq3Gw5PJ_L5_'
+
+RECAPTCHA_PRIVATE_KEY = get_secret(section='CAPTCHA', setting='PRIVATE_KEY')
+RECAPTCHA_PUBLIC_KEY = get_secret(section='CAPTCHA', setting='PUBLIC_KEY')
