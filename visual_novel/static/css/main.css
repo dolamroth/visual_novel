@@ -198,3 +198,7 @@ a.tooltip{
 	font-size: 12px !important;
     line-height: 1.0 !important;
 }
+
+.glypho-chart-main-sorting{
+	margin: -1px !important;
+}
