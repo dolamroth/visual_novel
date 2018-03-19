@@ -16,11 +16,11 @@ background-repeat:no-repeat;background-position:bottom;repeat-y;">
             нажмите <a href="/">туть</a>.<br>
         <b>Пожелания:</b><br>
         <textarea name="offer_text" cols="40" rows="5" placeholder="расскажите нам..."
-        maxlength="5000" form="form_offer"></textarea>
+        maxlength="5000" form="form_offer" required></textarea>
         <br>
         <b>Почта для обратной связи:</b>
         <br>
-        <input type="email" name="email" size="38" placeholder="example@example.com"><br>
+        <input type="email" name="email" size="38" placeholder="example@example.com" required><br>
       {% csrf_token %}
       {{ form }}
       <input type="submit" class="btn btn-primary" value="Отправить">
