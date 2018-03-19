@@ -63,10 +63,14 @@
 <div class="row" style="margin-bottom: 20px;">
     <div class="col-lg-12">
         <div class="btn-group btn-group-sm btn-group-chart-main-page">
-            <a class="btn btn-default">По дате перевода</a>
-            <a class="btn btn-default">По оценке</a>
-            <a class="btn btn-default">По названию</a>
-            <a class="btn btn-default">По дате выхода</a>
+            <a class="btn btn-default" href="?sort={{ date_of_translation }}">По дате перевода
+                <span class="{{ date_of_translation_icon }}"></span></a>
+            <a class="btn btn-default" href="?sort={{ rate }}">По оценке
+                <span class="{{ rate_icon }}"></span></a>
+            <a class="btn btn-default" href="?sort={{ title }}">По названию
+                <span class="{{ title_icon }}"></span></a>
+            <a class="btn btn-default" href="?sort={{ date_of_release }}">По дате выхода
+                <span class="{{ date_of_release_icon }}"></span></a>
         </div>
     </div>
 </div>
