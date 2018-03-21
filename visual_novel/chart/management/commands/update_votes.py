@@ -8,6 +8,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         sock = vndb_socket_login()
+        if sock is None:
+            return
 
         try:
             all_visual_novels = VisualNovel.objects.filter(is_published=True).values_list('vndb_id', flat=True)

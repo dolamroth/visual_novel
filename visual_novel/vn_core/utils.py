@@ -30,9 +30,14 @@ def vndb_socket_login():
 
 
 def vndb_socket_logout(sock):
+    if sock is None:
+        return
     sock.close()
 
+
 def vndb_socket_update_vn(sock, vndb_id):
+    if sock is None:
+        return
     eot = u"\u0004"
     bindata = 'get vn stats (id = {})'.format(vndb_id)
     sock.sendall(bytes(bindata + eot, "utf-8"))
