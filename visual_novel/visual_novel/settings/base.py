@@ -64,11 +64,13 @@ INSTALLED_APPS = [
     'mptt',
     'sanitizer',
     'timezone_field',
+    'snowpenguin.django.recaptcha2',
 
     'core.apps.CoreConfig',
     'cinfo.apps.CinfoConfig',
     'vn_core.apps.VnCoreConfig',
     'chart.apps.ChartConfig',
+    'offer_service.apps.OfferServiceConfig',
     'translation.apps.TranslationConfig'
 ]
 
@@ -193,3 +195,15 @@ VNDB_API_PASSWORD = get_secret(section='VNDB_API', setting='PASSWORD')
 DEFAULT_TIME_ZONE = 'Europe/Moscow'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
+
+# RECAPTCHA settings
+RECAPTCHA_PRIVATE_KEY = get_secret(section='CAPTCHA', setting='PRIVATE_KEY')
+RECAPTCHA_PUBLIC_KEY = get_secret(section='CAPTCHA', setting='PUBLIC_KEY')
+
+# email settings
+EMAIL_HOST = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST')
+EMAIL_PORT = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_PORT')
+EMAIL_HOST_USER = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_USE_TLS')
+SERVER_EMAIL = get_secret(section='EMAIL_SETTINGS', setting='SERVER_EMAIL')
