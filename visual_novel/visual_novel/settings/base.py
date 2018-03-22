@@ -174,6 +174,14 @@ CHART_NUMBER_OF_VN_IN_ROW = 4
 POSTER_STOPPER_URL = '/media/other/file-not-found-rect.jpg'
 STEAM_ICON_URL = '/media/other/steam-icon.png'
 
+VNDB_API_HOST = get_secret(section='VNDB_API', setting='HOST')
+VNDB_API_PORT = get_secret(section='VNDB_API', setting='PORT')
+VNDB_API_PROTOCOL = get_secret(section='VNDB_API', setting='PROTOCOL')
+VNDB_API_CLIENT = get_secret(section='VNDB_API', setting='CLIENT')
+VNDB_API_CLIENTVER = get_secret(section='VNDB_API', setting='CLIENTVER')
+VNDB_API_USERNAME = get_secret(section='VNDB_API', setting='USERNAME')
+VNDB_API_PASSWORD = get_secret(section='VNDB_API', setting='PASSWORD')
+
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
 
 # RECAPTCHA settings

@@ -8,6 +8,8 @@ from django.db import models
 from core.models import PublishModel
 from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
+from .utils import vndb_socket_login, vndb_socket_logout, vndb_socket_update_vn
+
 
 def posters_directory_path(instance, filename):
     fileName, fileExtension = os.path.splitext(filename)
@@ -55,6 +57,9 @@ class VisualNovel(PublishModel):
     studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии', blank=True)
     staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели', blank=True)
     alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='')
+    rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
+    popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
+    vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
 
     class Meta:
         db_table = 'vncore'
@@ -63,6 +68,12 @@ class VisualNovel(PublishModel):
 
     def __str__(self):
         return self.title
+
+    def get_rate(self):
+        return "{0:.2f}".format(self.rate)
+
+    def get_popularity(self):
+        return "{0:.2f}".format(self.popularity)
 
     def delete_poster(self):
         try:
@@ -89,9 +100,21 @@ class VisualNovel(PublishModel):
         return None
 
     def save(self, *args, **kwargs):
+        # Delete old poster in file system
         old_poster = self.old_poster_path_if_changed()
         if old_poster:
             self.delete_poster()
+
+        # Update VNDb rating on create
+        vn_id = self.id
+        vndb_id = self.vndb_id
+        if (not vn_id) and (type(vndb_id) == int):
+            sock = None
+            try:
+                sock = vndb_socket_login()
+                self.rate, self.popularity, self.vote_count = vndb_socket_update_vn(sock, vndb_id)
+            finally:
+                vndb_socket_logout(sock)
         super(VisualNovel, self).save(*args, **kwargs)
 
     def delete(self, force=True):

@@ -24,6 +24,12 @@ def chart_index_page(
 
     all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
 
+    context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
+    context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
+    context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
+    context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
+    context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
+
     # Optional endpoint parameters
     if genre_alias:
         vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
@@ -69,6 +75,45 @@ def chart_index_page(
         except Longevity.DoesNotExist:
             pass
 
+    # Sorting list of visual novels
+    sort_by = request.GET.get('sort')
+    base_sort_by = '-date_of_translation'
+    # These two arrays are coordinated in terms of order of elements and corresponding data
+    # This array shows all the possible GET parameters for "sort"
+    all_sortings = ['-date_of_translation', 'date_of_translation', 'visual_novel__rate', '-visual_novel__rate',
+                    '-visual_novel__date_of_release', 'visual_novel__date_of_release', '-visual_novel__title',
+                    'visual_novel__title']
+    # This array provides alternative sorting for one selected parameter, which is chosen by user,
+    # and a title of glyphoicon from Bootstrap
+    all_sortings_context_links = [
+        ('date_of_translation', 'date_of_translation', 'glyphicon glyphicon-arrow-down'),
+        ('date_of_translation', '-date_of_translation', 'glyphicon glyphicon-arrow-up'),
+        ('rate', '-visual_novel__rate', 'glyphicon glyphicon-arrow-up'),
+        ('rate', 'visual_novel__rate', 'glyphicon glyphicon-arrow-down'),
+        ('date_of_release', 'visual_novel__date_of_release', 'glyphicon glyphicon-arrow-down'),
+        ('date_of_release', '-visual_novel__date_of_release', 'glyphicon glyphicon-arrow-up'),
+        ('title', 'visual_novel__title', 'glyphicon glyphicon-arrow-down'),
+        ('title', '-visual_novel__title', 'glyphicon glyphicon-arrow-up')
+    ]
+    # This is base data for providing icons and links, in case nothing is selected by user
+    context['date_of_translation'] = '-date_of_translation'
+    context['date_of_translation_icon'] = 'glyphicon glyphicon-arrow-down'
+    context['rate'] = '-visual_novel__rate'
+    context['rate_icon'] = ''
+    context['date_of_release'] = '-visual_novel__date_of_release'
+    context['date_of_release_icon'] = ''
+    context['title'] = 'visual_novel__title'
+    context['title_icon'] = ''
+    # In case of sort selected, sort and provide respective links and icons
+    if sort_by and sort_by in all_sortings:
+        all_chart_items = all_chart_items.order_by(sort_by)
+        idx = all_sortings.index(sort_by)
+        context['date_of_translation_icon'] = '' # Removing icon for default sort in order to prevent multiple icons
+        context[all_sortings_context_links[idx][0]] = all_sortings_context_links[idx][1]
+        context[all_sortings_context_links[idx][0] + '_icon'] = all_sortings_context_links[idx][2]
+    else:
+        all_chart_items = all_chart_items.order_by(base_sort_by)
+
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
@@ -83,6 +128,7 @@ def chart_index_page(
         vn_context['genres'] = list()
         vn_context['vndb_id'] = visual_novel.vndb_id
         vn_context['chart_link'] = os.path.join('/chart/', visual_novel.alias)
+        vn_context['vndb_mark'] = visual_novel.get_rate()
 
         for genre in visual_novel.vngenre_set.all().order_by('-weight'):
             vn_context['genres'].append({
@@ -142,7 +188,7 @@ def chart_page(request, vn_alias):
 
     vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
     vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
-    vn_context['vndb_mark'] = 0 # TODO: fix
+    vn_context['vndb_mark'] = visual_novel.get_rate()
 
     vn_context['description'] = visual_novel.description
     vn_context['has_description'] = not not vn_context['description']
