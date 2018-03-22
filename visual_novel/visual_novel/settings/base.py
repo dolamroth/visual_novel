@@ -176,6 +176,14 @@ STEAM_ICON_URL = '/media/other/steam-icon.png'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
 
-
+# RECAPTCHA settings
 RECAPTCHA_PRIVATE_KEY = get_secret(section='CAPTCHA', setting='PRIVATE_KEY')
 RECAPTCHA_PUBLIC_KEY = get_secret(section='CAPTCHA', setting='PUBLIC_KEY')
+
+# email settings
+EMAIL_HOST = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST')
+EMAIL_PORT = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_PORT')
+EMAIL_HOST_USER = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_USE_TLS')
+SERVER_EMAIL = get_secret(section='EMAIL_SETTINGS', setting='SERVER_EMAIL')
