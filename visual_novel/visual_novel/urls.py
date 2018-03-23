@@ -1,14 +1,16 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from django.urls import path, include
 
-import offer_service.urls
-import chart.urls
+from django.contrib.auth import views as auth_views
+from core import views as core_views
 
 from core.forms import CustomAuthentificationForm
+
+import offer_service.urls
+import chart.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -20,6 +22,7 @@ urlpatterns = [
     path('logout/', auth_views.logout, {
         'template_name': 'pages/logout.html',
     }, name='logout'),
+    path('signup/', core_views.signup, name='signup'),
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('offers/', include(offer_service.urls), name='offers'),
     path('chart/', include(chart.urls))

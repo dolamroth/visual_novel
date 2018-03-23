@@ -41,6 +41,7 @@ class PublishModel(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE)
+    email_confirmed = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'user_profile'
