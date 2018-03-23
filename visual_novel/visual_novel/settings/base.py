@@ -194,6 +194,7 @@ VNDB_API_PASSWORD = get_secret(section='VNDB_API', setting='PASSWORD')
 
 DEFAULT_TIME_ZONE = 'Europe/Moscow'
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
 

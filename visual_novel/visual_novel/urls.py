@@ -15,8 +15,11 @@ urlpatterns = [
     path('login/', auth_views.login, {
         'template_name': 'pages/login.html',
         'redirect_authenticated_user': True,
-        'authentication_form': CustomAuthentificationForm
+        'authentication_form': CustomAuthentificationForm,
     }, name='login'),
+    path('logout/', auth_views.logout, {
+        'template_name': 'pages/logout.html',
+    }, name='logout'),
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('offers/', include(offer_service.urls), name='offers'),
     path('chart/', include(chart.urls))
