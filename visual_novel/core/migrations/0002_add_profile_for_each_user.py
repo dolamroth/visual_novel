@@ -9,7 +9,7 @@ def add_profiles(apps, schema_editor):
     User = apps.get_model('auth', 'User')
 
     for user in User.objects.all():
-        Profile.objects.create(user=user)
+        profile, _ = Profile.objects.get_or_create(user=user)
 
 
 class Migration(migrations.Migration):
