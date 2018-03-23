@@ -6,7 +6,7 @@ from django.conf import settings
 
 ru_months_in = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
                 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
-TZ_DETECT_COUNTRIES = getattr(settings, 'TZ_DETECT_COUNTRIES', ('RU', 'UK', 'BY', 'KZ'))
+TZ_DETECT_COUNTRIES = getattr(settings, 'TZ_DETECT_COUNTRIES', ('RU', 'UA', 'BY', 'KZ'))
 
 
 def printable_russian_date(date):

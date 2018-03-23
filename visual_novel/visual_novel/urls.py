@@ -22,6 +22,9 @@ urlpatterns = [
     path('logout/', auth_views.logout, {
         'template_name': 'pages/logout.html',
     }, name='logout'),
+    path('activate/<str:uidb64>/<str:token>/',
+        core_views.activate, name='activate'),
+    path('account_activation_sent/', core_views.account_activation_sent, name='account_activation_sent'),
     path('signup/', core_views.signup, name='signup'),
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('offers/', include(offer_service.urls), name='offers'),

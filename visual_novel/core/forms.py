@@ -38,6 +38,11 @@ class CustomSignUpForm(UserCreationForm):
         widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'hidden'}),
     )
 
+    email = forms.EmailField(
+        max_length=254,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'email'}),
+    )
+
     username = UsernameField(
         max_length=254,
         widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}),
@@ -58,4 +63,4 @@ class CustomSignUpForm(UserCreationForm):
     class Meta:
         model = User
         field_classes = {'username': UsernameField}
-        fields = ('username', 'timezone', 'password1', 'password2',)
+        fields = ('username', 'timezone', 'email', 'password1', 'password2',)
