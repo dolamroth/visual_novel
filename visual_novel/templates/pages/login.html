@@ -28,15 +28,17 @@
         </div>
     {% endif %}
 
-    <form>
+    <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
         <div class="form-group">
-            <label for="username-input">Логин</label>
-            <input type="text" class="form-control" id="username-input" placeholder="Введите логин">
+            <label for="id_username">Логин</label>
+            {{ form.username }}
         </div>
         <div class="form-group">
-            <label for="password-input">Пароль</label>
-            <input type="password" class="form-control" id="password-input" placeholder="Введите пароль">
+            <label for="id_password">Пароль</label>
+            {{ form.password }}
         </div>
+        <input type="hidden" name="next" value="{{ next }}" />
         <button type="submit" class="btn btn-primary">Отправить</button>
     </form>
 

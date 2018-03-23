@@ -8,9 +8,15 @@ from django.urls import path, include
 import offer_service.urls
 import chart.urls
 
+from core.forms import CustomAuthentificationForm
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', auth_views.login, {'template_name': 'pages/login.html'}, name='login'),
+    path('login/', auth_views.login, {
+        'template_name': 'pages/login.html',
+        'redirect_authenticated_user': True,
+        'authentication_form': CustomAuthentificationForm
+    }, name='login'),
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('offers/', include(offer_service.urls), name='offers'),
     path('chart/', include(chart.urls))
