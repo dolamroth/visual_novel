@@ -42,5 +42,9 @@ $(function () {
         $(this).toggleClass('hidden-option').prev().toggleClass('hidden-option').prev().toggleClass('hidden-option');
         return false;
     });
+
+    setTimeout(function(){
+		$('.alert').fadeOut();
+	}, 1000);
 });
 

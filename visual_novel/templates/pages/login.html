@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Вход на сайт
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+            <h3><a href="/">Главная</a>&nbsp;&#47;&nbsp;Вход на сайт</h3>
+        </div>
+    </div>
+
+    {% if form.errors %}
+        <div class="alert alert-danger alert alert-success alert-dismissable fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+            Неправильный логин или пароль!
+        </div>
+    {% endif %}
+
+    {% if next %}
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+        {% if user.is_authenticated %}
+            <p>Вы не имеете права просматривать данную страницу. Для продолжения зайдите под аккаунтом, имеющим доступ.</p>
+        {% else %}
+            <p>Пожалуйста, войдите в систему, чтобы увидеть данную страницу.</p>
+        {% endif %}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Логин</label>
+            {{ form.username }}
+        </div>
+        <div class="form-group">
+            <label for="id_password">Пароль</label>
+            {{ form.password }}
+        </div>
+        <input type="hidden" name="next" value="{{ next }}" />
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+
+    <div class="row">
+        <div class="col-lg-12" style="margin-top: 16px;">
+            <h6><a href="/signup/">Регистрация нового аккаунта</a></h6>
+            <h6><a href="/password_reset/">Забыли пароль?</a></h6>
+        </div>
+    </div>
+
+{% endblock %}

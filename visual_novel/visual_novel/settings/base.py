@@ -57,11 +57,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'mptt',
     'sanitizer',
+    'timezone_field',
     'snowpenguin.django.recaptcha2',
 
     'core.apps.CoreConfig',
@@ -70,6 +72,14 @@ INSTALLED_APPS = [
     'chart.apps.ChartConfig',
     'offer_service.apps.OfferServiceConfig',
     'translation.apps.TranslationConfig'
+]
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
 ]
 
 MIDDLEWARE = [
@@ -181,6 +191,10 @@ VNDB_API_CLIENT = get_secret(section='VNDB_API', setting='CLIENT')
 VNDB_API_CLIENTVER = get_secret(section='VNDB_API', setting='CLIENTVER')
 VNDB_API_USERNAME = get_secret(section='VNDB_API', setting='USERNAME')
 VNDB_API_PASSWORD = get_secret(section='VNDB_API', setting='PASSWORD')
+
+DEFAULT_TIME_ZONE = 'Europe/Moscow'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist_ok=True)
 
