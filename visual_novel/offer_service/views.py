@@ -3,6 +3,9 @@ from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 from django.forms import forms
 from django.utils.translation import gettext_lazy as _
+from django.utils.decorators import decorator_from_middleware
+
+from core.middlewares import IsAuthenticatedMiddleware
 
 from .models import Offer
 
@@ -17,6 +20,7 @@ class CaptchaForm(forms.Form):
     )
 
 
+@decorator_from_middleware(IsAuthenticatedMiddleware)
 def send_offer(request, *args, **kwargs):
     form = CaptchaForm()
     if request.method == 'GET':
