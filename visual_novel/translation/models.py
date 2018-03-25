@@ -5,20 +5,6 @@ from core.models import PublishModel
 from vn_core.models import VisualNovel
 
 
-class TranslationItem(PublishModel):
-    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
-    statistics = models.ForeignKey('TranslationStatistics', on_delete=models.PROTECT, null=True, blank=True)
-    beta_patches = models.ManyToManyField('TranslationBetaLink', blank=True)
-
-    class Meta:
-        db_table = 'translation_items'
-        verbose_name = 'Перевод'
-        verbose_name_plural = 'Переводы'
-
-    def __str__(self):
-        return self.visual_novel.title
-
-
 class TranslationStatistics(models.Model):
     tree_id = models.IntegerField(default=0)
     pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='')
@@ -54,6 +40,7 @@ class TranslationBetaLink(PublishModel):
     title = models.CharField(max_length=50, default='')
     url = models.CharField(max_length=200, default='')
     comment = models.TextField(max_length=2000, default='')
+    translation_item = models.ForeignKey('TranslationItem', on_delete=models.PROTECT, null=True, blank=True)
 
     class Meta:
         db_table = 'statistics_betalink'
@@ -67,3 +54,27 @@ class TranslationBetaLink(PublishModel):
         else:
             self.is_published = False
             super(TranslationBetaLink, self).save()
+
+
+class TranslationItem(PublishModel):
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT, verbose_name='Визуальная новелла')
+    statistics = models.ForeignKey(TranslationStatistics, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Привязанная статистика')
+
+    class Meta:
+        db_table = 'translation_items'
+        verbose_name = 'Перевод'
+        verbose_name_plural = 'Переводы'
+
+    def __str__(self):
+        return 'Перевод {}'.format(self.visual_novel.title)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            parental_translation_node, _ = TranslationStatisticsChapter.objects.get_or_create(
+                parent=None, title='Раздел самого высокого уровня', script_title='parent'
+            )
+            translation_statistics, _ = TranslationStatistics.objects.get_or_create(
+                tree_id=parental_translation_node.tree_id
+            )
+            self.statistics = translation_statistics
+        super(TranslationItem, self).save(*args, **kwargs)
