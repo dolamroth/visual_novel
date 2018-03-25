@@ -4,10 +4,10 @@
     <li><a href="/chart/">Чарт визуальных новелл</a></li>
     <li style="margin: 0 0 1em 0;"><a href="https://vndb.org/" target="_blank">VNDb</a></li>
     {% if user.is_authenticated %}
+        <li style="margin: 0 0 1em 0;"><a href="/logout/">Выйти</a></li>
+    {% else %}
         <li><a href="/login/">Вход</a></li>
         <li style="margin: 0 0 1em 0;"><a href="/signup/">Регистрация</a></li>
-    {% else %}
-        <li style="margin: 0 0 1em 0;"><a href="/logout/">Выйти</a></li>
     {% endif %}
     <li><a href="/offer/send/">Предложения</a></li>
 </ul>
