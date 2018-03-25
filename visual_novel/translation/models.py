@@ -35,6 +35,14 @@ class TranslationStatisticsChapter(MPTTModel):
     def __str__(self):
         return self.script_title
 
+    def statistics_name(self):
+        name = '<span class="indent"></span>' * self.get_level()
+        if self.is_chapter:
+            name += '<strong>' + self.title + '</strong>'
+        else:
+            name += self.title
+        return name
+
 
 class TranslationBetaLink(PublishModel):
     title = models.CharField(max_length=50, default='')

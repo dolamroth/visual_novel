@@ -11,8 +11,9 @@ from core.forms import (
     CustomAuthentificationForm, CustomPasswordResetForm, CustomSetPasswordForm
 )
 
-import offer_service.urls
 import chart.urls
+import offer_service.urls
+import translation.urls
 
 urlpatterns = [
     # Admin panel views
@@ -54,6 +55,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
 
     # Apps views
-    path('offers/', include(offer_service.urls), name='offers'),
+    path('offers/', include(offer_service.urls)),
+    path('translation/', include(translation.urls)),
     path('chart/', include(chart.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
