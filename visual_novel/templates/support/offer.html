@@ -1,32 +1,40 @@
 {% extends 'base.html' %}
-{% block content %}
-{% load recaptcha2 %}
 
-{% recaptcha_init 'ru'%}
-<!-- Codes by HTMLcodes.ws -->
-<div  style="background-image:url(/media/background.png);
-background-repeat:no-repeat;background-position:bottom;repeat-y;">
-<div class="row">
-    <div class="col-md-4 col-md-offset-4">
-    <form id="form_offer" action="?" method="POST">
-        <section>
-            <br><br>
-        Мы всегда стремимся к самому лучшему, и именно вы можете нам помочь! Если у вас есть идеи, мы их с удовольствием
-        узнаем. Можете высказать свое мнение в формочке ниже. Если вы передумали и хотите продолжить просмотр,
-            нажмите <a href="/">туть</a>.<br>
-        <b>Пожелания:</b><br>
-        <textarea name="offer_text" cols="40" rows="5" placeholder="расскажите нам..."
-        maxlength="5000" form="form_offer" required></textarea>
-        <br>
-        <b>Почта для обратной связи:</b>
-        <br>
-        <input type="email" name="email" size="38" placeholder="example@example.com" required><br>
-      {% csrf_token %}
-      {{ form }}
-      <input type="submit" class="btn btn-primary" value="Отправить">
-        </section>
-    </form>
+{% block title %}
+    Предложения по сайту
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 8px;">
+            <h3><a href="/">Главная</a>&nbsp;&#47;&nbsp;Предложения</h3>
+        </div>
     </div>
-</div>
-</div>
+
+    {% load recaptcha2 %}
+
+    {% recaptcha_init 'ru'%}
+
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+            Вы можете оставить своё предложение по функционалу сайта, сообщить о новых новеллах для статистики перевода или чарта.
+            После рассмотрения заявки вам придёт email-уведомление о результате.
+        </div>
+    </div>
+
+    <form id="form_offer" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="comment">Предложение:</label>
+            <textarea class="form-control" rows="5" id="comment" form="form_offer" maxlength="5000" name="offer_text" placeholder="Ваше предложение..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            {{ form }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Отправить</button>
+
+    </form>
+
 {% endblock %}
