@@ -5,5 +5,19 @@
 {% endblock %}
 
 {% block content %}
-    <p>Main page</p>
+    <div class="row">
+        <div class="col-12" style="margin-bottom: 16px;">
+            <h3>Главная</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 hidden-xs-down">
+            {% include "includes/main_page.html" %}
+        </div>
+
+        <div class="col-12 col-md-4">
+            {% include "includes/site_map.html" %}
+        </div>
+    </div>
 {% endblock %}
