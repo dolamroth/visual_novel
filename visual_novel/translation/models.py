@@ -10,6 +10,8 @@ class TranslationStatistics(models.Model):
     pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='')
     technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='')
     comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='')
+    last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
+                                       auto_now_add=True, null=True, blank=True)
 
     class Meta:
         db_table = 'statistics_item'
@@ -36,11 +38,10 @@ class TranslationStatisticsChapter(MPTTModel):
         return self.script_title
 
     def statistics_name(self):
-        name = '<span class="indent"></span>' * self.get_level()
+        name = self.script_title
         if self.is_chapter:
-            name += '<strong>' + self.title + '</strong>'
-        else:
-            name += self.title
+            name = '<strong>' + name + '</strong>'
+        name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level(), name)
         return name
 
 
@@ -66,7 +67,8 @@ class TranslationBetaLink(PublishModel):
 
 class TranslationItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT, verbose_name='Визуальная новелла')
-    statistics = models.ForeignKey(TranslationStatistics, on_delete=models.PROTECT, null=True, blank=True, verbose_name='Привязанная статистика')
+    statistics = models.ForeignKey(TranslationStatistics, on_delete=models.PROTECT,
+                                   null=True, blank=True, verbose_name='Привязанная статистика')
 
     class Meta:
         db_table = 'translation_items'
@@ -79,7 +81,7 @@ class TranslationItem(PublishModel):
     def save(self, *args, **kwargs):
         if not self.id:
             parental_translation_node, _ = TranslationStatisticsChapter.objects.get_or_create(
-                parent=None, title='Раздел самого высокого уровня', script_title='parent'
+                parent=None, title='Раздел самого высокого уровня', script_title='Раздел самого высокого уровня'
             )
             translation_statistics, _ = TranslationStatistics.objects.get_or_create(
                 tree_id=parental_translation_node.tree_id

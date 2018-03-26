@@ -1,34 +1,81 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Редактирование перевода {{ title }}
+    Редактирование перевода {{ title|safe }}
 {% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-lg-12" style="margin-bottom: 8px;">
-            <h3><a href="/">Главная</a>&nbsp;&#47; Профиль&nbsp;{{ username }}&nbsp;&#47; Редактирование перевода {{ title }}</h3>
+            <h3><a href="/">Главная</a>&nbsp;&#47; Профиль&nbsp;{{ username }}&nbsp;&#47; Редактирование перевода {{ title|safe }}</h3>
         </div>
     </div>
 
-    <div class="row">
-        <table class="table table-hover table-sm">
-            <thead>
+    <table class="table table-hover table-sm">
+        <thead>
+            <tr>
+            <th class="col-md-11 col-sm-10 small-td-padding">Название</th>
+            <th class="col-md-1 col-sm-2 small-td-padding">#</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in statistics %}
                 <tr>
-                <th class="col-md-10">Название</th>
-                <th class="col-md-2">#</th>
+                    {% if item.is_editable %}
+                        <td class="small-td-padding">{{ item.name|safe }}</td>
+                        <td class="small-td-padding">
+                            <a href="#" class="chapter-edit"><span class="glyphicon glyphicon-edit"></span></a>
+                            <a href="#" class="chapter-edit"><span class="glyphicon glyphicon-remove"></span></a>
+                        </td>
+                    {% else %}
+                        <td class="small-td-padding">
+                            {{ item.name|safe }}<br /><br />
+                            <span class="monospaced">
+                                {{ item.total_rows|safe }}<br />
+                                {{ item.translated|safe }}<br />
+                                {{ item.edited_first_pass|safe }}<br />
+                                {{ item.edited_second_pass|safe }}
+                            </span>
+                        </td>
+                        <td class="small-td-padding"></td>
+                    {% endif %}
                 </tr>
-            </thead>
-            <tbody>
-                {% for item in statistics %}
-                    <tr>
-                        <td>{{ item.script_title }}</td>
-                        <td>1</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="form-group">
+        <label for="pictures_statistics">Изображения</label>
+        <div class="input-group">
+            <textarea id="pictures_statistics" class="form-control">{{ pictures_statistics }}</textarea>
+            <a class="input-group-addon btn btn-default" href="#"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+        </div>
     </div>
 
+    <div class="form-group">
+        <label for="technical_statistics">Тех. часть</label>
+        <div class="input-group">
+            <textarea id="technical_statistics" class="form-control">{{ technical_statistics }}</textarea>
+            <a class="input-group-addon btn btn-default" href="#"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="comment">Комментарий</label>
+        <div class="input-group">
+            <textarea id="comment" class="form-control">{{ comment }}</textarea>
+            <a class="input-group-addon btn btn-default" href="#"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Обновить статистику (не чаще раза в день)</label>
+        <div class="btn-group btn-group-justified">
+            <a class="btn btn-default btn-danger" href="#">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+                Пересчитать
+            </a>
+        </div>
+    </div>
 
 {% endblock %}

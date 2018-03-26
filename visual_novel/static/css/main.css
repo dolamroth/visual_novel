@@ -202,3 +202,33 @@ a.tooltip{
 .glypho-chart-main-sorting{
 	margin: -1px !important;
 }
+
+.small-td-padding{
+	padding: 5px !important;
+    vertical-align: middle !important;
+}
+
+.chapter-edit{
+    padding: 5px 9px;
+    display: inline-block;
+    margin: -4px 0px;
+}
+
+.chapter-edit:link, .chapter-edit:visited{
+    color: #000000;
+}
+
+.chapter-edit:hover, .chapter-edit:active{
+    color: #c7ac27;
+}
+
+/* Overrided Bootstrap style */
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th{
+    border-left: 0px;
+    border-right: 0px;
+}
+/* Overrided Bootstrap style */
+
+.monospaced{
+    font-family: "Courier New", Courier, monospace;
+}
