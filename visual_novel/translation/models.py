@@ -44,6 +44,9 @@ class TranslationStatisticsChapter(MPTTModel):
         name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level(), name)
         return name
 
+    def select_like_statistics_name(self):
+        return '---'*self.get_level() + ' ' + str(self.script_title)
+
 
 class TranslationBetaLink(PublishModel):
     title = models.CharField(max_length=50, default='')

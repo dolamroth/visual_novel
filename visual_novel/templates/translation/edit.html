@@ -20,27 +20,47 @@
         </thead>
         <tbody>
             {% for item in statistics %}
-                <tr>
+                <tr class="translation-chapter-collapsed"
+                    data_translated="{{ item.translated }}"
+                    data_total_rows="{{ item.total_rows }}"
+                    data_edited_first_pass="{{ item.edited_first_pass }}"
+                    data_edited_second_pass="{{ item.edited_second_pass }}"
+                    data_name="{{ item.name|safe }}"
+                    data_is_chapter="{{ item.is_chapter }}"
+                    data_script_title="{{ item.script_title }}"
+                    data_title="{{ item.title }}">
                     {% if item.is_editable %}
                         <td class="small-td-padding">{{ item.name|safe }}</td>
                         <td class="small-td-padding">
-                            <a href="#" class="chapter-edit"><span class="glyphicon glyphicon-edit"></span></a>
-                            <a href="#" class="chapter-edit"><span class="glyphicon glyphicon-remove"></span></a>
+                            <a href="#" class="translation-chapter-edit translation-chapter-pin"><span class="glyphicon glyphicon-edit"></span></a>
+                            <a href="#" class="translation-chapter-delete-popup translation-chapter-pin"><span class="glyphicon glyphicon-remove"></span></a>
                         </td>
                     {% else %}
                         <td class="small-td-padding">
                             {{ item.name|safe }}<br /><br />
                             <span class="monospaced">
-                                {{ item.total_rows|safe }}<br />
-                                {{ item.translated|safe }}<br />
-                                {{ item.edited_first_pass|safe }}<br />
-                                {{ item.edited_second_pass|safe }}
+                                Всего строк&nbsp;: {{ item.total_rows|safe }}<br />
+                                Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ item.translated|safe }}<br />
+                                Редактура&nbsp;1&nbsp;: {{ item.edited_first_pass|safe }}<br />
+                                Редактура&nbsp;2&nbsp;: {{ item.edited_second_pass|safe }}
                             </span>
                         </td>
                         <td class="small-td-padding"></td>
                     {% endif %}
                 </tr>
             {% endfor %}
+            <tr class="editing-row-hidden editing-row-example">
+                {% include "translation/chapter_edit_form_header.html" %}
+                {% include "translation/chapter_edit_form.html" %}
+                {% include "translation/chapter_edit_form_footer.html" %}
+            </tr>
+            <tr class="editing-row-hidden editing-row-example-chapter">
+                {% include "translation/chapter_edit_form_header.html" %}
+                {% include "translation/chapter_edit_form_footer.html" %}
+            </tr>
+            <tr class="editing-row-hidden collapsed-row-example">
+                {% include "translation/chapter_collapsed.html" %}
+            </tr>
         </tbody>
     </table>
 

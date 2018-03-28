@@ -31,21 +31,28 @@ def edit_statistics(request, vn_alias):
     context['username'] = request.user.username
 
     context['statistics'] = list()
+    context['move_to_list'] = list()
     for item in TranslationStatisticsChapter.objects.filter(
         tree_id=statistics.tree_id
     ).order_by('lft'):
         parent = item.parent
         context['statistics'].append({
-            'title': item.title,
-            'script_title': item.script_title,
+            'title': item.title.replace('"', '\''),
+            'script_title': item.script_title.replace('"', '\''),
             'parent_id': 0 if not parent else parent.id,
-            'name': item.statistics_name(),
+            'name': item.statistics_name().replace('"', '\''),
             'is_editable': not not parent,
-            'total_rows': '{:18}: {}'.format("Всего строк", item.total_rows).replace(' ', '&nbsp;'),
-            'translated': '{:18}: {}'.format("Перевод", item.translated).replace(' ', '&nbsp;'),
-            'edited_first_pass': '{:18}: {}'.format("Редактура 1", item.edited_first_pass).replace(' ', '&nbsp;'),
-            'edited_second_pass': '{:18}: {}'.format("Редактура 2", item.edited_second_pass).replace(' ', '&nbsp;')
+            'total_rows': item.total_rows,
+            'translated': item.translated,
+            'edited_first_pass': item.edited_first_pass,
+            'edited_second_pass': item.edited_second_pass,
+            'is_chapter': item.is_chapter
         })
+        if item.lft > 1:
+            context['move_to_list'].append({
+                'id': item.id,
+                'title': item.select_like_statistics_name()
+            })
 
     context['pictures_statistics'] = statistics.pictures_statistics
     context['technical_statistics'] = statistics.technical_statistics

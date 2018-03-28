@@ -1,0 +1,27 @@
+        <div class="row">
+            <label class="col-xs-3 col-sm-2">Переместить</label>
+            <div class="col-xs-3 col-sm-4">
+                <select class="form-control input_data_position">
+                    <option value="0"></option>
+                    <option>Первым потомком</option>
+                    <option>Последним потомком</option>
+                    <option>Перед</option>
+                    <option>После</option>
+                </select>
+            </div>
+            <label class="col-xs-3 col-sm-2">Относительно</label>
+            <div class="col-xs-3 col-sm-4">
+                <select class="form-control input_data_parent">
+                    <option value="0"></option>
+                    {% for item in move_to_list %}
+                        <option value="{{ item.id }}">{{ item.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <a href="#" class="btn btn-xs btn-primary btn-save-translation-chapter">Сохранить</a>
+        <a href="#" class="btn btn-xs btn-default btn-cancel-translation-chapter">Отмена</a>
+
+    </form>
+</td>
