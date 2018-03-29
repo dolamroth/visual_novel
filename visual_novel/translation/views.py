@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.conf import settings
 from django.http import Http404
 from django.utils.decorators import decorator_from_middleware
 
@@ -46,7 +45,9 @@ def edit_statistics(request, vn_alias):
             'translated': item.translated,
             'edited_first_pass': item.edited_first_pass,
             'edited_second_pass': item.edited_second_pass,
-            'is_chapter': item.is_chapter
+            'is_chapter': item.is_chapter,
+            'translation_item': translation_item.id,
+            'id': item.id
         })
         if item.lft > 1:
             context['move_to_list'].append({

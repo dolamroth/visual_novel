@@ -28,7 +28,9 @@
                     data_name="{{ item.name|safe }}"
                     data_is_chapter="{{ item.is_chapter }}"
                     data_script_title="{{ item.script_title }}"
-                    data_title="{{ item.title }}">
+                    data_title="{{ item.title }}"
+                    data_translation_item="{{ item.translation_item }}"
+                    data_id="{{ item.id }}">
                     {% if item.is_editable %}
                         <td class="small-td-padding">{{ item.name|safe }}</td>
                         <td class="small-td-padding">
