@@ -12,6 +12,10 @@ class TranslationStatistics(models.Model):
     comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='')
     last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
                                        auto_now_add=True, null=True, blank=True)
+    total_rows = models.IntegerField(default=0, verbose_name='Всего строк')
+    translated = models.IntegerField(default=0, verbose_name='Переведено')
+    edited_first_pass = models.IntegerField(default=0, verbose_name='Первый проход редактуры')
+    edited_second_pass = models.IntegerField(default=0, verbose_name='Второй проход редактуры')
 
     class Meta:
         db_table = 'statistics_item'
@@ -30,6 +34,8 @@ class TranslationStatisticsChapter(MPTTModel):
     translated = models.IntegerField(default=0)
     edited_first_pass = models.IntegerField(default=0)
     edited_second_pass = models.IntegerField(default=0)
+    last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
+                                       auto_now_add=True, null=True, blank=True)
 
     class Meta:
         db_table = 'statistics_chapter'
