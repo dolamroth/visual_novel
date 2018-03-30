@@ -59,5 +59,6 @@ def edit_statistics(request, vn_alias):
     context['technical_statistics'] = statistics.technical_statistics
     context['comment'] = statistics.comment
     context['last_update'] = statistics.last_update.isoformat()
+    context['alias'] = vn_alias
 
     return render(request, 'translation/edit.html', context)

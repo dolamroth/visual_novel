@@ -3,10 +3,10 @@
             <div class="col-xs-3 col-sm-4">
                 <select class="form-control input_data_position">
                     <option value="0"></option>
-                    <option>Первым потомком</option>
-                    <option>Последним потомком</option>
-                    <option>Перед</option>
-                    <option>После</option>
+                    <option value="first-child">Первым потомком</option>
+                    <option value="last-child">Последним потомком</option>
+                    <option value="left">Перед</option>
+                    <option value="right">После</option>
                 </select>
             </div>
             <label class="col-xs-3 col-sm-2">Относительно</label>
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <a href="#" class="btn btn-xs btn-primary btn-save-translation-chapter">Сохранить</a>
+        <a href="/translation/api/{{ alias }}/edit" class="btn btn-xs btn-primary btn-save-translation-chapter">Сохранить</a>
         <a href="#" class="btn btn-xs btn-default btn-cancel-translation-chapter">Отмена</a>
 
     </form>

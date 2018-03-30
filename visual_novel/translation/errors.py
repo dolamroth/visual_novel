@@ -17,9 +17,9 @@ class InvalidMoveToChildElement(TranslationError):
     message = 'Нельзя переместить главу или раздел внутрь самого себя.'
 
 
-class InvalidRowsQuantityInput(TranslationError):
-    message = 'Число строк должно быть положительным целым числом.'
-
-
 class InvalidValueOnRowsQuantity(TranslationError):
     message = 'Некорректное соотношение между числом строк (всего, переведено, отредактировано).'
+
+
+class InvalidMoveParent(TranslationError):
+    message = 'Глава (не раздел) не может быть родительским элементом для другой главы или раздела.'

@@ -3,7 +3,6 @@ jQuery.fn.extend({
         var example_row = $(".collapsed-row-example");
         var translation_row_old = this;
         this.replaceWith( example_row.clone(true, true) );
-        console.log($(".collapsed-row-example"));
         var translation_row = $(".collapsed-row-example").first();
         translation_row.trigger('create');
         $.each(translation_row_old.prop('attributes'), function() {
@@ -15,7 +14,6 @@ jQuery.fn.extend({
             .addClass('translation-chapter-collapsed')
             .removeClass('editing-row-hidden')
             .removeClass('collapsed-row-example');
-
         return translation_row;
     }
 });
@@ -102,6 +100,50 @@ $(function () {
         var cancel_link = $( e.currentTarget );
         var translation_row_old = cancel_link.closest('.translation-chapter-expanded');
         translation_row_old.collapseTC();
+        return false;
+    });
+
+    $('.btn-save-translation-chapter').on('click', function(e){
+        var save_link = $( e.currentTarget );
+        var translation_row = save_link.closest('.translation-chapter-expanded');
+        var data = {};
+        data['translation_item_id'] = parseInt(translation_row.attr('data_translation_item'));
+        data['translation_chapter_id'] = parseInt(translation_row.attr('data_id'));
+        data['total'] = translation_row.find('.input_data_total_rows').val();
+        data['translated'] = translation_row.find('.input_data_translation').val();
+        data['edited_first_pass'] = translation_row.find('.input_data_editing_first_pass').val();
+        data['edited_second_pass'] = translation_row.find('.input_data_editing_second_pass').val();
+        data['parent'] = parseInt(translation_row.find('.input_data_parent').find(":selected").val());
+        data['move_to'] = translation_row.find('.input_data_position').find(":selected").val();
+        data['is_chapter'] = (translation_row.attr('data_is_chapter') === 'True');
+        data['title'] = translation_row.find('.input_data_title').val();
+        data['script_title'] = translation_row.find('.input_data_script_title').val();
+
+        $.ajax({
+            url: save_link.attr('href'),
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            console.log(data);
+            if (data['movement']){
+                location.reload();
+            } else {
+                if (data['status'] && (data['status'] !== 200)){
+                    /* TODO: alert */
+                } else{
+                    var return_data = data['data'];
+                    translation_row.attr('data_translated', return_data['new_translated']);
+                    translation_row.attr('data_total_rows', return_data['total']);
+                    translation_row.attr('data_edited_first_pass', return_data['new_edited_first_pass']);
+                    translation_row.attr('data_edited_second_pass', return_data['new_edited_second_pass']);
+                    translation_row.attr('data_title', return_data['title']);
+                    translation_row.attr('data_script_title', return_data['script_title']);
+                    translation_row.collapseTC();
+                }
+            }
+        });
+
         return false;
     });
 });
