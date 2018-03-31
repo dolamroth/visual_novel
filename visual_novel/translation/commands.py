@@ -13,7 +13,7 @@ from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveP
 from .models import TranslationStatisticsChapter
 
 
-class EditTranslationChapter(
+class EditTranslationPartChapter(
     TranslationChapterExistsValidator, TranslationExistsValidator, InputNumberValidator, Command
 ):
     """
@@ -27,24 +27,19 @@ class EditTranslationChapter(
         self.translation_item_id = data['translation_item_id']
         self.translation_chapter_id = data['translation_chapter_id']
         self.is_chapter = data['is_chapter']
-        self.new_total = data['total']
-        self.new_translated = data['new_translated']
-        self.new_edited_first_pass = data['new_edited_first_pass']
-        self.new_edited_second_pass = data['new_edited_second_pass']
         self.new_parent = data['new_parent']
         self.new_move_to = data['new_move_to']
         self.timezone = data['timezone']
         self.title = data['title']
         self.script_title = data['script_title']
 
+    def modify_chapter_item_rows(self, translation_chapter):
+        pass
+
     def execute_validated(self):
         translation_chapter = TranslationStatisticsChapter.objects.get(id=self.translation_chapter_id)
-        # TODO: pass user and add timestamp as arrow.utcnow() at user's timezone
-        if not self.is_chapter:
-            translation_chapter.total_rows = int(self.new_total)
-            translation_chapter.translated = int(self.new_translated)
-            translation_chapter.edited_first_pass = int(self.new_edited_first_pass)
-            translation_chapter.edited_second_pass = int(self.new_edited_second_pass)
+
+        self.modify_chapter_item_rows(translation_chapter)
 
         translation_chapter.title = self.title
         translation_chapter.script_title = self.script_title
@@ -74,6 +69,25 @@ class EditTranslationChapter(
     def validate(self):
         translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
         self.validate_chapter_exists(chapter_id=self.translation_chapter_id,translation_item=translation_item)
+
+
+class EditTranslationChapter(EditTranslationPartChapter):
+    def __init__(self, data):
+        super(EditTranslationChapter, self).__init__(data)
+        self.new_total = data['total']
+        self.new_translated = data['new_translated']
+        self.new_edited_first_pass = data['new_edited_first_pass']
+        self.new_edited_second_pass = data['new_edited_second_pass']
+
+    def modify_chapter_item_rows(self, translation_chapter):
+        # TODO: pass user and add timestamp as arrow.utcnow() at user's timezone
+        translation_chapter.total_rows = int(self.new_total)
+        translation_chapter.translated = int(self.new_translated)
+        translation_chapter.edited_first_pass = int(self.new_edited_first_pass)
+        translation_chapter.edited_second_pass = int(self.new_edited_second_pass)
+
+    def validate(self):
+        super(EditTranslationChapter, self).validate()
         self.validate_numbers_input(
             total=self.new_total,
             translated=self.new_translated,
