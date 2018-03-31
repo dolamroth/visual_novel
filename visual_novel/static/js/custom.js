@@ -49,37 +49,37 @@ $(function () {
     // Handling events with popup windows and galleries throughout the project
     // Documentation available at: http://dimsemenov.com/plugins/magnific-popup/
     $('.popup-modal').magnificPopup({
-		type: 'inline',
-		preloader: false,
-		focus: '#username',
-		modal: true
-	});
+        type: 'inline',
+        preloader: false,
+        focus: '#username',
+        modal: true
+    });
 
-	$(document).on('click', '.popup-modal-dismiss', function (e) {
-		e.preventDefault();
-		$.magnificPopup.close();
-	});
+    $(document).on('click', '.popup-modal-dismiss', function (e) {
+        e.preventDefault();
+        $.magnificPopup.close();
+    });
 
-	$('.gallery').magnificPopup({
-		delegate: 'a',
-		type: 'image',
-		gallery: {
-			enabled:true,
-			tCounter: '<span class="mfp-counter">%curr% из %total%</span>'
-		}
-	});
+    $('.gallery').magnificPopup({
+        delegate: 'a',
+        type: 'image',
+        gallery: {
+            enabled:true,
+            tCounter: '<span class="mfp-counter">%curr% из %total%</span>'
+        }
+    });
 
-	// Handling events with tooltip events on hover
+    // Handling events with tooltip events on hover
     // Documentation available at: http://iamceege.github.io/tooltipster/
-	$('.tooltip').tooltipster({
+    $('.tooltip').tooltipster({
         theme: 'tooltipster-shadow',
         contentAsHTML: true,
-		interactive: true,
+        interactive: true,
         maxWidth: 1000
     });
 
     // Custom functions for chart main page, to hide and open visual novel description
-	$('.vn-desc-unwrap').click(function(){
+    $('.vn-desc-unwrap').click(function(){
         $(this).toggleClass('hidden-option').next().toggleClass('hidden-option').next().toggleClass('hidden-option');
         return false;
     });
@@ -90,8 +90,8 @@ $(function () {
     });
 
     setTimeout(function(){
-		$('.alert').fadeOut();
-	}, 1000);
+        $('.alert').fadeOut();
+    }, 1000);
 
     $('.translation-chapter-edit').on('click', function(e){
         var edit_link = $( e.currentTarget );
@@ -116,8 +116,8 @@ $(function () {
             .addClass('translation-chapter-expanded')
             .removeClass('editing-row-hidden')
             .removeClass('editing-row-example');
-    	return false;
-	});
+        return false;
+    });
 
     $('.btn-cancel-translation-chapter').on('click', function(e){
         var cancel_link = $( e.currentTarget );
@@ -148,7 +148,6 @@ $(function () {
             data: data,
             type: 'json'
         }).always(function(data){
-            console.log(data);
             if (data['movement']){
                 location.reload();
             } else {
@@ -220,7 +219,6 @@ $(function () {
             data: data,
             type: 'json'
         }).always(function(data){
-            console.log(data);
             if (data['id']){
                 location.reload();
             } else {
@@ -232,5 +230,40 @@ $(function () {
 
         return false;
     });
+
+    $('.translation-chapter-delete-popup').on('click', function(e){
+        var delete_chapter_link = $( e.currentTarget );
+        var translation_row = delete_chapter_link.closest('.translation-chapter-collapsed');
+        var popup_window = $("#delete-chapter-popup");
+        popup_window.find('h3').text('Действительно удалить ' + translation_row.attr('data_script_title') + '?');
+        var text = $("p#delete-chapter-popup-additional-text");
+        text.css('display', 'none');
+
+        $.ajax({
+            url: '/translation/api/'+delete_chapter_link.attr('alias')+'/get-children',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            if (data['children']){
+                var text = $("p#delete-chapter-popup-additional-text");
+                $.each(data['children'], function(idx, val){
+                    text.append();
+                });
+            }
+        });
+    });
+
+    $('.translation-chapter-delete-popup').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        modal: true
+    });
+
+    $(document).on('click', '.popup-modal-dismiss', function (e){
+        $.magnificPopup.close();
+        return false;
+    });
+
 });
 

@@ -11,6 +11,12 @@
         </div>
     </div>
 
+    <div id="delete-chapter-popup" class="white-popup-block mfp-hide">
+        <h3>Действительно удалить раздел?</h3>
+        <p id="delete-chapter-popup-additional-text"></p>
+        <p><a class="popup-modal-dismiss" href="#">Отмена</a></p>
+    </div>
+
     <table class="table table-hover table-sm">
         <thead>
             <tr>
@@ -30,12 +36,13 @@
                     data_script_title="{{ item.script_title }}"
                     data_title="{{ item.title }}"
                     data_translation_item="{{ item.translation_item }}"
-                    data_id="{{ item.id }}">
+                    data_id="{{ item.id }}"
+                    data_alias="{{ alias }}">
                     {% if item.is_editable %}
                         <td class="small-td-padding item_name">{{ item.name|safe }}</td>
                         <td class="small-td-padding">
                             <a href="#" class="translation-chapter-edit translation-chapter-pin"><span class="glyphicon glyphicon-edit"></span></a>
-                            <a href="#" class="translation-chapter-delete-popup translation-chapter-pin"><span class="glyphicon glyphicon-remove"></span></a>
+                            <a href="#delete-chapter-popup" class="translation-chapter-delete-popup translation-chapter-pin"><span class="glyphicon glyphicon-remove"></span></a>
                         </td>
                     {% else %}
                         <td class="small-td-padding">

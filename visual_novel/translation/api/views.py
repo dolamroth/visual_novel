@@ -18,6 +18,7 @@ from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
     AddTranslationChapterPartSerializer, AddTranslationChapterSerializer
 )
+from ..models import TranslationStatisticsChapter
 
 
 def get_data(request):
@@ -117,6 +118,23 @@ def add_chapter(request, vn_alias):
     ) as exc:
         return Response(data={'message': exc.message}, status=422)
 
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'id': translation_chapter.id
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def get_chapter_children(request, vn_alias):
+    translation_chapter_id = request.GET.get('translation_chapter_id', None)
+    if type(translation_chapter_id) != int:
+        return Response(data={'message': "Неверный формат идентификатора главы."}, status=422)
+    try:
+        translation_chapter = TranslationStatisticsChapter.objects.get(id=translation_chapter_id)
+    except TranslationStatisticsChapter.DoesNotExist:
+        return Response(data={'message': TranslationNotFound().message}, status=422)
     return Response(data={
         'message': 'Операция проведена успешно.',
         'id': translation_chapter.id
