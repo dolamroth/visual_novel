@@ -156,7 +156,7 @@ class AddTranslationPartChapter(
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
-        self.parent = self.validate_parent_section_exists(self.translation_item, self.new_parent)
+        self.parent = self.validate_parent_section_exists(self.translation_item, self.new_parent, self.new_move_to)
 
 
 class AddTranslationChapter(AddTranslationPartChapter):
@@ -183,3 +183,26 @@ class AddTranslationChapter(AddTranslationPartChapter):
             edited_second=self.new_edited_second_pass,
             is_chapter=self.is_chapter
         )
+
+
+class DeleteTranslationChapter(
+    TranslationChapterExistsValidator, TranslationExistsValidator, Command
+):
+    """
+    :raises TranslationNotFound: Raises if either translation item or translation chapter
+    with respective translation item not found.
+    """
+    def __init__(self, data):
+        self.translation_item_id = data['translation_item_id']
+        self.translation_chapter_id = data['translation_chapter_id']
+
+    def execute_validated(self):
+        translation_item = TranslationStatisticsChapter.objects.get(id=self.translation_chapter_id,
+                                                                  tree_id=self.translation_item.statistics.tree_id)
+        number_of_objects = (translation_item.rght - translation_item.lft + 1) // 2
+        translation_item.delete()
+        return number_of_objects
+
+    def validate(self):
+        self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        self.validate_chapter_exists(chapter_id=self.translation_chapter_id, translation_item=self.translation_item)

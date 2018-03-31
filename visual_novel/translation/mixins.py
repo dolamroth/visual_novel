@@ -22,7 +22,7 @@ class TranslationChapterExistsValidator(object):
                 id=chapter_id,
                 tree_id=translation_item.statistics.tree_id
             )
-            return
+            return chapter
         except TranslationStatisticsChapter.DoesNotExist:
             raise TranslationNotFound()
 
@@ -46,7 +46,7 @@ class InputNumberValidator(object):
 
 
 class ParentExistsValidator(object):
-    def validate_parent_section_exists(self, translation_item, parent_id):
+    def validate_parent_section_exists(self, translation_item, parent_id, move_to):
         parent_id = None if not parent_id else parent_id
         try:
             parent = TranslationStatisticsChapter.objects.get(
@@ -55,7 +55,6 @@ class ParentExistsValidator(object):
             )
         except TranslationStatisticsChapter.DoesNotExist:
             raise ParentDoesNotExist()
-        print(parent)
-        if not parent.is_chapter:
+        if (not parent.is_chapter) and (move_to in ['first-child', 'last-child']):
             raise InvalidMoveParent()
         return parent

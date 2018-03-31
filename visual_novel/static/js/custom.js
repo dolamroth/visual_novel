@@ -234,22 +234,26 @@ $(function () {
     $('.translation-chapter-delete-popup').on('click', function(e){
         var delete_chapter_link = $( e.currentTarget );
         var translation_row = delete_chapter_link.closest('.translation-chapter-collapsed');
+        var item_id = translation_row.attr('data_id');
         var popup_window = $("#delete-chapter-popup");
         popup_window.find('h3').text('Действительно удалить ' + translation_row.attr('data_script_title') + '?');
+        popup_window.attr('data_id', item_id);
         var text = $("p#delete-chapter-popup-additional-text");
         text.css('display', 'none');
-
+        text.text('');
         $.ajax({
             url: '/translation/api/'+delete_chapter_link.attr('alias')+'/get-children',
             method: 'GET',
-            data: data,
+            data: {'translation_chapter_id': item_id},
             type: 'json'
         }).always(function(data){
-            if (data['children']){
+            if (data['children'] && (data['children'].length > 0)){
                 var text = $("p#delete-chapter-popup-additional-text");
+                text.append('<p>Это действие удалит следующие главы и разделы:</p>');
                 $.each(data['children'], function(idx, val){
-                    text.append();
+                    text.append('<p>' + val['title'] + '</p>');
                 });
+                text.css('display', 'block');
             }
         });
     });
@@ -262,6 +266,24 @@ $(function () {
 
     $(document).on('click', '.popup-modal-dismiss', function (e){
         $.magnificPopup.close();
+        return false;
+    });
+
+    $('.delete-chapter-btn').on('click', function(e){
+        var block = $("#delete-chapter-popup");
+        var data = {};
+        data['translation_item_id'] = parseInt(block.attr('data_translation_item'));
+        data['translation_chapter_id'] = parseInt(block.attr('data_id'));
+        $.ajax({
+            url: '/translation/api/'+block.attr('data_alias')+'/delete-chapter',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            if (data['delete_results']){
+                location.reload();
+            }
+        });
         return false;
     });
 

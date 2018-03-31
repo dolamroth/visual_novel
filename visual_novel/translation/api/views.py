@@ -8,7 +8,8 @@ from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
 from ..commands import (
-    EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter
+    EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
+    DeleteTranslationChapter
 )
 from ..errors import (
     InvalidMoveToChildElement, TranslationNotFound, InvalidValueOnRowsQuantity, InvalidMoveParent,
@@ -89,8 +90,7 @@ def edit_chapter(request, vn_alias):
 def add_chapter(request, vn_alias):
 
     data, is_chapter = get_data(request)
-
-    print(data, is_chapter)
+    data['is_chapter'] = is_chapter
 
     if is_chapter:
         serializer = AddTranslationChapterPartSerializer(data=data, context={'user': request.user})
@@ -129,13 +129,40 @@ def add_chapter(request, vn_alias):
 @decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def get_chapter_children(request, vn_alias):
     translation_chapter_id = request.GET.get('translation_chapter_id', None)
-    if type(translation_chapter_id) != int:
+
+    try:
+        translation_chapter_id = int(translation_chapter_id)
+    except ValueError:
         return Response(data={'message': "Неверный формат идентификатора главы."}, status=422)
+
     try:
         translation_chapter = TranslationStatisticsChapter.objects.get(id=translation_chapter_id)
     except TranslationStatisticsChapter.DoesNotExist:
         return Response(data={'message': TranslationNotFound().message}, status=422)
+
+    children = [{
+        'title': d.select_like_statistics_name(base_level=translation_chapter.level)
+    } for d in translation_chapter.get_descendants(include_self=True)]
+
     return Response(data={
         'message': 'Операция проведена успешно.',
-        'id': translation_chapter.id
+        'children': children
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def delete_translation_chapter(request, vn_alias):
+
+    data, is_chapter = get_data(request)
+
+    try:
+        deleted_n = DeleteTranslationChapter(data).execute()
+    except TranslationNotFound as exc:
+        return Response(data={'message': exc.message}, status=404)
+
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'delete_results': deleted_n
     }, status=200)

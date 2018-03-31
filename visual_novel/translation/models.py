@@ -28,7 +28,7 @@ class TranslationStatisticsChapter(MPTTModel):
     title = models.CharField(max_length=50, default='')
     script_title = models.CharField(max_length=50, default='')
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
-                            db_index=True, on_delete=models.PROTECT)
+                            db_index=True, on_delete=models.CASCADE)
     is_chapter = models.BooleanField(default=False)
     total_rows = models.IntegerField(default=0)
     translated = models.IntegerField(default=0)
@@ -53,6 +53,9 @@ class TranslationStatisticsChapter(MPTTModel):
     def select_like_statistics_name(self, base_level = 0):
         return '---' * (self.get_level() - base_level) + ' ' + str(self.script_title)
 
+    def delete(self):
+        super(TranslationStatisticsChapter, self).delete()
+
 
 class TranslationBetaLink(PublishModel):
     title = models.CharField(max_length=50, default='')
@@ -76,7 +79,7 @@ class TranslationBetaLink(PublishModel):
 
 class TranslationItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT, verbose_name='Визуальная новелла')
-    statistics = models.ForeignKey(TranslationStatistics, on_delete=models.PROTECT,
+    statistics = models.ForeignKey(TranslationStatistics, on_delete=models.SET_NULL,
                                    null=True, blank=True, verbose_name='Привязанная статистика')
 
     class Meta:
@@ -90,10 +93,19 @@ class TranslationItem(PublishModel):
     def save(self, *args, **kwargs):
         if not self.id:
             parental_translation_node, _ = TranslationStatisticsChapter.objects.get_or_create(
-                parent=None, title='Раздел самого высокого уровня', script_title='Раздел самого высокого уровня'
+                parent=None,
+                title='Раздел самого высокого уровня',
+                script_title='Раздел самого высокого уровня',
+                is_chapter=True
             )
             translation_statistics, _ = TranslationStatistics.objects.get_or_create(
                 tree_id=parental_translation_node.tree_id
             )
             self.statistics = translation_statistics
         super(TranslationItem, self).save(*args, **kwargs)
+
+    def delete(self):
+        tree_id = self.statistics.tree_id
+        TranslationStatisticsChapter.objects.filter(tree_id=tree_id).delete()
+        TranslationStatistics.objects.get(pk=self.statistics.pk).delete()
+        super(TranslationItem, self).delete()

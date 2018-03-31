@@ -11,10 +11,14 @@
         </div>
     </div>
 
-    <div id="delete-chapter-popup" class="white-popup-block mfp-hide">
+    <div id="delete-chapter-popup" class="white-popup-block mfp-hide"
+         data_id="0" data_translation_item="{{ translation_item }}" data_alias="{{ alias }}">
         <h3>Действительно удалить раздел?</h3>
         <p id="delete-chapter-popup-additional-text"></p>
-        <p><a class="popup-modal-dismiss" href="#">Отмена</a></p>
+        <p>
+            <a class="delete-chapter-btn btn btn-xs btn-danger" href="#">Подтвердить удаление</a>
+            <a class="popup-modal-dismiss btn btn-xs btn-default" href="#">Отмена</a>
+        </p>
     </div>
 
     <table class="table table-hover table-sm">
