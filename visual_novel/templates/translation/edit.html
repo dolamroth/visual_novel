@@ -51,17 +51,46 @@
                     {% endif %}
                 </tr>
             {% endfor %}
+            <tr class="add-row-collapsed" data_is_chapter="False">
+                <td><a href="#" class="add-chapter">Добавить главу</a></td>
+                <td></td>
+            </tr>
+            <tr class="add-row-collapsed" data_is_chapter="True">
+                <td><a href="#" class="add-chapter">Добавить подраздел</a></td>
+                <td></td>
+            </tr>
             <tr class="editing-row-hidden editing-row-example">
                 {% include "translation/chapter_edit_form_header.html" %}
                 {% include "translation/chapter_edit_form.html" %}
                 {% include "translation/chapter_edit_form_footer.html" %}
+                {% include "translation/chapter_edit_buttons.html" %}
             </tr>
             <tr class="editing-row-hidden editing-row-example-chapter">
                 {% include "translation/chapter_edit_form_header.html" %}
                 {% include "translation/chapter_edit_form_footer.html" %}
+                {% include "translation/chapter_edit_buttons.html" %}
             </tr>
             <tr class="editing-row-hidden collapsed-row-example">
                 {% include "translation/chapter_collapsed.html" %}
+            </tr>
+            <tr class="editing-row-hidden add-chapter-example">
+                {% include "translation/chapter_edit_form_header.html" %}
+                {% include "translation/chapter_edit_form.html" %}
+                {% include "translation/chapter_edit_form_footer.html" %}
+                {% include "translation/chapter_add_buttons.html" %}
+            </tr>
+            <tr class="editing-row-hidden add-section-example">
+                {% include "translation/chapter_edit_form_header.html" %}
+                {% include "translation/chapter_edit_form_footer.html" %}
+                {% include "translation/chapter_add_buttons.html" %}
+            </tr>
+            <tr class="editing-row-hidden add-row-collapsed add-chapter-text-example" data_is_chapter="False">
+                <td><a href="#" class="add-chapter">Добавить главу</a></td>
+                <td></td>
+            </tr>
+            <tr class="editing-row-hidden add-row-collapsed add-section-text-example" data_is_chapter="True">
+                <td><a href="#" class="add-chapter">Добавить подраздел</a></td>
+                <td></td>
             </tr>
         </tbody>
     </table>

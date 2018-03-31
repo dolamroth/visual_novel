@@ -15,6 +15,32 @@ jQuery.fn.extend({
             .removeClass('editing-row-hidden')
             .removeClass('collapsed-row-example');
         return translation_row;
+    },
+    collapseAC: function(is_chapter){
+        var className = (is_chapter === "True") ? ".add-section-text-example" : ".add-chapter-text-example";
+        var example_row = $(className);
+        var translation_row_old = this;
+        this.replaceWith( example_row.clone(true, true) );
+        var translation_row_add = $(className).first();
+        translation_row_add.trigger('create');
+        $.each(translation_row_old.prop('attributes'), function() {
+            translation_row_add.attr(this.name, this.value);
+        });
+        translation_row_add
+            .removeClass('add-row-expanded')
+            .addClass('add-row-collapsed');
+        return translation_row_add;
+    },
+    collapseAll: function(){
+        var expanded = $('.translation-chapter-expanded');
+        if (expanded.length > 0){
+            expanded.first().collapseTC();
+        }
+        expanded = $('.add-row-expanded');
+        if (expanded.length > 0){
+            expanded.first().collapseAC();
+        }
+        return this;
     }
 });
 
@@ -69,10 +95,7 @@ $(function () {
 
     $('.translation-chapter-edit').on('click', function(e){
         var edit_link = $( e.currentTarget );
-        var expanded = $('.translation-chapter-expanded');
-        if (expanded.length > 0){
-            expanded.first().collapseTC();
-        }
+        edit_link.collapseAll();
         var translation_row_old = edit_link.closest('.translation-chapter-collapsed');
         var class_chapter = translation_row_old.attr('data_is_chapter') === "True" ? ".editing-row-example-chapter" : ".editing-row-example";
         var example_row = $(class_chapter);
@@ -145,6 +168,33 @@ $(function () {
             }
         });
 
+        return false;
+    });
+
+    $('.add-chapter').on('click', function(e){
+        var add_chapter_link = $( e.currentTarget );
+        add_chapter_link.collapseAll();
+        var translation_row_old = add_chapter_link.closest('.add-row-collapsed');
+        var class_chapter = translation_row_old.attr('data_is_chapter') === "True" ? ".add-section-example" : ".add-chapter-example";
+        var example_row = $(class_chapter);
+        translation_row_old.replaceWith( example_row.clone(true, true) );
+        var translation_row = $(class_chapter).first();
+        translation_row.trigger('create');
+        $.each(translation_row_old.prop('attributes'), function() {
+            translation_row.attr(this.name, this.value);
+        });
+        translation_row
+            .removeClass('add-row-collapsed')
+            .addClass('add-row-expanded')
+            .removeClass('editing-row-hidden');
+        return false;
+    });
+
+    $('.btn-cancel-new-translation-chapter').on('click', function(e){
+        var cancel_add_chapter_link = $( e.currentTarget );
+        var translation_row_add = cancel_add_chapter_link.closest('.add-row-expanded');
+        var is_chapter = translation_row_add.attr('data_is_chapter');
+        translation_row_add.collapseAC(is_chapter);
         return false;
     });
 });
