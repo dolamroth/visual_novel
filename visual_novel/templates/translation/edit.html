@@ -32,7 +32,7 @@
                     data_translation_item="{{ item.translation_item }}"
                     data_id="{{ item.id }}">
                     {% if item.is_editable %}
-                        <td class="small-td-padding">{{ item.name|safe }}</td>
+                        <td class="small-td-padding item_name">{{ item.name|safe }}</td>
                         <td class="small-td-padding">
                             <a href="#" class="translation-chapter-edit translation-chapter-pin"><span class="glyphicon glyphicon-edit"></span></a>
                             <a href="#" class="translation-chapter-delete-popup translation-chapter-pin"><span class="glyphicon glyphicon-remove"></span></a>

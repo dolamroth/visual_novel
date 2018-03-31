@@ -139,7 +139,8 @@ $(function () {
                     translation_row.attr('data_edited_second_pass', return_data['new_edited_second_pass']);
                     translation_row.attr('data_title', return_data['title']);
                     translation_row.attr('data_script_title', return_data['script_title']);
-                    translation_row.collapseTC();
+                    translation_row = translation_row.collapseTC();
+                    translation_row.find('.item_name').find('span').text(return_data['script_title']);
                 }
             }
         });

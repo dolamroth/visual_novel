@@ -47,9 +47,6 @@ def edit_chapter(request, vn_alias):
             'errors': serializer.errors
         }, status=422)
 
-    print(serializer.data)
-    print(serializer.validated_data)
-
     try:
         if is_chapter:
             translation_chapter, movement = EditTranslationPartChapter(serializer.data).execute()
