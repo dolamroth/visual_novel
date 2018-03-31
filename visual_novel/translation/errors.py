@@ -23,3 +23,11 @@ class InvalidValueOnRowsQuantity(TranslationError):
 
 class InvalidMoveParent(TranslationError):
     message = 'Глава (не раздел) не может быть родительским элементом для другой главы или раздела.'
+
+
+class ParentDoesNotExist(TranslationError):
+    message = 'Указанный родительский раздел не существует.'
+
+
+class CannotBeSiblingOfBaseTreeNode(TranslationError):
+    message = 'Главы или разделы должны быть потомками раздела самого высокого уровня.'

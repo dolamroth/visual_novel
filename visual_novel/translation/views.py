@@ -49,16 +49,16 @@ def edit_statistics(request, vn_alias):
             'translation_item': translation_item.id,
             'id': item.id
         })
-        if item.lft > 1:
-            context['move_to_list'].append({
-                'id': item.id,
-                'title': item.select_like_statistics_name()
-            })
+        context['move_to_list'].append({
+            'id': item.id,
+            'title': item.select_like_statistics_name()
+        })
 
     context['pictures_statistics'] = statistics.pictures_statistics
     context['technical_statistics'] = statistics.technical_statistics
     context['comment'] = statistics.comment
     context['last_update'] = statistics.last_update.isoformat()
     context['alias'] = vn_alias
+    context['translation_item'] = translation_item.id
 
     return render(request, 'translation/edit.html', context)

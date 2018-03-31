@@ -1,7 +1,7 @@
 from .models import TranslationItem, TranslationStatisticsChapter
 
 from .errors import (
-    TranslationNotFound, InvalidValueOnRowsQuantity
+    TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent
 )
 
 
@@ -43,3 +43,19 @@ class InputNumberValidator(object):
             raise InvalidValueOnRowsQuantity()
 
         return
+
+
+class ParentExistsValidator(object):
+    def validate_parent_section_exists(self, translation_item, parent_id):
+        parent_id = None if not parent_id else parent_id
+        try:
+            parent = TranslationStatisticsChapter.objects.get(
+                id=parent_id,
+                tree_id=translation_item.statistics.tree_id
+            )
+        except TranslationStatisticsChapter.DoesNotExist:
+            raise ParentDoesNotExist()
+        print(parent)
+        if not parent.is_chapter:
+            raise InvalidMoveParent()
+        return parent

@@ -197,5 +197,40 @@ $(function () {
         translation_row_add.collapseAC(is_chapter);
         return false;
     });
+
+    $('.btn-new-translation-chapter').on('click', function(e){
+        var add_chapter_link = $( e.currentTarget );
+        var translation_row = add_chapter_link.closest('.add-row-expanded');
+        var data = {};
+        data['translation_item_id'] = parseInt(translation_row.attr('data_translation_item'));
+        data['translation_chapter_id'] = parseInt(translation_row.attr('data_id'));
+        data['total'] = translation_row.find('.input_data_total_rows').val();
+        data['translated'] = translation_row.find('.input_data_translation').val();
+        data['edited_first_pass'] = translation_row.find('.input_data_editing_first_pass').val();
+        data['edited_second_pass'] = translation_row.find('.input_data_editing_second_pass').val();
+        data['parent'] = parseInt(translation_row.find('.input_data_parent').find(":selected").val());
+        data['move_to'] = translation_row.find('.input_data_position').find(":selected").val();
+        data['is_chapter'] = (translation_row.attr('data_is_chapter') === 'True');
+        data['title'] = translation_row.find('.input_data_title').val();
+        data['script_title'] = translation_row.find('.input_data_script_title').val();
+
+        $.ajax({
+            url: add_chapter_link.attr('href'),
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            console.log(data);
+            if (data['id']){
+                location.reload();
+            } else {
+                if (data['status'] && (data['status'] !== 200)){
+                    /* TODO: alert */
+                }
+            }
+        });
+
+        return false;
+    });
 });
 
