@@ -11,6 +11,7 @@ from core.forms import (
     CustomAuthentificationForm, CustomPasswordResetForm, CustomSetPasswordForm
 )
 
+from . import api_urls
 import chart.urls
 import offer_service.urls
 import translation.urls
@@ -18,6 +19,9 @@ import translation.urls
 urlpatterns = [
     # Admin panel views
     path('admin/', admin.site.urls),
+
+    # API urls
+    path('api/', include(api_urls)),
 
     # Authentification views
     path('login/', auth_views.LoginView.as_view(

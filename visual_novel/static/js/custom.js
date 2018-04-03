@@ -242,7 +242,7 @@ $(function () {
         text.css('display', 'none');
         text.text('');
         $.ajax({
-            url: '/translation/api/'+delete_chapter_link.attr('alias')+'/get-children',
+            url: '/api/translation/'+delete_chapter_link.attr('alias')+'/get-children',
             method: 'GET',
             data: {'translation_chapter_id': item_id},
             type: 'json'
@@ -275,7 +275,7 @@ $(function () {
         data['translation_item_id'] = parseInt(block.attr('data_translation_item'));
         data['translation_chapter_id'] = parseInt(block.attr('data_id'));
         $.ajax({
-            url: '/translation/api/'+block.attr('data_alias')+'/delete-chapter',
+            url: '/api/translation/'+block.attr('data_alias')+'/delete-chapter',
             method: 'GET',
             data: data,
             type: 'json'

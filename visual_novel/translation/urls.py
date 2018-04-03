@@ -5,5 +5,4 @@ from .api import urls as api_urls
 
 urlpatterns = [
     path(r'<str:vn_alias>/edit', translation_views.edit_statistics, name='statistics_edit'),
-    path(r'api/', include(api_urls)),
 ]
