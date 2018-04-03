@@ -28,7 +28,7 @@ class EditTranslationPartChapter(
     def __init__(self, data):
         self.translation_item_id = data['translation_item_id']
         self.translation_chapter_id = data['translation_chapter_id']
-        self.is_chapter = data['is_chapter']
+        self.is_chapter = True
         self.new_parent = data['new_parent']
         self.new_move_to = data['new_move_to']
         self.timezone = data['timezone']
@@ -39,7 +39,10 @@ class EditTranslationPartChapter(
         pass
 
     def execute_validated(self):
-        translation_chapter = TranslationStatisticsChapter.objects.get(id=self.translation_chapter_id)
+        translation_chapter = TranslationStatisticsChapter.objects.get(
+            id=self.translation_chapter_id,
+            is_chapter=self.is_chapter
+        )
 
         self.modify_chapter_item_rows(translation_chapter)
 
@@ -70,11 +73,16 @@ class EditTranslationPartChapter(
             # 4. Make movement
             # Check that it is valid, i.e. user doesn't try to move parental node to be child of it's own child
             try:
+                current_parent = translation_chapter.parent
                 translation_chapter.move_to(parent, self.new_move_to)
                 translation_chapter.save()
+                current_parent.recalculate()
+                translation_chapter.recalculate()
                 movement = True
             except InvalidMove:
                 raise InvalidMoveToChildElement()
+        else:
+            translation_chapter.recalculate()
         return translation_chapter, movement
 
     def validate(self):
@@ -89,6 +97,7 @@ class EditTranslationChapter(EditTranslationPartChapter):
         self.new_translated = data['new_translated']
         self.new_edited_first_pass = data['new_edited_first_pass']
         self.new_edited_second_pass = data['new_edited_second_pass']
+        self.is_chapter = False
 
     def modify_chapter_item_rows(self, translation_chapter):
         translation_chapter.total_rows = int(self.new_total)
@@ -151,6 +160,7 @@ class AddTranslationPartChapter(
 
             self.modify_chapter_item_rows(translation_chapter)
             translation_chapter.save()
+            translation_chapter.recalculate()
 
             return translation_chapter
 
@@ -200,7 +210,9 @@ class DeleteTranslationChapter(
         translation_item = TranslationStatisticsChapter.objects.get(id=self.translation_chapter_id,
                                                                   tree_id=self.translation_item.statistics.tree_id)
         number_of_objects = (translation_item.rght - translation_item.lft + 1) // 2
+        current_parent = translation_item.parent
         translation_item.delete()
+        current_parent.recalculate()
         return number_of_objects
 
     def validate(self):

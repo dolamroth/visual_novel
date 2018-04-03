@@ -7,4 +7,6 @@ urlpatterns = [
     path(r'<str:vn_alias>/add', translation_api_views.add_chapter, name='chapter_add'),
     path(r'<str:vn_alias>/get-children', translation_api_views.get_chapter_children, name='chapter_get_children'),
     path(r'<str:vn_alias>/delete-chapter', translation_api_views.delete_translation_chapter, name='chapter_delete'),
+    path(r'<str:vn_alias>/get-statistics',
+         translation_api_views.get_current_statistics_for_translation_item, name='get_statistics')
 ]

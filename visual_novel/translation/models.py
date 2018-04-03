@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from mptt.models import MPTTModel, TreeForeignKey
 
 from core.models import PublishModel
@@ -55,6 +56,22 @@ class TranslationStatisticsChapter(MPTTModel):
 
     def delete(self):
         super(TranslationStatisticsChapter, self).delete()
+
+    def recalculate(self):
+        if self.is_chapter:
+            all_counts = self.get_children().aggregate(
+                total_rows_all=Sum('total_rows'),
+                total_translated=Sum('translated'),
+                total_edited_first_pass=Sum('edited_first_pass'),
+                total_edited_second_pass=Sum('edited_second_pass')
+            )
+            self.total_rows = all_counts['total_rows_all']
+            self.translated = all_counts['total_translated']
+            self.edited_first_pass = all_counts['total_edited_first_pass']
+            self.edited_second_pass = all_counts['total_edited_second_pass']
+            super(TranslationStatisticsChapter, self).save()
+        if self.parent:
+            self.parent.recalculate()
 
 
 class TranslationBetaLink(PublishModel):

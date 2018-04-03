@@ -19,7 +19,7 @@ from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
     AddTranslationChapterPartSerializer, AddTranslationChapterSerializer
 )
-from ..models import TranslationStatisticsChapter
+from ..models import TranslationStatisticsChapter, TranslationItem
 
 
 def get_data(request):
@@ -165,4 +165,29 @@ def delete_translation_chapter(request, vn_alias):
     return Response(data={
         'message': 'Операция проведена успешно.',
         'delete_results': deleted_n
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def get_current_statistics_for_translation_item(request, vn_alias):
+
+    data, is_chapter = get_data(request)
+
+    try:
+        tree_id = TranslationItem.objects.get(id=int(data['translation_item_id'])).statistics.tree_id
+        base_node = TranslationStatisticsChapter.objects.get(lft=1, tree_id=tree_id)
+        data = {
+            'total_rows': base_node.total_rows,
+            'translated': base_node.translated,
+            'edited_first_pass': base_node.edited_first_pass,
+            'edited_second_pass': base_node.edited_second_pass
+        }
+    except (TranslationItem.DoesNotExist, ValueError, TranslationStatisticsChapter.DoesNotExist):
+        return Response(data={'message': TranslationNotFound().message}, status=404)
+
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'statistics': data
     }, status=200)

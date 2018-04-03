@@ -29,6 +29,7 @@ class TranslationChapterExistsValidator(object):
 
 class InputNumberValidator(object):
     def validate_numbers_input(self, total, translated, edited_first, edited_second, is_chapter):
+
         # Quantities of rows for chapters are recalculated outside the command
         if is_chapter:
             return

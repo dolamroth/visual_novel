@@ -41,6 +41,26 @@ jQuery.fn.extend({
             expanded.first().collapseAC();
         }
         return this;
+    },
+    showRecalculate: function(){
+        var translation_row = $('#translation_total_rows').closest('tr');
+        var vn_alias = translation_row.attr('data_alias');
+        var translation_item = translation_row.attr('data_translation_item');
+        $.ajax({
+            url: '/api/translation/'+vn_alias+'/get-statistics',
+            method: 'GET',
+            data: {'translation_item_id': translation_item},
+            type: 'json'
+        }).always(function(data){
+            console.log(data);
+            if (data['statistics']){
+                $('#translation_total_rows').text( data['statistics']['total_rows'] );
+                $('#translation_translation').text( data['statistics']['translated'] );
+                $('#translation_edited_first_pass').text( data['statistics']['edited_first_pass'] );
+                $('#translation_edited_second_pass').text( data['statistics']['edited_second_pass'] );
+            }
+        });
+        return this;
     }
 });
 
@@ -152,6 +172,7 @@ $(function () {
                 location.reload();
             } else {
                 if (data['status'] && (data['status'] !== 200)){
+                    console.log(data);
                     /* TODO: alert */
                 } else{
                     var return_data = data['data'];
@@ -161,7 +182,7 @@ $(function () {
                     translation_row.attr('data_edited_second_pass', return_data['new_edited_second_pass']);
                     translation_row.attr('data_title', return_data['title']);
                     translation_row.attr('data_script_title', return_data['script_title']);
-                    translation_row = translation_row.collapseTC();
+                    translation_row = translation_row.collapseTC().showRecalculate();
                     translation_row.find('.item_name').find('span').text(return_data['script_title']);
                 }
             }
@@ -288,4 +309,3 @@ $(function () {
     });
 
 });
-
