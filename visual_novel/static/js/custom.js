@@ -1,3 +1,18 @@
+window.translation_errors_codes = {
+    "translation_item_id": "Уникальный идентификатор перевода",
+    "new_parent": "Идентификатор родительского элемента",
+    "new_move_to": "Тип перемещения",
+    "title": "Пользовательское название",
+    "script_title": "Название скрипта",
+    "is_chapter": "(Скрытое поле) является ли разделом",
+    "timezone": "(Скрытое поле) смещение в минутах от UTC-часового пояса",
+    "translation_chapter_id": "Уникальный идентификатор главы перевода",
+    "total": "Всего строк",
+    "new_translated": "Перевод",
+    "new_edited_first_pass": "Редактура 1",
+    "new_edited_second_pass": "Редактура 2"
+};
+
 jQuery.fn.extend({
     collapseTC: function(){
         var example_row = $(".collapsed-row-example");
@@ -52,7 +67,6 @@ jQuery.fn.extend({
             data: {'translation_item_id': translation_item},
             type: 'json'
         }).always(function(data){
-            console.log(data);
             if (data['statistics']){
                 $('#translation_total_rows').text( data['statistics']['total_rows'] );
                 $('#translation_translation').text( data['statistics']['translated'] );
@@ -60,6 +74,24 @@ jQuery.fn.extend({
                 $('#translation_edited_second_pass').text( data['statistics']['edited_second_pass'] );
             }
         });
+        return this;
+    },
+    closeAlertRows: function(){
+        $('tr.alert-row').remove();
+        return this;
+    },
+    spawnAlert: function(data){
+        var alert_div = this.find('.alert-text-div');
+        alert_div
+            .text( data['responseJSON']['message'] );
+        if (data['responseJSON']['errors']){
+            var error_html = "<ul>";
+            $.each(data['responseJSON']['errors'], function(key, value){
+                error_html += ('<li>Поле "' + (window.translation_errors_codes)[key] + '": ' + value + '</li>');
+            });
+            error_html += "</ul>";
+            alert_div.html( alert_div.html() + error_html);
+        }
         return this;
     }
 });
@@ -113,9 +145,14 @@ $(function () {
         $('.alert').fadeOut();
     }, 1000);
 
+    $('a.close').on('click', function(e){
+        var close_link = $( e.currentTarget );
+        close_link.closeAlertRows();
+    });
+
     $('.translation-chapter-edit').on('click', function(e){
         var edit_link = $( e.currentTarget );
-        edit_link.collapseAll();
+        edit_link.collapseAll().closeAlertRows();
         var translation_row_old = edit_link.closest('.translation-chapter-collapsed');
         var class_chapter = translation_row_old.attr('data_is_chapter') === "True" ? ".editing-row-example-chapter" : ".editing-row-example";
         var example_row = $(class_chapter);
@@ -142,13 +179,14 @@ $(function () {
     $('.btn-cancel-translation-chapter').on('click', function(e){
         var cancel_link = $( e.currentTarget );
         var translation_row_old = cancel_link.closest('.translation-chapter-expanded');
-        translation_row_old.collapseTC();
+        translation_row_old.collapseTC().closeAlertRows();
         return false;
     });
 
     $('.btn-save-translation-chapter').on('click', function(e){
         var save_link = $( e.currentTarget );
         var translation_row = save_link.closest('.translation-chapter-expanded');
+        translation_row.closeAlertRows();
         var data = {};
         data['translation_item_id'] = parseInt(translation_row.attr('data_translation_item'));
         data['translation_chapter_id'] = parseInt(translation_row.attr('data_id'));
@@ -172,8 +210,16 @@ $(function () {
                 location.reload();
             } else {
                 if (data['status'] && (data['status'] !== 200)){
-                    console.log(data);
-                    /* TODO: alert */
+                    var alert_example = $('.alert-row-example');
+                    translation_row.before( alert_example.clone(true, true) );
+                    var alert_row = translation_row.prev();
+                    alert_row.spawnAlert(data);
+                    alert_row.find('div')
+                        .fadeIn();
+                    alert_row
+                        .removeClass('alert-row-example')
+                        .addClass('alert-row')
+                        .removeClass('editing-row-hidden');
                 } else{
                     var return_data = data['data'];
                     translation_row.attr('data_translated', return_data['new_translated']);
@@ -193,7 +239,7 @@ $(function () {
 
     $('.add-chapter').on('click', function(e){
         var add_chapter_link = $( e.currentTarget );
-        add_chapter_link.collapseAll();
+        add_chapter_link.collapseAll().closeAlertRows();
         var translation_row_old = add_chapter_link.closest('.add-row-collapsed');
         var class_chapter = translation_row_old.attr('data_is_chapter') === "True" ? ".add-section-example" : ".add-chapter-example";
         var example_row = $(class_chapter);
@@ -214,13 +260,14 @@ $(function () {
         var cancel_add_chapter_link = $( e.currentTarget );
         var translation_row_add = cancel_add_chapter_link.closest('.add-row-expanded');
         var is_chapter = translation_row_add.attr('data_is_chapter');
-        translation_row_add.collapseAC(is_chapter);
+        translation_row_add.collapseAC(is_chapter).closeAlertRows();
         return false;
     });
 
     $('.btn-new-translation-chapter').on('click', function(e){
         var add_chapter_link = $( e.currentTarget );
         var translation_row = add_chapter_link.closest('.add-row-expanded');
+        translation_row.closeAlertRows();
         var data = {};
         data['translation_item_id'] = parseInt(translation_row.attr('data_translation_item'));
         data['translation_chapter_id'] = parseInt(translation_row.attr('data_id'));
@@ -244,7 +291,16 @@ $(function () {
                 location.reload();
             } else {
                 if (data['status'] && (data['status'] !== 200)){
-                    /* TODO: alert */
+                    var alert_example = $('.alert-row-example');
+                    translation_row.before( alert_example.clone(true, true) );
+                    var alert_row = translation_row.prev();
+                    alert_row.spawnAlert(data);
+                    alert_row.find('div')
+                        .fadeIn();
+                    alert_row
+                        .removeClass('alert-row-example')
+                        .addClass('alert-row')
+                        .removeClass('editing-row-hidden');
                 }
             }
         });
@@ -255,6 +311,7 @@ $(function () {
     $('.translation-chapter-delete-popup').on('click', function(e){
         var delete_chapter_link = $( e.currentTarget );
         var translation_row = delete_chapter_link.closest('.translation-chapter-collapsed');
+        translation_row.closeAlertRows();
         var item_id = translation_row.attr('data_id');
         var popup_window = $("#delete-chapter-popup");
         popup_window.find('h3').text('Действительно удалить ' + translation_row.attr('data_script_title') + '?');
@@ -295,6 +352,7 @@ $(function () {
         var data = {};
         data['translation_item_id'] = parseInt(block.attr('data_translation_item'));
         data['translation_chapter_id'] = parseInt(block.attr('data_id'));
+        block.closeAlertRows();
         $.ajax({
             url: '/api/translation/'+block.attr('data_alias')+'/delete-chapter',
             method: 'GET',
