@@ -70,10 +70,10 @@ class VisualNovel(PublishModel):
         return self.title
 
     def get_rate(self):
-        return "{0:.2f}".format(self.rate)
+        return "{0:.2f}".format(self.rate / 100.0)
 
     def get_popularity(self):
-        return "{0:.2f}".format(self.popularity)
+        return "{0:.2f}".format(self.popularity / 100.0)
 
     def delete_poster(self):
         try:
