@@ -17,9 +17,10 @@ from ..errors import (
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
-    AddTranslationChapterPartSerializer, AddTranslationChapterSerializer
+    AddTranslationChapterPartSerializer, AddTranslationChapterSerializer,
+    StatisticsDescription, StatisticsComment
 )
-from ..models import TranslationStatisticsChapter, TranslationItem
+from ..models import TranslationStatisticsChapter, TranslationItem, TranslationStatistics
 
 
 def get_data(request):
@@ -190,4 +191,55 @@ def get_current_statistics_for_translation_item(request, vn_alias):
     return Response(data={
         'message': 'Операция проведена успешно.',
         'statistics': data
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def get_edit_pictures_tech_comment_statistics(request, vn_alias):
+
+    description = request.GET.get('description', None)
+    translation_item_id = request.GET.get('translation_item_id', None)
+    type = request.GET.get('type', None)
+
+    if not type in ['pictures', 'tech', 'comment']:
+        return Response(data={
+            'message': 'Необходимо указать корректный тип редактируемого описания.'
+        }, status=422)
+
+    if type == 'comment':
+        serializer = StatisticsComment(data={'comment': description})
+    else:
+        serializer = StatisticsDescription(data={'description': description})
+
+    try:
+        translation_item_id = int(translation_item_id)
+        translation_item = TranslationItem.objects.get(id=translation_item_id)
+        translation_statistics = TranslationStatistics.objects.get(pk=translation_item.statistics.pk)
+    except (TypeError, TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
+        return Response(data={
+            'message': 'Перевод с указанным идентификатором не найден.'
+        }, status=404)
+
+    try:
+        serializer.is_valid(raise_exception=True)
+    except restValidationError as exc:
+        return Response(data={
+            'message': 'При попытке сохранения возникли ошибки.',
+            'errors': serializer.errors
+        }, status=422)
+
+    if type == 'pictures':
+        translation_statistics.pictures_statistics = description
+    elif type == 'tech':
+        translation_statistics.technical_statistics = description
+    else:
+        translation_statistics.comment = description
+    translation_statistics.save()
+
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'description': description,
+        'type': type
     }, status=200)

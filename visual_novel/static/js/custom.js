@@ -366,4 +366,42 @@ $(function () {
         return false;
     });
 
+    $('.edit-comment-send').on('click', function(e){
+        var edit_link = $( e.currentTarget );
+        var link_id = edit_link.attr('id');
+        var type = '';
+        switch(link_id){
+            case 'save-pictures-description':
+                type = 'pictures';
+                break;
+            case 'save-tech-description':
+                type = 'tech';
+                break;
+            case 'save-comment-description':
+                type = 'comment';
+                break;
+            default:
+                return false;
+        }
+
+        var data = {};
+        var block = $("#delete-chapter-popup");
+        data['translation_item_id'] = parseInt(block.attr('data_translation_item'));
+        data['description'] = edit_link.prev('textarea').val();
+        data['type'] = type;
+
+        $.ajax({
+            url: '/api/translation/'+block.attr('data_alias')+'/edit-comment',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            if (data['description']){
+                edit_link.prev('textarea').val( data['description'] );
+            }
+        });
+
+        return false;
+    });
+
 });

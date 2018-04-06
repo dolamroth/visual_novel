@@ -34,3 +34,11 @@ class TranslationChapterPartSerializer(AddTranslationChapterPartSerializer):
 
 class TranslationChapterSerializer(AddTranslationChapterSerializer):
     translation_chapter_id = serializers.IntegerField()
+
+
+class StatisticsDescription(serializers.Serializer):
+    description = serializers.CharField(max_length=500)
+
+
+class StatisticsComment(serializers.Serializer):
+    comment = serializers.CharField(max_length=2000)
