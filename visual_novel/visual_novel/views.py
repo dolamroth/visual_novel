@@ -1,9 +1,9 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
+from django.conf import settings
 
 
 def handler404(request, exception, template_name='404.html'):
-    response = render_to_response('404.html', {},
-                                  context_instance=RequestContext(request))
+    response = render(request, template_name)
     response.status_code = 404
     return response
+
