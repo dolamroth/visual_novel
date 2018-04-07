@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 
 
 class IsAuthenticatedMiddleware(object):
@@ -7,3 +8,11 @@ class IsAuthenticatedMiddleware(object):
             return HttpResponseRedirect("/login?next=" + request.path)
         else:
             return None
+
+
+class HasPermissionToEditProfile(object):
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        username = view_kwargs.get('username', None)
+        if not (username == request.user.username):
+            raise PermissionDenied
+        return None

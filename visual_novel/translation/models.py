@@ -1,5 +1,7 @@
 from django.db import models
 from django.db.models import Sum
+from django.contrib.auth.models import User
+
 from mptt.models import MPTTModel, TreeForeignKey
 
 from core.models import PublishModel
@@ -98,6 +100,7 @@ class TranslationItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT, verbose_name='Визуальная новелла')
     statistics = models.ForeignKey(TranslationStatistics, on_delete=models.SET_NULL,
                                    null=True, blank=True, verbose_name='Привязанная статистика')
+    moderators = models.ManyToManyField(User, blank=True, verbose_name="Модераторы")
 
     class Meta:
         db_table = 'translation_items'
