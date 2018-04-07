@@ -6,12 +6,15 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.utils.decorators import decorator_from_middleware
 
 from notifications.service import send_email
+from translation.models import TranslationItem
 
 from .forms import CustomSignUpForm
 from .utils import offset_to_timezone
 from .tokens import account_activation_token
+from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
 
 
 def signup(request):
@@ -65,3 +68,28 @@ def activate(request, uidb64, token):
 
 def account_activation_sent(request):
     return render(request, 'pages/account_activation_sent.html')
+
+
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditProfile)
+def profile_page(request, username):
+    context = dict()
+    user = request.user
+    context['username'] = username
+
+    context['moderated_translations'] = list()
+    moderated_translations_query = TranslationItem.objects.filter(
+        visual_novel__is_published=True,
+        is_published=True
+    )
+    if not (user.is_superuser or user.is_staff):
+        moderated_translations_query = moderated_translations_query.filter(moderators=user)
+
+    for translation in moderated_translations_query:
+        visual_novel = translation.visual_novel
+        context['moderated_translations'].append({
+            'title': visual_novel.title,
+            'alias': visual_novel.alias
+        })
+
+    return render(request, 'pages/profile.html', context)

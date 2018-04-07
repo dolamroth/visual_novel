@@ -42,13 +42,12 @@
                     <li>
                         <a href="https://vndb.org/" target="_blank">VNDb&nbsp;&nbsp;<i class="glyphicon glyphicon-share"></i></a>
                     </li>
-                    <li>
-                        {% if user.is_authenticated %}
-                            <a href="/logout/">Выйти</a>
-                        {% else %}
-                            <a href="/login/">Войти</a>
-                        {% endif %}
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/profile/{{ user.username }}">Профиль {{ user.username }}</a></li>
+                        <li><a href="/logout/">Выйти</a></li>
+                    {% else %}
+                        <li><a href="/login/">Войти</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

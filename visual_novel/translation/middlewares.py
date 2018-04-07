@@ -14,5 +14,4 @@ class HasPermissionToEditVNMiddleware(object):
         user_moderates_vn = (request.user in translation.moderators.all())
         if not (request.user.is_superuser or request.user.is_staff or user_moderates_vn):
             raise PermissionDenied
-        else:
-            return None
+        return None

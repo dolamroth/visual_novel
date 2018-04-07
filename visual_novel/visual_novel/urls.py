@@ -57,6 +57,7 @@ urlpatterns = [
 
     # Plain pages views
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
+    path('profile/<str:username>', core_views.profile_page, name='profile_page'),
 
     # Apps views
     path('offers/', include(offer_service.urls)),
