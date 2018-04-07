@@ -5,6 +5,7 @@ from django.utils.encoding import force_text, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
+from django.conf import settings
 
 from notifications.service import send_email
 
@@ -31,6 +32,7 @@ def signup(request):
             message = render_to_string('pages/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
+                'protocol': settings.VN_PROTOCOL,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),
                 'token': account_activation_token.make_token(user),
             })
