@@ -46,11 +46,11 @@ class TranslationStatisticsChapter(MPTTModel):
     def __str__(self):
         return self.script_title
 
-    def statistics_name(self):
+    def statistics_name(self, base_level = 0):
         name = self.script_title
         if self.is_chapter:
             name = '<strong>' + name + '</strong>'
-        name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level(), name)
+        name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level()-base_level, name)
         return name
 
     def select_like_statistics_name(self, base_level = 0):

@@ -81,7 +81,8 @@ def profile_page(request, username):
     moderated_translations_query = TranslationItem.objects.filter(
         visual_novel__is_published=True,
         is_published=True
-    )
+    ).order_by('visual_novel__title')
+
     if not (user.is_superuser or user.is_staff):
         moderated_translations_query = moderated_translations_query.filter(moderators=user)
 
