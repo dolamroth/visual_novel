@@ -5,7 +5,7 @@ from django.utils.decorators import decorator_from_middleware
 from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
-from .models import TranslationItem, TranslationStatisticsChapter
+from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -62,3 +62,93 @@ def edit_statistics(request, vn_alias):
     context['translation_item'] = translation_item.id
 
     return render(request, 'translation/edit.html', context)
+
+
+def all_translations(request):
+    all_translations = TranslationItem.objects.filter(
+        is_published=True,
+        visual_novel__is_published=True
+    ).order_by('visual_novel__title')
+
+    context = dict()
+    context['novels'] = list()
+
+    for translation in all_translations:
+        visual_novel = translation.visual_novel
+        statistics = TranslationStatisticsChapter.objects.get(
+            tree_id=translation.statistics.tree_id,
+            lft=1
+        )
+
+        context['novels'].append({
+            'title': visual_novel.title,
+            'total_rows': statistics.total_rows,
+            'translated': statistics.translated,
+            'edited_first_pass': statistics.edited_first_pass,
+            'edited_second_pass': statistics.edited_second_pass,
+            'last_update': statistics.last_update.__str__()[:19],
+            'alias': visual_novel.alias,
+            'translated_perc': "{0:.2f}%".format(statistics.translated / statistics.total_rows * 100.0),
+            'edited_first_pass_perc': "{0:.2f}%".format(statistics.edited_first_pass / statistics.total_rows * 100.0),
+            'edited_second_pass_perc': "{0:.2f}%".format(statistics.edited_second_pass / statistics.total_rows * 100.0)
+        })
+
+    return render(request, 'translation/all.html', context)
+
+
+def translation_item_view(request, vn_alias):
+    try:
+        translation = TranslationItem.objects.get(
+            is_published=True,
+            visual_novel__is_published=True,
+            visual_novel__alias=vn_alias
+        )
+    except TranslationItem.DoesNotExist:
+        return render(request, 'translation/item_does_not_exist.html')
+
+    context = dict()
+
+    visual_novel = translation.visual_novel
+
+    context['title'] = visual_novel.title
+    context['alias'] = visual_novel.alias
+    context['items'] = list()
+
+    statistics = translation.statistics
+
+    context['pictures_statistics'] = statistics.pictures_statistics
+    context['technical_statistics'] = statistics.technical_statistics
+    context['comment'] = statistics.comment
+
+    base_node = TranslationStatisticsChapter.objects.get(
+        tree_id=statistics.tree_id,
+        lft=1
+    )
+
+    context['total_rows'] = base_node.total_rows
+    context['translated'] = base_node.translated
+    context['edited_first_pass'] = base_node.edited_first_pass
+    context['edited_second_pass'] = base_node.edited_second_pass
+    context['translated_perc'] = "{0:.2f}%".format(base_node.translated / base_node.total_rows * 100.0)
+    context['edited_first_pass_perc'] = "{0:.2f}%".format(base_node.edited_first_pass / base_node.total_rows * 100.0)
+    context['edited_second_pass_perc'] = "{0:.2f}%".format(base_node.edited_second_pass / base_node.total_rows * 100.0)
+
+    all_items = TranslationStatisticsChapter.objects.filter(
+        tree_id=statistics.tree_id,
+        lft__gt=1
+    ).order_by('lft')
+
+    for item in all_items:
+        context['items'].append({
+            'name': item.statistics_name(base_level=1).replace('"', '\''),
+            'total_rows': item.total_rows,
+            'translated': item.translated,
+            'edited_first_pass': item.edited_first_pass,
+            'edited_second_pass': item.edited_second_pass,
+            'is_chapter': item.is_chapter
+        })
+
+    context['is_subscribed'] = request.user.is_authenticated  \
+        and TranslationSubscription.objects.filter(profile=request.user.profile, translation=translation).exists()
+
+    return render(request, 'translation/item.html', context)

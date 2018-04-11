@@ -20,7 +20,9 @@ from .serializers import (
     AddTranslationChapterPartSerializer, AddTranslationChapterSerializer,
     StatisticsDescription, StatisticsComment
 )
-from ..models import TranslationStatisticsChapter, TranslationItem, TranslationStatistics
+from ..models import (
+    TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
+)
 
 
 def get_data(request):
@@ -242,4 +244,44 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
         'message': 'Операция проведена успешно.',
         'description': description,
         'type': type
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+def subscribe_statistics(request, vn_alias):
+    try:
+        translation_item = TranslationItem.objects.get(visual_novel__alias=vn_alias)
+    except (TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
+        return Response(data={
+            'message': 'Перевод с указанным идентификатором не найден.'
+        }, status=404)
+
+    subscription, _ = TranslationSubscription.objects.get_or_create(
+        profile=request.user.profile,
+        translation=translation_item
+    )
+
+    return Response(data={
+        'message': 'Операция проведена успешно.'
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+def unsubscribe_statistics(request, vn_alias):
+    try:
+        translation_item = TranslationItem.objects.get(visual_novel__alias=vn_alias)
+    except (TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
+        return Response(data={
+            'message': 'Перевод с указанным идентификатором не найден.'
+        }, status=404)
+
+    TranslationSubscription.objects.filter(
+        profile=request.user.profile,
+        translation=translation_item
+    ).delete()
+
+    return Response(data={
+        'message': 'Операция проведена успешно.'
     }, status=200)

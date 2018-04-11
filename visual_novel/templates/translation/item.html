@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Редактирование перевода {{ title|safe }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 8px;">
+            <h3><a href="/">Главная</a>&nbsp;&#47;
+                <a href="/translation/all">Активные переводы</a>&nbsp;&#47;
+                Статистика перевода {{ title|safe }}</h3>
+        </div>
+    </div>
+
+    <table class="table table-hover table-sm">
+        <thead>
+            <tr>
+                <th class="col-sm-8">Название главы</th>
+                <th class="col-sm-1">Всего строк</th>
+                <th class="col-sm-1">Перевод</th>
+                <th class="col-sm-1">Редактура 1</th>
+                <th class="col-sm-1">Редактура 2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="5">
+                    <span class="monospaced">
+                        Всего строк&nbsp;: {{ total_rows|safe }}<br />
+                        Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ translated|safe }}
+                        ({{ translated_perc }})<br />
+                        Редактура&nbsp;1&nbsp;: {{ edited_first_pass|safe }}
+                        ({{ edited_first_pass_perc }})<br />
+                        Редактура&nbsp;2&nbsp;: {{ edited_second_pass|safe }}
+                        ({{ edited_second_pass_perc }})
+                    </span>
+                </td>
+            </tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.name|safe }}</td>
+                    <td>{{ item.total_rows }}</td>
+                    <td>{{ item.translated }}</td>
+                    <td>{{ item.edited_first_pass }}</td>
+                    <td>{{ item.edited_second_pass }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 8px;">
+            <h4>Перевод изображений</h4>
+            <p>{{ pictures_statistics }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 8px;">
+            <h4>Техническая часть</h4>
+            <p>{{ technical_statistics }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 8px;">
+            <h4>Комментарий</h4>
+            <p>{{ comment }}</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {% if user.is_authenticated %}
+            {% if is_subscribed %}
+                <a class="btn btn-danger subscription-button" href="/api/translation/{{ alias }}/unsubscribe">Отписаться от рассылки</a>
+            {% else %}
+                <a class="btn btn-success subscription-button" href="/api/translation/{{ alias }}/subscribe">Подписаться на рассылку статистики</a>
+            {% endif %}
+        {% else %}
+            <a class="btn btn-success" href="/login/">Подписаться на рассылку статистики</a>
+        {% endif %}
+    </div>
+
+{% endblock %}

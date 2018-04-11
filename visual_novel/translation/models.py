@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from core.models import PublishModel
+from core.models import PublishModel, Profile
 from vn_core.models import VisualNovel
 
 
@@ -46,11 +46,11 @@ class TranslationStatisticsChapter(MPTTModel):
     def __str__(self):
         return self.script_title
 
-    def statistics_name(self):
+    def statistics_name(self, base_level = 0):
         name = self.script_title
         if self.is_chapter:
             name = '<strong>' + name + '</strong>'
-        name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level(), name)
+        name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level()-base_level, name)
         return name
 
     def select_like_statistics_name(self, base_level = 0):
@@ -101,6 +101,8 @@ class TranslationItem(PublishModel):
     statistics = models.ForeignKey(TranslationStatistics, on_delete=models.SET_NULL,
                                    null=True, blank=True, verbose_name='Привязанная статистика')
     moderators = models.ManyToManyField(User, blank=True, verbose_name="Модераторы")
+    subscriber = models.ManyToManyField(Profile, blank=True,
+                                        verbose_name="Подписчики", through='TranslationSubscription')
 
     class Meta:
         db_table = 'translation_items'
@@ -129,3 +131,18 @@ class TranslationItem(PublishModel):
         TranslationStatisticsChapter.objects.filter(tree_id=tree_id).delete()
         TranslationStatistics.objects.get(pk=self.statistics.pk).delete()
         super(TranslationItem, self).delete()
+
+
+class TranslationSubscription(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    translation = models.ForeignKey(TranslationItem,
+                                    on_delete=models.CASCADE, null=True, blank=True, related_name='translations_set')
+
+    class Meta:
+        db_table = 'translation_subscriptions'
+        verbose_name = 'Подписка на рассылку'
+        verbose_name_plural = 'Подписки'
+
+    def __str__(self):
+        return 'Подписка {} на рассылку статистики перевода {}'.format(
+            self.profile.user.username, self.translation.visual_novel.title)

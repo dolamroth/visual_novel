@@ -404,4 +404,18 @@ $(function () {
         return false;
     });
 
+    $('.subscription-button').on('click', function (e) {
+        var subscription_link = $( e.currentTarget );
+
+        $.ajax({
+            url: subscription_link.attr('href'),
+            method: 'GET',
+            type: 'json'
+        }).always(function(data){
+            location.reload();
+        });
+
+        return false;
+    });
+
 });

@@ -45,9 +45,19 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'user_profile'
+        verbose_name = 'Профиль пользователя'
+        verbose_name_plural = 'Профили пользователей'
 
     def __str__(self):
         return self.user.username
+
+    def is_staff(self):
+        return self.user.is_staff
+    is_staff.short_description = 'Модератор'
+
+    def is_superuser(self):
+        return self.user.is_superuser
+    is_superuser.short_description = 'Суперпользователь'
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
