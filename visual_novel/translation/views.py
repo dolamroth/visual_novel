@@ -87,7 +87,10 @@ def all_translations(request):
             'edited_first_pass': statistics.edited_first_pass,
             'edited_second_pass': statistics.edited_second_pass,
             'last_update': statistics.last_update.__str__()[:19],
-            'alias': visual_novel.alias
+            'alias': visual_novel.alias,
+            'translated_perc': "{0:.2f}%".format(statistics.translated / statistics.total_rows * 100.0),
+            'edited_first_pass_perc': "{0:.2f}%".format(statistics.edited_first_pass / statistics.total_rows * 100.0),
+            'edited_second_pass_perc': "{0:.2f}%".format(statistics.edited_second_pass / statistics.total_rows * 100.0)
         })
 
     return render(request, 'translation/all.html', context)
@@ -110,8 +113,27 @@ def translation_item_view(request, vn_alias):
     context['title'] = visual_novel.title
     context['items'] = list()
 
+    statistics = translation.statistics
+
+    context['pictures_statistics'] = statistics.pictures_statistics
+    context['technical_statistics'] = statistics.technical_statistics
+    context['comment'] = statistics.comment
+
+    base_node = TranslationStatisticsChapter.objects.get(
+        tree_id=statistics.tree_id,
+        lft=1
+    )
+
+    context['total_rows'] = base_node.total_rows
+    context['translated'] = base_node.translated
+    context['edited_first_pass'] = base_node.edited_first_pass
+    context['edited_second_pass'] = base_node.edited_second_pass
+    context['translated_perc'] = "{0:.2f}%".format(base_node.translated / base_node.total_rows * 100.0)
+    context['edited_first_pass_perc'] = "{0:.2f}%".format(base_node.edited_first_pass / base_node.total_rows * 100.0)
+    context['edited_second_pass_perc'] = "{0:.2f}%".format(base_node.edited_second_pass / base_node.total_rows * 100.0)
+
     all_items = TranslationStatisticsChapter.objects.filter(
-        tree_id=translation.statistics.tree_id,
+        tree_id=statistics.tree_id,
         lft__gt=1
     ).order_by('lft')
 

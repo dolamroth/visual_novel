@@ -16,12 +16,16 @@
             {% for novel in novels %}
                 <tr>
                     <td>
-                        <strong><a href="/translation/{{ novel.alias }}">{{ novel.title|safe }}</a></strong> <em>(последнее обновление: {{ novel.last_update }})</em><br /><br />
+                        <strong><a href="/translation/{{ novel.alias }}">{{ novel.title|safe }}</a></strong>
+                        <em>(последнее обновление: {{ novel.last_update }})</em><br /><br />
                         <span class="monospaced">
                             Всего строк&nbsp;: <span id="translation_total_rows">{{ novel.total_rows|safe }}</span><br />
-                            Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="translation_translation">{{ novel.translated|safe }}</span><br />
-                            Редактура&nbsp;1&nbsp;: <span id="translation_edited_first_pass">{{ novel.edited_first_pass|safe }}</span><br />
-                            Редактура&nbsp;2&nbsp;: <span id="translation_edited_second_pass">{{ novel.edited_second_pass|safe }}</span>
+                            Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="translation_translation">{{ novel.translated|safe }}
+                            ({{ novel.translated_perc }})</span><br />
+                            Редактура&nbsp;1&nbsp;: <span id="translation_edited_first_pass">{{ novel.edited_first_pass|safe }}
+                            ({{ novel.edited_first_pass_perc }})</span><br />
+                            Редактура&nbsp;2&nbsp;: <span id="translation_edited_second_pass">{{ novel.edited_second_pass|safe }}
+                            ({{ novel.edited_second_pass_perc }})</span>
                         </span>
                     </td>
                 </tr>

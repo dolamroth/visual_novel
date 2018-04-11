@@ -22,6 +22,19 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td colspan="5">
+                    <span class="monospaced">
+                        Всего строк&nbsp;: {{ total_rows|safe }}<br />
+                        Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ translated|safe }}
+                        ({{ translated_perc }})<br />
+                        Редактура&nbsp;1&nbsp;: {{ edited_first_pass|safe }}
+                        ({{ edited_first_pass_perc }})<br />
+                        Редактура&nbsp;2&nbsp;: {{ edited_second_pass|safe }}
+                        ({{ edited_second_pass_perc }})
+                    </span>
+                </td>
+            </tr>
             {% for item in items %}
                 <tr>
                     <td>{{ item.name|safe }}</td>
@@ -33,5 +46,16 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 8px;">
+            <h4>Перевод изображений</h4>
+            <p>{{ pictures_statistics }}</p>
+            <h4>Техническая часть</h4>
+            <p>{{ technical_statistics }}</p>
+            <h4>Комментарий</h4>
+            <p>{{ comment }}</p>
+        </div>
+    </div>
 
 {% endblock %}
