@@ -15,6 +15,7 @@ from .forms import CustomSignUpForm
 from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
+from .models import Profile
 
 
 def signup(request):
@@ -92,5 +93,16 @@ def profile_page(request, username):
             'title': visual_novel.title,
             'alias': visual_novel.alias
         })
+    context['has_moderated_translations'] = (len(context['moderated_translations']) > 0)
+
+    context['subscriptions'] = list()
+    profile = user.profile
+    for translation in profile.translationsubscription_set.all():
+        visual_novel = translation.translation.visual_novel
+        context['subscriptions'].append({
+            'alias': visual_novel.alias,
+            'title': visual_novel.title
+        })
+    context['has_subscriptions'] = (len(context['subscriptions']) > 0)
 
     return render(request, 'pages/profile.html', context)

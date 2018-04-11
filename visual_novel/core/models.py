@@ -42,8 +42,6 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE)
     email_confirmed = models.BooleanField(default=False)
-    subscriptions = models.ManyToManyField('translation.TranslationItem',
-                                           blank=True, verbose_name='Подписки на рассылку')
 
     class Meta:
         db_table = 'user_profile'
