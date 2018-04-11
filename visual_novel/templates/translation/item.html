@@ -7,7 +7,9 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-12" style="margin-bottom: 8px;">
-            <h3><a href="/">Главная</a>&nbsp;&#47; Статистика перевода {{ title|safe }}</h3>
+            <h3><a href="/">Главная</a>&nbsp;&#47;
+                <a href="/translation/all">Активные переводы</a>&nbsp;&#47;
+                Статистика перевода {{ title|safe }}</h3>
         </div>
     </div>
 
@@ -51,8 +53,12 @@
         <div class="col-lg-12" style="margin-bottom: 8px;">
             <h4>Перевод изображений</h4>
             <p>{{ pictures_statistics }}</p>
+        </div>
+        <div class="col-lg-12" style="margin-bottom: 8px;">
             <h4>Техническая часть</h4>
             <p>{{ technical_statistics }}</p>
+        </div>
+        <div class="col-lg-12" style="margin-bottom: 8px;">
             <h4>Комментарий</h4>
             <p>{{ comment }}</p>
         </div>
