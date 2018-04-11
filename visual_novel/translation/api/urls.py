@@ -11,4 +11,8 @@ urlpatterns = [
          translation_api_views.get_current_statistics_for_translation_item, name='get_statistics'),
     path(r'<str:vn_alias>/edit-comment',
          translation_api_views.get_edit_pictures_tech_comment_statistics, name='edit_comment'),
+    path(r'<str:vn_alias>/subscribe',
+         translation_api_views.subscribe_statistics, name='subscribe'),
+    path(r'<str:vn_alias>/unsubscribe',
+         translation_api_views.unsubscribe_statistics, name='subscribe'),
 ]

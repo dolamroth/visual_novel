@@ -5,7 +5,7 @@ from django.utils.decorators import decorator_from_middleware
 from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
-from .models import TranslationItem, TranslationStatisticsChapter
+from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -111,6 +111,7 @@ def translation_item_view(request, vn_alias):
     visual_novel = translation.visual_novel
 
     context['title'] = visual_novel.title
+    context['alias'] = visual_novel.alias
     context['items'] = list()
 
     statistics = translation.statistics
@@ -146,4 +147,8 @@ def translation_item_view(request, vn_alias):
             'edited_second_pass': item.edited_second_pass,
             'is_chapter': item.is_chapter
         })
+
+    context['is_subscribed'] = request.user.is_authenticated  \
+        and TranslationSubscription.objects.filter(profile=request.user.profile, translation=translation).exists()
+
     return render(request, 'translation/item.html', context)
