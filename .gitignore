@@ -109,6 +109,7 @@ visual_novel_env/
 secrets.json
 **/db.sqlite3
 **/media
+**/vk_config*.*
 
 # static files
 **/static/admin
