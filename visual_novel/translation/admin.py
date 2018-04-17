@@ -22,3 +22,4 @@ class TranslationItemAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TranslationItem, TranslationItemAdmin)
+admin.site.register(TranslationBetaLink)

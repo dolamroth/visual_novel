@@ -68,6 +68,27 @@
         </div>
     </div>
 
+    {% if has_download_links %}
+    <table class="table table-hover table-sm">
+        <thead>
+            <tr>
+                <th class="col-sm-12">Ссылки на скачивание</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in download_links %}
+                <tr>
+                    <td>
+                        <strong>{{ link.title }}</strong><br />
+                        <a href="{{ link.url }}" target="_blank">{{ link.url }}</a><br />
+                        {{ link.comment }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
     <div class="form-group">
         {% if user.is_authenticated %}
             {% if is_subscribed %}
