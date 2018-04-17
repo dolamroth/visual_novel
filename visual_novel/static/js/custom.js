@@ -418,4 +418,30 @@ $(function () {
         return false;
     });
 
+    $('.translation-betalink-edit').on('click', function(e){
+        var edit_link = $( e.currentTarget );
+        var edit_row = edit_link.closest('.betalink-row-collapsed');
+        var approved = edit_row.attr("betalink_approved");
+        var rejected = edit_row.attr("betalink_rejected");
+        var title = edit_row.attr("betalink_title");
+        var url = edit_row.attr("betalink_url");
+        var comment = edit_row.attr("betalink_comment");
+        var example_row = $(".edit-betalink-example");
+        edit_row.replaceWith( example_row.clone(true, true) );
+        var translation_row_add = $(".betalink-row-expanded").first();
+        translation_row_add.trigger('create');
+        $.each(edit_row.prop('attributes'), function() {
+            translation_row_add.attr(this.name, this.value);
+        });
+        translation_row_add.find('.input_betalink_title').val( title );
+        translation_row_add.find('.input_betalink_url').val( url );
+        translation_row_add.find('.input_betalink_comment').val( comment );
+        translation_row_add
+            .removeClass("edit-betalink-example")
+            .removeClass("editing-row-hidden")
+            .removeClass("betalink-row-collapsed")
+            .addClass("betalink-row-expanded");
+        return false;
+    });
+
 });

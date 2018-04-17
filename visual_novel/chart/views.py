@@ -202,7 +202,7 @@ def chart_page(request, vn_alias):
         vn_context['genres'].append({
             'title': genre.genre.title,
             'description': genre.genre.description,
-            'link': ('/chart/genre' + genre.genre.alias),
+            'link': ('/chart/genre/' + genre.genre.alias),
             'has_description': not not genre.genre.description,
             'alias': genre.genre.alias
         })
@@ -214,7 +214,7 @@ def chart_page(request, vn_alias):
         vn_context['studios'].append({
             'title': studio.studio.title,
             'description': studio.studio.description,
-            'link': ('/chart/studio' + studio.studio.alias),
+            'link': ('/chart/studio/' + studio.studio.alias),
             'has_description': not not studio.studio.description,
             'alias': studio.studio.alias
         })
@@ -243,7 +243,7 @@ def chart_page(request, vn_alias):
         roles = [vnstaffs[i].role for i in range(len(vnstaffs))]
         vn_context['staffs'].append({
             'title': staff.title,
-            'link': ('/chart/staff' + staff.alias),
+            'link': ('/chart/staff/' + staff.alias),
             'description': staff.description,
             'has_description': not not staff.description,
             'roles': roles,

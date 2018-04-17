@@ -18,7 +18,7 @@
             {% for visual_novel in row %}
                 <div class="col-md-3 col-sm-6 hero-feature vn-block">
                     <div class="thumbnail vn-thumbnail">
-                        <a href="{{ visual_novel.chart_link }}"><img src="{{ visual_novel.poster_url }}" alt="Sengoku Rance" class="poster-img"></a>
+                        <a href="{{ visual_novel.chart_link }}"><img src="{{ visual_novel.poster_url }}" alt="{{ visual_novel.title|safe }}" class="poster-img"></a>
                         <div class="caption">
                             <h4 class="vn-header-title" title="{{ visual_novel.title|safe }}">{{ visual_novel.title|safe }}</h4>
                             <div class="vn-desc vn-desc-unwrap"><a href="#" class="vn-desc-enlarge">Развернуть описание</a></div>

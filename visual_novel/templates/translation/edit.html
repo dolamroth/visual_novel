@@ -157,7 +157,12 @@
         </thead>
         <tbody>
             {% for link in download_links %}
-                <tr>
+                <tr class="betalink-row-collapsed"
+                betalink_title="{{ link.title }}"
+                betalink_url="{{ link.url }}"
+                betalink_comment="{{ link.comment }}"
+                betalink_approved="{{ link.approved }}"
+                betalink_rejected="{{ link.rejected }}">
                     <td>
                         <strong>{{ link.title }}</strong><br />
                         <a href="{{ link.url }}" target="_blank">{{ link.url }}</a><br />
@@ -183,7 +188,10 @@
                     <a href="#" id="add-betalink">Добавить ссылку</a>
                 </td>
             </tr>
-            <tr class="edit-betalink-example editing-row-hidden">
+            <tr class="edit-betalink-example editing-row-hidden betalink-row-expanded">
+                {% include "translation/betalink_edit.html" %}
+            </tr>
+            <tr class="add-betalink-example editing-row-hidden">
                 {% include "translation/betalink_edit.html" %}
             </tr>
         </tbody>
