@@ -183,16 +183,20 @@
                     </td>
                 </tr>
             {% endfor %}
-            <tr class="add-betalink-example">
-                <td colspan="2">
-                    <a href="#" id="add-betalink">Добавить ссылку</a>
-                </td>
+            <tr class="add-betalink-row betalink-row-add-collapsed">
+                {% include "translation/betalink_add_example.html" %}
             </tr>
-            <tr class="edit-betalink-example editing-row-hidden betalink-row-expanded">
+            <tr class="edit-betalink-example editing-row-hidden">
                 {% include "translation/betalink_edit.html" %}
             </tr>
-            <tr class="add-betalink-example editing-row-hidden">
-                {% include "translation/betalink_edit.html" %}
+            <tr class="add-betalink-row add-betalink-example editing-row-hidden">
+                {% include "translation/betalink_add.html" %}
+            </tr>
+            <tr class="betallink-collapsed-edit-row-example editing-row-hidden">
+                {% include "translation/betalink_edit_example.html" %}
+            </tr>
+            <tr class="add-betalink-row betallink-collapsed-add-row-example editing-row-hidden">
+                {% include "translation/betalink_add_example.html" %}
             </tr>
         </tbody>
     </table>

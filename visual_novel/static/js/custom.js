@@ -93,6 +93,62 @@ jQuery.fn.extend({
             alert_div.html( alert_div.html() + error_html);
         }
         return this;
+    },
+    collapseBetaLinkEdit: function(){
+        var betalink_expanded_row = this;
+        var example_row = $(".betallink-collapsed-edit-row-example");
+        this.replaceWith( example_row.clone(true, true) );
+        var translation_row = $(".betallink-collapsed-edit-row-example").first();
+        translation_row.trigger('create');
+        $.each(betalink_expanded_row.prop('attributes'), function() {
+            translation_row.attr(this.name, this.value);
+        });
+        var new_html = "";
+        new_html += "<strong>" + translation_row.attr('betalink_title') + "</strong><br />";
+        new_html += "<a href="+translation_row.attr('betalink_url')+" target='_blank'>"+translation_row.attr('betalink_url')+"</a><br />";
+        new_html += translation_row.attr('betalink_comment') + "<br />";
+        var approved = (translation_row.attr('betalink_approved') === "True");
+        var rejected = (translation_row.attr('betalink_rejected') === "True");
+        if (approved){
+            new_html += "<span style=\"color:#118339\">Подтвержденная ссылка</span>";
+        } else {
+            if (rejected){
+                new_html += "<span style=\"color:#dc301f\">Ссылка отклонена</span>";
+            } else {
+                new_html += "<span style=\"color:#ffa121\">Ссылка не подтверждена</span>";
+            }
+        }
+        translation_row.find('td').first().html( new_html );
+        translation_row
+            .removeClass('betallink-collapsed-edit-row-example')
+            .removeClass('betalink-row-expanded')
+            .addClass('betalink-row-collapsed')
+            .removeClass('editing-row-hidden');
+        return translation_row;
+    },
+    collapseBetaLinkAdd: function(){
+        var betalink_add_row = this;
+        var example_row = $(".betallink-collapsed-add-row-example");
+        this.replaceWith( example_row.clone(true, true) );
+        var translation_row = $(".betallink-collapsed-add-row-example").first();
+        translation_row.trigger('create');
+        translation_row
+            .removeClass('betallink-collapsed-add-row-example')
+            .addClass('betalink-row-add-collapsed')
+            .removeClass("betalink-row-add-expanded")
+            .removeClass('editing-row-hidden');
+        return translation_row;
+    },
+    collapseBetaLinkAll: function(){
+        var expanded = $('.betalink-row-expanded');
+        if (expanded.length > 0){
+            expanded.first().collapseBetaLinkEdit();
+        }
+        expanded = $('.betalink-row-add-expanded');
+        if (expanded.length > 0){
+            expanded.first().collapseBetaLinkAdd();
+        }
+        return this;
     }
 });
 
@@ -420,6 +476,7 @@ $(function () {
 
     $('.translation-betalink-edit').on('click', function(e){
         var edit_link = $( e.currentTarget );
+        edit_link.collapseBetaLinkAll();
         var edit_row = edit_link.closest('.betalink-row-collapsed');
         var approved = edit_row.attr("betalink_approved");
         var rejected = edit_row.attr("betalink_rejected");
@@ -428,19 +485,49 @@ $(function () {
         var comment = edit_row.attr("betalink_comment");
         var example_row = $(".edit-betalink-example");
         edit_row.replaceWith( example_row.clone(true, true) );
-        var translation_row_add = $(".betalink-row-expanded").first();
-        translation_row_add.trigger('create');
+        var betalink_row_add = $(".edit-betalink-example").first();
+        betalink_row_add.trigger('create');
         $.each(edit_row.prop('attributes'), function() {
-            translation_row_add.attr(this.name, this.value);
+            betalink_row_add.attr(this.name, this.value);
         });
-        translation_row_add.find('.input_betalink_title').val( title );
-        translation_row_add.find('.input_betalink_url').val( url );
-        translation_row_add.find('.input_betalink_comment').val( comment );
-        translation_row_add
+        betalink_row_add.find('.input_betalink_title').val( title );
+        betalink_row_add.find('.input_betalink_url').val( url );
+        betalink_row_add.find('.input_betalink_comment').val( comment );
+        betalink_row_add
             .removeClass("edit-betalink-example")
             .removeClass("editing-row-hidden")
             .removeClass("betalink-row-collapsed")
             .addClass("betalink-row-expanded");
+        console.log(betalink_row_add);
+        return false;
+    });
+
+    $('.add-betalink-link').on('click', function(e){
+        var add_link = $( e.currentTarget );
+        var add_row = add_link.closest('tr.add-betalink-row');
+        add_row.collapseBetaLinkAll();
+        var example_row = $(".add-betalink-example");
+        add_row.replaceWith( example_row.clone(true, true) );
+        var betalink_row_add = $(".add-betalink-row").first();
+        betalink_row_add
+            .removeClass("add-betalink-example")
+            .removeClass("editing-row-hidden")
+            .removeClass("betalink-row-add-collapsed")
+            .addClass("betalink-row-add-expanded");
+        return false;
+    });
+
+    $(".btn-cancel-betalink").on('click', function(e){
+        var cancel_link = $( e.currentTarget );
+        var edit_row = cancel_link.closest(".betalink-row-expanded");
+        edit_row.collapseBetaLinkEdit();
+        return false;
+    });
+
+    $(".btn-cancel-add-betalink").on("click", function(e){
+        var cancel_link = $( e.currentTarget );
+        var add_row = cancel_link.closest(".betalink-row-add-expanded");
+        add_row.collapseBetaLinkAdd();
         return false;
     });
 
