@@ -1,4 +1,5 @@
 import vk_api
+
 from django.conf import settings
 
 

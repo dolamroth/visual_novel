@@ -309,7 +309,7 @@ def unsubscribe_statistics(request, vn_alias):
 def add_betalink(request, vn_alias):
 
     data = {
-        'translation_item_id': request.GET.get('translation_item_id', None),
+        'translation_item_id': request.GET.get('data_translation_item', None),
         'title': request.GET.get('title', None),
         'url': request.GET.get('url', None),
         'comment': request.GET.get('comment', ''),

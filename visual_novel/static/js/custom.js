@@ -13,6 +13,13 @@ window.translation_errors_codes = {
     "new_edited_second_pass": "Редактура 2"
 };
 
+window.betalink_errors_codes = {
+    "translation_item_id": "Уникальный идентификатор перевода",
+    "title": "Пользовательское название",
+    "url": "URL",
+    "comment": "Комментарий"
+};
+
 jQuery.fn.extend({
     collapseTC: function(){
         var example_row = $(".collapsed-row-example");
@@ -80,14 +87,14 @@ jQuery.fn.extend({
         $('tr.alert-row').remove();
         return this;
     },
-    spawnAlert: function(data){
+    spawnAlert: function(data, error_codes){
         var alert_div = this.find('.alert-text-div');
         alert_div
             .text( data['responseJSON']['message'] );
         if (data['responseJSON']['errors']){
             var error_html = "<ul>";
             $.each(data['responseJSON']['errors'], function(key, value){
-                error_html += ('<li>Поле "' + (window.translation_errors_codes)[key] + '": ' + value + '</li>');
+                error_html += ('<li>Поле "' + error_codes[key] + '": ' + value + '</li>');
             });
             error_html += "</ul>";
             alert_div.html( alert_div.html() + error_html);
@@ -269,7 +276,7 @@ $(function () {
                     var alert_example = $('.alert-row-example');
                     translation_row.before( alert_example.clone(true, true) );
                     var alert_row = translation_row.prev();
-                    alert_row.spawnAlert(data);
+                    alert_row.spawnAlert(data, window.translation_errors_codes);
                     alert_row.find('div')
                         .fadeIn();
                     alert_row
@@ -350,7 +357,7 @@ $(function () {
                     var alert_example = $('.alert-row-example');
                     translation_row.before( alert_example.clone(true, true) );
                     var alert_row = translation_row.prev();
-                    alert_row.spawnAlert(data);
+                    alert_row.spawnAlert(data, window.translation_errors_codes);
                     alert_row.find('div')
                         .fadeIn();
                     alert_row
@@ -528,6 +535,40 @@ $(function () {
         var cancel_link = $( e.currentTarget );
         var add_row = cancel_link.closest(".betalink-row-add-expanded");
         add_row.collapseBetaLinkAdd();
+        return false;
+    });
+
+    $(".btn-save-add-betalink").on('click', function(e){
+        var add_link = $( e.currentTarget );
+        var add_row = add_link.closest(".betalink-row-add-expanded");
+        var data = {};
+        data['data_translation_item'] = parseInt(add_row.attr('data_translation_item'));
+        data['title'] = add_row.find('.input_betalink_title').val();
+        data['url'] = add_row.find('.input_betalink_url').val();
+        data['comment'] = add_row.find('.input_betalink_comment').val();
+
+        console.log(data);
+
+        $.ajax({
+            url: add_link.attr('href'),
+            method: 'GET',
+            type: 'json',
+            data: data
+        }).always(function(data){
+            if (data['status'] && (data['status'] !== 200)){
+                var alert_example = $('.betalink-alert-row-example');
+                add_row.before( alert_example.clone(true, true) );
+                var alert_row = add_row.prev();
+                alert_row.spawnAlert(data, window.betalink_errors_codes);
+                alert_row.find('div')
+                    .fadeIn();
+                alert_row
+                    .removeClass('betalink-alert-row-example')
+                    .addClass('alert-row')
+                    .removeClass('editing-row-hidden');
+            }
+        });
+
         return false;
     });
 

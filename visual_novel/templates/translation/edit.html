@@ -162,7 +162,8 @@
                 betalink_url="{{ link.url }}"
                 betalink_comment="{{ link.comment }}"
                 betalink_approved="{{ link.approved }}"
-                betalink_rejected="{{ link.rejected }}">
+                betalink_rejected="{{ link.rejected }}"
+                data_translation_item="{{ translation_item }}">
                     <td>
                         <strong>{{ link.title }}</strong><br />
                         <a href="{{ link.url }}" target="_blank">{{ link.url }}</a><br />
@@ -183,20 +184,29 @@
                     </td>
                 </tr>
             {% endfor %}
-            <tr class="add-betalink-row betalink-row-add-collapsed">
+            <tr class="add-betalink-row betalink-row-add-collapsed" data_translation_item="{{ translation_item }}">
                 {% include "translation/betalink_add_example.html" %}
             </tr>
-            <tr class="edit-betalink-example editing-row-hidden">
+            <tr class="edit-betalink-example editing-row-hidden" data_translation_item="{{ translation_item }}">
                 {% include "translation/betalink_edit.html" %}
             </tr>
-            <tr class="add-betalink-row add-betalink-example editing-row-hidden">
+            <tr class="add-betalink-row add-betalink-example editing-row-hidden" data_translation_item="{{ translation_item }}">
                 {% include "translation/betalink_add.html" %}
             </tr>
-            <tr class="betallink-collapsed-edit-row-example editing-row-hidden">
+            <tr class="betallink-collapsed-edit-row-example editing-row-hidden" data_translation_item="{{ translation_item }}">
                 {% include "translation/betalink_edit_example.html" %}
             </tr>
-            <tr class="add-betalink-row betallink-collapsed-add-row-example editing-row-hidden">
+            <tr class="add-betalink-row betallink-collapsed-add-row-example editing-row-hidden" data_translation_item="{{ translation_item }}">
                 {% include "translation/betalink_add_example.html" %}
+            </tr>
+            <tr class="editing-row-hidden betalink-alert-row-example">
+                <td>
+                    <div class="alert alert-danger alert alert-success alert-dismissable fade in">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <span class="alert-text-div"></span>
+                    </div>
+                </td>
+                <td></td>
             </tr>
         </tbody>
     </table>

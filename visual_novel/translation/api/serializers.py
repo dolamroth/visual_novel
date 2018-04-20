@@ -45,6 +45,7 @@ class StatisticsComment(serializers.Serializer):
 
 
 class BetaLinkSerializer(serializers.Serializer):
+    translation_item_id = serializers.IntegerField(min_value=1)
     title = serializers.CharField(min_length=1, max_length=50)
-    comment = serializers.CharField(max_length=2000)
-    comment = serializers.CharField(min_length=1, max_length=200)
+    comment = serializers.CharField(max_length=2000, allow_blank=True)
+    url = serializers.CharField(min_length=1, max_length=200)

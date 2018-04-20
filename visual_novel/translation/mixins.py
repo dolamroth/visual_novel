@@ -68,8 +68,7 @@ class ParentExistsValidator(object):
 
 class BetaLinkUrlValidator(object):
     def validate_betalink_url(self, url):
-        val = URLValidator(verify_exists=True)
         try:
-            val(url)
+            URLValidator()(url)
         except ValidationError:
             raise InvalidBetaLinkUrl()
