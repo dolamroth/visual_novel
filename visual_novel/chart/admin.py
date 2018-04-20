@@ -5,6 +5,8 @@ from .models import ChartItem, ChartItemScreenshot
 
 class ScreenshotInline(admin.TabularInline):
     model = ChartItemScreenshot
+    fields = ('is_published', 'title', 'image', 'image_tag', 'order')
+    readonly_fields = ('image_tag',)
     extra = 3
 
 

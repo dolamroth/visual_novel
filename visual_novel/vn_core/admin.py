@@ -26,9 +26,12 @@ class StaffInline(admin.TabularInline):
 class VisualNovelAdmin(admin.ModelAdmin):
     inlines = (GenreInline, TagInline, StudioInline, StaffInline, )
     list_display = (
-        'title', 'is_published', 'alternative_title', 'photo', 'description', 'date_of_release', 'longevity',
+        'title', 'is_published', 'alternative_title', 'photo_tag', 'description', 'date_of_release', 'longevity',
         'vndb_id', 'steam_link', 'alias'
     )
+    fields = ('title', 'photo_tag', 'photo', 'alternative_title', 'description', 'date_of_release', 'vndb_id',
+              'steam_link', 'longevity', 'alias', 'rate', 'popularity', 'vote_count')
+    readonly_fields = ['photo_tag']
 
 
 admin.site.register(VisualNovel, VisualNovelAdmin)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import format_html
 
 from core.models import PublishModel
 from vn_core.models import VisualNovel, VNScreenshot
@@ -29,4 +30,10 @@ class ChartItemScreenshot(VNScreenshot):
         if self.title:
             return self.title
         return 'Скриншот для {}'.format(self.item.visual_novel.title)
+
+    def image_tag(self):
+        return format_html('<img src="%s" width=200 height=150 />' % self.image.url if self.image else '')
+
+    image_tag.short_description = 'Фотография'
+    image_tag.allow_tags = True
 
