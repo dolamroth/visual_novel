@@ -12,7 +12,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-12" style="margin-bottom: 16px;">
+        <div class="col-lg-6" style="margin-bottom: 16px;">
             <h4>Мои подписки на статистику переводов</h4>
             {% if has_subscriptions %}
             <p><ul>{% for translation in subscriptions %}
@@ -21,6 +21,31 @@
             {% else %}
             <p>Список подписок пуст.</p>
             {% endif %}
+        </div>
+        <div class="col-lg-6" style="margin-bottom: 16px;">
+            <form method="post">
+                {% csrf_token %}
+
+                <fieldset>
+                    <legend>Дни рассылки</legend>
+                    <label for="distribution-time">Время рассылки: </label>
+                    <input id="distribution-time" type="time" name="time" value="{{distribution_time}}"><br />
+                    {% for day in weekdays%}
+                    {% if day.value %}
+                    <input type="checkbox" name="{{day.name}}" value="{{day.value}}" checked/>{{day.label}}<br />
+                    {% else %}
+                    <input type="checkbox" name="{{day.name}}" value="{{day.value}}"/>{{day.label}}<br />
+                    {% endif %}
+                    {% endfor %}
+                </fieldset>
+                <label for="distribution-check">Уведомления о рассылке: </label>
+                {%if distribution%}
+                    <input id="distribution-check" type="checkbox" name="distribution" value="True" checked/><br />
+                {% else %}
+                    <input id="distribution-check" type="checkbox" name="distribution" value="False"/><br />
+                {% endif %}
+                <input type="submit" value="Применить" />
+            </form>
         </div>
     </div>
 

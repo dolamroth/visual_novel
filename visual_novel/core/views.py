@@ -76,10 +76,6 @@ def account_activation_sent(request):
 def profile_page(request, username):
     context = dict()
     user = request.user
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        pass
     context['username'] = username
 
     context['moderated_translations'] = list()
@@ -107,9 +103,27 @@ def profile_page(request, username):
             'alias': visual_novel.alias,
             'title': visual_novel.title
         })
+
+    weekdays_items = profile.weekdays.items()
     context['has_subscriptions'] = (len(context['subscriptions']) > 0)
+    if request.method == 'POST':
+        profile.send_time = request.POST['time']
+        print(request.POST['time'], type(request.POST['time']))
+        profile.send_distributions = request.POST.get('distribution', False)
+        ctrl_summ = 0
+        for i in range(len(weekdays_items)):
+            if request.POST.get(weekdays_items[i][0], False):
+                ctrl_summ += 2**i
+        profile.weekdays = ctrl_summ
+        profile.save()
+
+    weekdays = list()
+    weekdays_items = profile.weekdays.items()
+    weekdays_labels = profile.weekdays._labels
+    for i in range(len(weekdays_items)):
+        weekdays.append({'name': weekdays_items[i][0], 'value': weekdays_items[i][1],
+                         'label': weekdays_labels[i]})
+    context['weekdays'] = weekdays
     context['distribution_time'] = profile.send_time
     context['distribution'] = profile.send_distributions
-    context['send_days'] = profile.send_days
-
     return render(request, 'pages/profile.html', context)
