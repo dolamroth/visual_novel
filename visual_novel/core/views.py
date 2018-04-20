@@ -76,6 +76,10 @@ def account_activation_sent(request):
 def profile_page(request, username):
     context = dict()
     user = request.user
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        pass
     context['username'] = username
 
     context['moderated_translations'] = list()
@@ -104,5 +108,8 @@ def profile_page(request, username):
             'title': visual_novel.title
         })
     context['has_subscriptions'] = (len(context['subscriptions']) > 0)
+    context['distribution_time'] = profile.send_time
+    context['distribution'] = profile.send_distributions
+    context['send_days'] = profile.send_days
 
     return render(request, 'pages/profile.html', context)

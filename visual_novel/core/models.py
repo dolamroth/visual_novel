@@ -1,3 +1,6 @@
+from bitfield import BitField
+import datetime
+
 from django.db import models
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
@@ -42,6 +45,12 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE)
     email_confirmed = models.BooleanField(default=False)
+    send_distributions = models.BooleanField(verbose_name='Отправлять рассылку', default=False)
+    send_time = models.TimeField(verbose_name='Время рассылки', default=datetime.time(10, 30))
+    weekdays = BitField(verbose_name='Битовый код дней рассылки',
+                        flags=(('monday', 'Понедельник'), ('tuesday', 'Вторник'), ('wednesday', 'Среда'),
+                               ('thursday', 'Четверг'), ('friday', 'Пятница'), ('saturday', 'Суббота'),
+                               ('sunday', 'Воскреснье')), default=127)
 
     class Meta:
         db_table = 'user_profile'
@@ -58,6 +67,7 @@ class Profile(models.Model):
     def is_superuser(self):
         return self.user.is_superuser
     is_superuser.short_description = 'Суперпользователь'
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
