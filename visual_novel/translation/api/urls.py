@@ -15,4 +15,6 @@ urlpatterns = [
          translation_api_views.subscribe_statistics, name='subscribe'),
     path(r'<str:vn_alias>/unsubscribe',
          translation_api_views.unsubscribe_statistics, name='subscribe'),
+    path(r'<str:vn_alias>/addbetalink',
+         translation_api_views.add_betalink, name='add_beta_link'),
 ]

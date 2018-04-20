@@ -42,3 +42,9 @@ class StatisticsDescription(serializers.Serializer):
 
 class StatisticsComment(serializers.Serializer):
     comment = serializers.CharField(max_length=2000)
+
+
+class BetaLinkSerializer(serializers.Serializer):
+    title = serializers.CharField(min_length=1, max_length=50)
+    comment = serializers.CharField(max_length=2000)
+    comment = serializers.CharField(min_length=1, max_length=200)

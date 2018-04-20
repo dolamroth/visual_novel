@@ -1,0 +1,1 @@
+Добавлена новая ссылка на патч: {{ domain }}/admin/translation/translationbetalink/{{ betalink_id }}/change/

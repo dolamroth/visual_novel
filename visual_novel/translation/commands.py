@@ -2,16 +2,21 @@ import arrow
 
 from mptt.exceptions import InvalidMove
 
+from django.conf import settings
+from django.template.loader import render_to_string
+
 from core.commands import Command
+from core.vk_api import post_to_user
 
 from .mixins import (
     TranslationChapterExistsValidator,
     TranslationExistsValidator,
     InputNumberValidator,
     ParentExistsValidator,
+    BetaLinkUrlValidator
 )
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
-from .models import TranslationStatisticsChapter
+from .models import TranslationStatisticsChapter, TranslationBetaLink
 
 
 class EditTranslationPartChapter(
@@ -218,3 +223,35 @@ class DeleteTranslationChapter(
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
         self.validate_chapter_exists(chapter_id=self.translation_chapter_id, translation_item=self.translation_item)
+
+
+class AddBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, Command):
+    """
+    :raises TranslationNotFound: Raises if translation item not found.
+    :raises InvalidBetaLinkUrl: Raises if betalink is malformed.
+    """
+    def __init__(self, data):
+        self.translation_item_id = data['translation_item_id']
+        self.title = data['title']
+        self.url = data['url']
+        self.comment = data['comment']
+
+    def execute_validated(self):
+        beta_link, _ = TranslationBetaLink.objects.get_or_create(
+            title=self.title,
+            url=self.url,
+            comment=self.comment,
+            translation_item=self.translation_item
+        )
+        post_to_user(
+            settings.VK_ADMIN_LOGIN,
+            render_to_string(
+                'translation/includes/approve_link.txt', {
+                    'betalink_id': beta_link.id,
+                    'domain': settings.VN_HTTP_DOMAIN
+                })
+        )
+
+    def validate(self):
+        self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        self.validate_betalink_url(self.url)
