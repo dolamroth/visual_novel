@@ -79,8 +79,12 @@ class TranslationStatisticsChapter(MPTTModel):
 class TranslationBetaLink(PublishModel):
     title = models.CharField(max_length=50, default='')
     url = models.CharField(max_length=200, default='')
-    comment = models.TextField(max_length=2000, default='')
+    comment = models.TextField(max_length=2000, default='', null=True, blank=True)
     translation_item = models.ForeignKey('TranslationItem', on_delete=models.PROTECT, null=True, blank=True)
+    approved = models.BooleanField(verbose_name="Подтверждена", default=False)
+    rejected = models.BooleanField(verbose_name="Отклонена", default=False)
+    last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
+                                       auto_now_add=True, null=True, blank=True)
 
     class Meta:
         db_table = 'statistics_betalink'

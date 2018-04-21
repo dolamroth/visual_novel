@@ -5,7 +5,7 @@ from django.utils.decorators import decorator_from_middleware
 from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
-from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription
+from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription, TranslationBetaLink
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -53,6 +53,13 @@ def edit_statistics(request, vn_alias):
             'id': item.id,
             'title': item.select_like_statistics_name()
         })
+
+    context['download_links'] = [
+        d for d in TranslationBetaLink.objects.filter(
+            is_published=True,
+            translation_item=translation_item
+        ).values('id', 'title', 'url', 'comment', 'approved', 'rejected')
+    ]
 
     context['pictures_statistics'] = statistics.pictures_statistics
     context['technical_statistics'] = statistics.technical_statistics
@@ -132,6 +139,16 @@ def translation_item_view(request, vn_alias):
     context['translated_perc'] = "{0:.2f}%".format(base_node.translated / base_node.total_rows * 100.0)
     context['edited_first_pass_perc'] = "{0:.2f}%".format(base_node.edited_first_pass / base_node.total_rows * 100.0)
     context['edited_second_pass_perc'] = "{0:.2f}%".format(base_node.edited_second_pass / base_node.total_rows * 100.0)
+
+    context['download_links'] = [
+        d for d in TranslationBetaLink.objects.filter(
+            is_published=True,
+            translation_item=translation,
+            approved=True,
+            rejected=False
+        ).values('id', 'title', 'url', 'comment', 'approved', 'rejected')
+    ]
+    context['has_download_links'] = (len(context['download_links']) > 0)
 
     all_items = TranslationStatisticsChapter.objects.filter(
         tree_id=statistics.tree_id,

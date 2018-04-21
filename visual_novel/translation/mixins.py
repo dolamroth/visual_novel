@@ -1,7 +1,11 @@
-from .models import TranslationItem, TranslationStatisticsChapter
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
+from .models import TranslationItem, TranslationStatisticsChapter, TranslationBetaLink
 
 from .errors import (
-    TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent
+    TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl,
+    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist
 )
 
 
@@ -10,6 +14,8 @@ class TranslationExistsValidator(object):
         try:
             return TranslationItem.objects.get(
                 id=translation_item_id,
+                visual_novel__is_published=True,
+                is_published=True
             )
         except TranslationItem.DoesNotExist:
             raise TranslationNotFound()
@@ -59,3 +65,28 @@ class ParentExistsValidator(object):
         if (not parent.is_chapter) and (move_to in ['first-child', 'last-child']):
             raise InvalidMoveParent()
         return parent
+
+
+class BetaLinkUrlValidator(object):
+    def validate_betalink_url(self, url):
+        try:
+            URLValidator()(url)
+        except ValidationError:
+            raise InvalidBetaLinkUrl()
+
+
+class BetaLinkUrlUniqueValidator(object):
+    def validate_betalink_url_unique(self, id, url):
+        if TranslationBetaLink.objects.filter(
+            url=url,
+            is_published=True
+        ).exclude(id=id).exists():
+            raise BetaLinkUrlAlreadyExists()
+
+
+class BetaLinkExistsValidator(object):
+    def validate_betalink_exists(self, id):
+        try:
+            return TranslationBetaLink.objects.get(id=id)
+        except TranslationBetaLink.DoesNotExist:
+            raise BetaLinkDoesNotExist()

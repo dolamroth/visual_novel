@@ -13,6 +13,13 @@ window.translation_errors_codes = {
     "new_edited_second_pass": "Редактура 2"
 };
 
+window.betalink_errors_codes = {
+    "translation_item_id": "Уникальный идентификатор перевода",
+    "title": "Пользовательское название",
+    "url": "URL",
+    "comment": "Комментарий"
+};
+
 jQuery.fn.extend({
     collapseTC: function(){
         var example_row = $(".collapsed-row-example");
@@ -80,17 +87,73 @@ jQuery.fn.extend({
         $('tr.alert-row').remove();
         return this;
     },
-    spawnAlert: function(data){
+    spawnAlert: function(data, error_codes){
         var alert_div = this.find('.alert-text-div');
         alert_div
             .text( data['responseJSON']['message'] );
         if (data['responseJSON']['errors']){
             var error_html = "<ul>";
             $.each(data['responseJSON']['errors'], function(key, value){
-                error_html += ('<li>Поле "' + (window.translation_errors_codes)[key] + '": ' + value + '</li>');
+                error_html += ('<li>Поле "' + error_codes[key] + '": ' + value + '</li>');
             });
             error_html += "</ul>";
             alert_div.html( alert_div.html() + error_html);
+        }
+        return this;
+    },
+    collapseBetaLinkEdit: function(){
+        var betalink_expanded_row = this;
+        var example_row = $(".betallink-collapsed-edit-row-example");
+        this.replaceWith( example_row.clone(true, true) );
+        var translation_row = $(".betallink-collapsed-edit-row-example").first();
+        translation_row.trigger('create');
+        $.each(betalink_expanded_row.prop('attributes'), function() {
+            translation_row.attr(this.name, this.value);
+        });
+        var new_html = "";
+        new_html += "<strong>" + translation_row.attr('betalink_title') + "</strong><br />";
+        new_html += "<a href="+translation_row.attr('betalink_url')+" target='_blank'>"+translation_row.attr('betalink_url')+"</a><br />";
+        new_html += translation_row.attr('betalink_comment') + "<br />";
+        var approved = (translation_row.attr('betalink_approved') === "True");
+        var rejected = (translation_row.attr('betalink_rejected') === "True");
+        if (approved){
+            new_html += "<span style=\"color:#118339\">Подтвержденная ссылка</span>";
+        } else {
+            if (rejected){
+                new_html += "<span style=\"color:#dc301f\">Ссылка отклонена</span>";
+            } else {
+                new_html += "<span style=\"color:#ffa121\">Ссылка не подтверждена</span>";
+            }
+        }
+        translation_row.find('td').first().html( new_html );
+        translation_row
+            .removeClass('betallink-collapsed-edit-row-example')
+            .removeClass('betalink-row-expanded')
+            .addClass('betalink-row-collapsed')
+            .removeClass('editing-row-hidden');
+        return translation_row;
+    },
+    collapseBetaLinkAdd: function(){
+        var betalink_add_row = this;
+        var example_row = $(".betallink-collapsed-add-row-example");
+        this.replaceWith( example_row.clone(true, true) );
+        var translation_row = $(".betallink-collapsed-add-row-example").first();
+        translation_row.trigger('create');
+        translation_row
+            .removeClass('betallink-collapsed-add-row-example')
+            .addClass('betalink-row-add-collapsed')
+            .removeClass("betalink-row-add-expanded")
+            .removeClass('editing-row-hidden');
+        return translation_row;
+    },
+    collapseBetaLinkAll: function(){
+        var expanded = $('.betalink-row-expanded');
+        if (expanded.length > 0){
+            expanded.first().collapseBetaLinkEdit();
+        }
+        expanded = $('.betalink-row-add-expanded');
+        if (expanded.length > 0){
+            expanded.first().collapseBetaLinkAdd();
         }
         return this;
     }
@@ -213,7 +276,7 @@ $(function () {
                     var alert_example = $('.alert-row-example');
                     translation_row.before( alert_example.clone(true, true) );
                     var alert_row = translation_row.prev();
-                    alert_row.spawnAlert(data);
+                    alert_row.spawnAlert(data, window.translation_errors_codes);
                     alert_row.find('div')
                         .fadeIn();
                     alert_row
@@ -294,7 +357,7 @@ $(function () {
                     var alert_example = $('.alert-row-example');
                     translation_row.before( alert_example.clone(true, true) );
                     var alert_row = translation_row.prev();
-                    alert_row.spawnAlert(data);
+                    alert_row.spawnAlert(data, window.translation_errors_codes);
                     alert_row.find('div')
                         .fadeIn();
                     alert_row
@@ -415,6 +478,185 @@ $(function () {
             location.reload();
         });
 
+        return false;
+    });
+
+    $('.translation-betalink-edit').on('click', function(e){
+        var edit_link = $( e.currentTarget );
+        edit_link.collapseBetaLinkAll().closeAlertRows();
+        var edit_row = edit_link.closest('.betalink-row-collapsed');
+        var approved = edit_row.attr("betalink_approved");
+        var rejected = edit_row.attr("betalink_rejected");
+        var title = edit_row.attr("betalink_title");
+        var url = edit_row.attr("betalink_url");
+        var comment = edit_row.attr("betalink_comment");
+        var example_row = $(".edit-betalink-example");
+        edit_row.replaceWith( example_row.clone(true, true) );
+        var betalink_row_add = $(".edit-betalink-example").first();
+        betalink_row_add.trigger('create');
+        $.each(edit_row.prop('attributes'), function() {
+            betalink_row_add.attr(this.name, this.value);
+        });
+        betalink_row_add.find('.input_betalink_title').val( title );
+        betalink_row_add.find('.input_betalink_url').val( url );
+        betalink_row_add.find('.input_betalink_comment').val( comment );
+        betalink_row_add
+            .removeClass("edit-betalink-example")
+            .removeClass("editing-row-hidden")
+            .removeClass("betalink-row-collapsed")
+            .addClass("betalink-row-expanded");
+        return false;
+    });
+
+    $('.add-betalink-link').on('click', function(e){
+        var add_link = $( e.currentTarget );
+        var add_row = add_link.closest('tr.add-betalink-row');
+        add_row.collapseBetaLinkAll().closeAlertRows();
+        var example_row = $(".add-betalink-example");
+        add_row.replaceWith( example_row.clone(true, true) );
+        var betalink_row_add = $(".add-betalink-row").first();
+        betalink_row_add
+            .removeClass("add-betalink-example")
+            .removeClass("editing-row-hidden")
+            .removeClass("betalink-row-add-collapsed")
+            .addClass("betalink-row-add-expanded");
+        return false;
+    });
+
+    $(".btn-cancel-betalink").on('click', function(e){
+        var cancel_link = $( e.currentTarget );
+        var edit_row = cancel_link.closest(".betalink-row-expanded");
+        edit_row.collapseBetaLinkEdit().closeAlertRows();
+        return false;
+    });
+
+    $(".btn-cancel-add-betalink").on("click", function(e){
+        var cancel_link = $( e.currentTarget );
+        var add_row = cancel_link.closest(".betalink-row-add-expanded");
+        add_row.collapseBetaLinkAdd().closeAlertRows();
+        return false;
+    });
+
+    $(".btn-save-add-betalink").on('click', function(e){
+        var add_link = $( e.currentTarget );
+        var add_row = add_link.closest(".betalink-row-add-expanded");
+        add_row.closeAlertRows();
+        var data = {};
+        data['data_translation_item'] = parseInt(add_row.attr('data_translation_item'));
+        data['title'] = add_row.find('.input_betalink_title').val();
+        data['url'] = add_row.find('.input_betalink_url').val();
+        data['comment'] = add_row.find('.input_betalink_comment').val();
+
+        $.ajax({
+            url: add_link.attr('href'),
+            method: 'GET',
+            type: 'json',
+            data: data
+        }).always(function(data){
+            if (data['status'] && (data['status'] !== 200)){
+                var alert_example = $('.betalink-alert-row-example');
+                add_row.before( alert_example.clone(true, true) );
+                var alert_row = add_row.prev();
+                alert_row.spawnAlert(data, window.betalink_errors_codes);
+                alert_row.find('div')
+                    .fadeIn();
+                alert_row
+                    .removeClass('betalink-alert-row-example')
+                    .addClass('alert-row')
+                    .removeClass('editing-row-hidden');
+            } else {
+                var return_data = data['data'];
+                var example_row = $(".edit-betalink-example");
+                add_row.before( example_row.clone(true, true) );
+                var new_added_row = add_row.prev();
+                new_added_row.trigger('create');
+                new_added_row.attr('betalink_title', return_data['title']);
+                new_added_row.attr('betalink_url', return_data['url']);
+                new_added_row.attr('betalink_comment', return_data['comment']);
+                new_added_row.attr('betalink_approved', return_data['approved']);
+                new_added_row.attr('betalink_rejected', return_data['rejected']);
+                new_added_row.attr('data_translation_item', return_data['translation_item_id']);
+                new_added_row.attr('betalink_id', return_data['betalink_id']);
+                new_added_row = new_added_row.collapseBetaLinkEdit().closeAlertRows();
+                add_row.collapseBetaLinkAdd();
+            }
+        });
+
+        return false;
+    });
+
+    $(".btn-save-betalink").on('click', function(e){
+        var edit_link = $( e.currentTarget );
+        var edit_row = edit_link.closest(".betalink-row-expanded");
+        edit_row.closeAlertRows();
+        var data = {};
+        data['data_translation_item'] = parseInt(edit_row.attr('data_translation_item'));
+        data['title'] = edit_row.find('.input_betalink_title').val();
+        data['url'] = edit_row.find('.input_betalink_url').val();
+        data['comment'] = edit_row.find('.input_betalink_comment').val();
+        data['betalink_id'] = parseInt(edit_row.attr('betalink_id'));
+        $.ajax({
+            url: edit_link.attr('href'),
+            method: 'GET',
+            type: 'json',
+            data: data
+        }).always(function(data){
+            if (data['status'] && (data['status'] !== 200)){
+                var alert_example = $('.betalink-alert-row-example');
+                edit_row.before( alert_example.clone(true, true) );
+                var alert_row = edit_row.prev();
+                alert_row.spawnAlert(data, window.betalink_errors_codes);
+                alert_row.find('div')
+                    .fadeIn();
+                alert_row
+                    .removeClass('betalink-alert-row-example')
+                    .addClass('alert-row')
+                    .removeClass('editing-row-hidden');
+            } else {
+                var return_data = data['data'];
+                edit_row.attr('betalink_title', return_data['title']);
+                edit_row.attr('betalink_url', return_data['url']);
+                edit_row.attr('betalink_comment', return_data['comment']);
+                edit_row.attr('betalink_approved', return_data['approved']);
+                edit_row.attr('betalink_rejected', return_data['rejected']);
+                edit_row.attr('data_translation_item', return_data['translation_item_id']);
+                edit_row = edit_row.collapseBetaLinkEdit().closeAlertRows();
+            }
+        });
+        return false;
+    });
+
+    $('.translation-betalink-delete-popup').on('click', function(e){
+        var delete_chapter_link = $( e.currentTarget );
+        var betalink_row = delete_chapter_link.closest('.betalink-row-collapsed');
+        betalink_row.closeAlertRows();
+        var item_id = betalink_row.attr('betalink_id');
+        var popup_window = $("#delete-betalink-popup");
+        popup_window.attr('data_id', item_id);
+    });
+
+    $('.translation-betalink-delete-popup').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        modal: true
+    });
+
+    $('.delete-betalink-btn').on('click', function(e){
+        var block = $("#delete-betalink-popup");
+        var data = {};
+        data['betalink_id'] = parseInt(block.attr('data_id'));
+        console.log(data);
+        block.closeAlertRows();
+        $.ajax({
+            url: '/api/translation/'+block.attr('data_alias')+'/deletebetalink',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            if (data['delete_results']){
+                location.reload();
+            }
+        });
         return false;
     });
 

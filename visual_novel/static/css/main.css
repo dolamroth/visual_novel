@@ -237,7 +237,7 @@ a.tooltip{
     display: none;
 }
 
-.btn-save-translation-chapter, .btn-new-translation-chapter{
+.btn-save-translation-chapter, .btn-new-translation-chapter, .btn-save-betalink{
     background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
     background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
@@ -246,7 +246,7 @@ a.tooltip{
     padding: 1px 8px !important;
 }
 
-.btn-cancel-translation-chapter, .btn-cancel-new-translation-chapter{
+.btn-cancel-translation-chapter, .btn-cancel-new-translation-chapter, .btn-cancel-betalink{
     background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
     background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);

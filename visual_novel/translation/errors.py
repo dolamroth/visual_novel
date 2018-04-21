@@ -31,3 +31,15 @@ class ParentDoesNotExist(TranslationError):
 
 class CannotBeSiblingOfBaseTreeNode(TranslationError):
     message = 'Главы или разделы не могут располагаться на том же уровне, что и раздел самого высокого уровня.'
+
+
+class InvalidBetaLinkUrl(TranslationError):
+    message = 'Не валидный URL.'
+
+
+class BetaLinkUrlAlreadyExists(TranslationError):
+    message = 'Ссылка с указанным URL уже существует.'
+
+
+class BetaLinkDoesNotExist(TranslationError):
+    message = 'Указанная ссылка не существует.'
