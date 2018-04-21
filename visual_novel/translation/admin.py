@@ -7,6 +7,10 @@ class TranslationBetaLinkInline(admin.TabularInline):
     model = TranslationBetaLink
     extra = 3
 
+    def get_queryset(self, request):
+        qs = super(TranslationBetaLinkInline, self).get_queryset(request)
+        return qs.filter(is_published=True)
+
 
 class TranslationItemAdmin(admin.ModelAdmin):
     inlines = (TranslationBetaLinkInline,)

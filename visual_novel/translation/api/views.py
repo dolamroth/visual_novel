@@ -9,11 +9,12 @@ from translation.middlewares import HasPermissionToEditVNMiddleware
 
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
-    DeleteTranslationChapter, ManageBetaLink
+    DeleteTranslationChapter, ManageBetaLink, DeleteBetaLink
 )
 from ..errors import (
     InvalidMoveToChildElement, TranslationNotFound, InvalidValueOnRowsQuantity, InvalidMoveParent,
-    CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists
+    CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists,
+    BetaLinkDoesNotExist
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
@@ -327,16 +328,37 @@ def manage_betalink(request, vn_alias):
         }, status=422)
 
     try:
-        approved, rejected = ManageBetaLink(serializer.data).execute()
-    except (TranslationNotFound, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists) as exc:
+        betalink_id, approved, rejected = ManageBetaLink(serializer.data).execute()
+    except (TranslationNotFound, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist) as exc:
         return Response(data={'message': exc.message}, status=422)
 
     return_data = {**serializer.data}
     return_data.pop('timezone', None)
     return_data['approved'] = "True" if approved else "False"
     return_data['rejected'] = "True" if rejected else "False"
+    return_data['betalink_id'] = betalink_id
 
     return Response(data={
         'message': 'Операция проведена успешно.',
         'data': return_data
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def delete_betalink(request, vn_alias):
+
+    data = {
+        'betalink_id': request.GET.get('betalink_id', 0),
+    }
+
+    try:
+        deleted_n = DeleteBetaLink(data).execute()
+    except BetaLinkDoesNotExist as exc:
+        return Response(data={'message': exc.message}, status=404)
+
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'delete_results': deleted_n
     }, status=200)

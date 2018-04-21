@@ -39,3 +39,7 @@ class InvalidBetaLinkUrl(TranslationError):
 
 class BetaLinkUrlAlreadyExists(TranslationError):
     message = 'Ссылка с указанным URL уже существует.'
+
+
+class BetaLinkDoesNotExist(TranslationError):
+    message = 'Указанная ссылка не существует.'

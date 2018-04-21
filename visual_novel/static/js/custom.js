@@ -576,6 +576,7 @@ $(function () {
                 new_added_row.attr('betalink_approved', return_data['approved']);
                 new_added_row.attr('betalink_rejected', return_data['rejected']);
                 new_added_row.attr('data_translation_item', return_data['translation_item_id']);
+                new_added_row.attr('betalink_id', return_data['betalink_id']);
                 new_added_row = new_added_row.collapseBetaLinkEdit().closeAlertRows();
                 add_row.collapseBetaLinkAdd();
             }
@@ -620,6 +621,40 @@ $(function () {
                 edit_row.attr('betalink_rejected', return_data['rejected']);
                 edit_row.attr('data_translation_item', return_data['translation_item_id']);
                 edit_row = edit_row.collapseBetaLinkEdit().closeAlertRows();
+            }
+        });
+        return false;
+    });
+
+    $('.translation-betalink-delete-popup').on('click', function(e){
+        var delete_chapter_link = $( e.currentTarget );
+        var betalink_row = delete_chapter_link.closest('.betalink-row-collapsed');
+        betalink_row.closeAlertRows();
+        var item_id = betalink_row.attr('betalink_id');
+        var popup_window = $("#delete-betalink-popup");
+        popup_window.attr('data_id', item_id);
+    });
+
+    $('.translation-betalink-delete-popup').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        modal: true
+    });
+
+    $('.delete-betalink-btn').on('click', function(e){
+        var block = $("#delete-betalink-popup");
+        var data = {};
+        data['betalink_id'] = parseInt(block.attr('data_id'));
+        console.log(data);
+        block.closeAlertRows();
+        $.ajax({
+            url: '/api/translation/'+block.attr('data_alias')+'/deletebetalink',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            if (data['delete_results']){
+                location.reload();
             }
         });
         return false;

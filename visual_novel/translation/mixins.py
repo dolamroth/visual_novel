@@ -5,7 +5,7 @@ from .models import TranslationItem, TranslationStatisticsChapter, TranslationBe
 
 from .errors import (
     TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl,
-    BetaLinkUrlAlreadyExists
+    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist
 )
 
 
@@ -77,5 +77,16 @@ class BetaLinkUrlValidator(object):
 
 class BetaLinkUrlUniqueValidator(object):
     def validate_betalink_url_unique(self, id, url):
-        if TranslationBetaLink.objects.filter(url=url).exclude(id=id).exists():
+        if TranslationBetaLink.objects.filter(
+            url=url,
+            is_published=True
+        ).exclude(id=id).exists():
             raise BetaLinkUrlAlreadyExists()
+
+
+class BetaLinkExistsValidator(object):
+    def validate_betalink_exists(self, id):
+        try:
+            return TranslationBetaLink.objects.get(id=id)
+        except TranslationBetaLink.DoesNotExist:
+            raise BetaLinkDoesNotExist()

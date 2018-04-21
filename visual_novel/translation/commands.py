@@ -14,7 +14,8 @@ from .mixins import (
     InputNumberValidator,
     ParentExistsValidator,
     BetaLinkUrlValidator,
-    BetaLinkUrlUniqueValidator
+    BetaLinkUrlUniqueValidator,
+    BetaLinkExistsValidator
 )
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
 from .models import TranslationStatisticsChapter, TranslationBetaLink
@@ -226,11 +227,14 @@ class DeleteTranslationChapter(
         self.validate_chapter_exists(chapter_id=self.translation_chapter_id, translation_item=self.translation_item)
 
 
-class ManageBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkUrlUniqueValidator, Command):
+class ManageBetaLink(
+    TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkUrlUniqueValidator, BetaLinkExistsValidator, Command
+):
     """
     :raises TranslationNotFound: Raises if translation item not found.
     :raises InvalidBetaLinkUrl: Raises if betalink is malformed.
     :raises BetaLinkUrlAlreadyExists: Raises if another betalink with specified url already exists.
+    :raises BetaLinkDoesNotExist: raises if betalink does not exist.
     """
     def __init__(self, data):
         self.translation_item_id = data['translation_item_id']
@@ -242,7 +246,11 @@ class ManageBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkU
 
     def execute_validated(self):
         new_url = False
+        # Additional check to reduce number of queries to database and to use PostgreSQL feature
+        # to put newly saved instances at the end of filtered list when selecting
+        changed = False
 
+        # New betalink
         if self.betalink_id == 0:
             new_url = True
             beta_link, _ = TranslationBetaLink.objects.get_or_create(
@@ -251,6 +259,7 @@ class ManageBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkU
                 comment=self.comment,
                 translation_item=self.translation_item
             )
+        # Already existing betalink
         else:
             beta_link = TranslationBetaLink.objects.get(id=self.betalink_id)
             if beta_link.url != self.url:
@@ -258,10 +267,14 @@ class ManageBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkU
                 beta_link.approved = False
                 beta_link.rejected = False
                 beta_link.last_update = arrow.utcnow().to(self.timezone).datetime
-            beta_link.url = self.url
-            beta_link.comment = self.comment
-            beta_link.title  = self.title
-            beta_link.save()
+                changed = True
+            if (beta_link.url != self.url) or (beta_link.comment != self.comment) or (beta_link.title != self.title):
+                beta_link.url = self.url
+                beta_link.comment = self.comment
+                beta_link.title = self.title
+                changed = True
+            if changed:
+                beta_link.save()
 
         if new_url:
             post_to_user(
@@ -273,9 +286,26 @@ class ManageBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkU
                     })
             )
 
-        return beta_link.approved, beta_link.rejected
+        return beta_link.id, beta_link.approved, beta_link.rejected
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        if self.betalink_id > 0:
+            self.betalink = self.validate_betalink_exists(self.betalink_id)
         self.validate_betalink_url(self.url)
         self.validate_betalink_url_unique(self.betalink_id, self.url)
+
+
+class DeleteBetaLink(BetaLinkExistsValidator, Command):
+    """
+    :raises BetaLinkDoesNotExist: raises if betalink does not exist.
+    """
+    def __init__(self, data):
+        self.betalink_id = data['betalink_id']
+
+    def execute_validated(self):
+        TranslationBetaLink.objects.get(id=self.betalink_id).delete(force=False)
+        return 1
+
+    def validate(self):
+        self.betalink = self.validate_betalink_exists(self.betalink_id)

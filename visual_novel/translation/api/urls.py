@@ -19,4 +19,6 @@ urlpatterns = [
          translation_api_views.manage_betalink, name='add_beta_link'),
     path(r'<str:vn_alias>/editbetalink',
          translation_api_views.manage_betalink, name='edit_beta_link'),
+    path(r'<str:vn_alias>/deletebetalink',
+         translation_api_views.delete_betalink, name='delete_beta_link'),
 ]
