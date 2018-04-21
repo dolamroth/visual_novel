@@ -1,10 +1,11 @@
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
-from .models import TranslationItem, TranslationStatisticsChapter
+from .models import TranslationItem, TranslationStatisticsChapter, TranslationBetaLink
 
 from .errors import (
-    TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl
+    TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl,
+    BetaLinkUrlAlreadyExists
 )
 
 
@@ -72,3 +73,9 @@ class BetaLinkUrlValidator(object):
             URLValidator()(url)
         except ValidationError:
             raise InvalidBetaLinkUrl()
+
+
+class BetaLinkUrlUniqueValidator(object):
+    def validate_betalink_url_unique(self, id, url):
+        if TranslationBetaLink.objects.filter(url=url).exclude(id=id).exists():
+            raise BetaLinkUrlAlreadyExists()

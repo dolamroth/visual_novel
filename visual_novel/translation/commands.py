@@ -13,7 +13,8 @@ from .mixins import (
     TranslationExistsValidator,
     InputNumberValidator,
     ParentExistsValidator,
-    BetaLinkUrlValidator
+    BetaLinkUrlValidator,
+    BetaLinkUrlUniqueValidator
 )
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
 from .models import TranslationStatisticsChapter, TranslationBetaLink
@@ -225,33 +226,56 @@ class DeleteTranslationChapter(
         self.validate_chapter_exists(chapter_id=self.translation_chapter_id, translation_item=self.translation_item)
 
 
-class AddBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, Command):
+class ManageBetaLink(TranslationExistsValidator, BetaLinkUrlValidator, BetaLinkUrlUniqueValidator, Command):
     """
     :raises TranslationNotFound: Raises if translation item not found.
     :raises InvalidBetaLinkUrl: Raises if betalink is malformed.
+    :raises BetaLinkUrlAlreadyExists: Raises if another betalink with specified url already exists.
     """
     def __init__(self, data):
         self.translation_item_id = data['translation_item_id']
         self.title = data['title']
         self.url = data['url']
         self.comment = data['comment']
+        self.betalink_id = data.get('betalink_id', 0)
+        self.timezone = data['timezone']
 
     def execute_validated(self):
-        beta_link, _ = TranslationBetaLink.objects.get_or_create(
-            title=self.title,
-            url=self.url,
-            comment=self.comment,
-            translation_item=self.translation_item
-        )
-        post_to_user(
-            settings.VK_ADMIN_LOGIN,
-            render_to_string(
-                'translation/includes/approve_link.txt', {
-                    'betalink_id': beta_link.id,
-                    'domain': settings.VN_HTTP_DOMAIN
-                })
-        )
+        new_url = False
+
+        if self.betalink_id == 0:
+            new_url = True
+            beta_link, _ = TranslationBetaLink.objects.get_or_create(
+                title=self.title,
+                url=self.url,
+                comment=self.comment,
+                translation_item=self.translation_item
+            )
+        else:
+            beta_link = TranslationBetaLink.objects.get(id=self.betalink_id)
+            if beta_link.url != self.url:
+                new_url = True
+                beta_link.approved = False
+                beta_link.rejected = False
+                beta_link.last_update = arrow.utcnow().to(self.timezone).datetime
+            beta_link.url = self.url
+            beta_link.comment = self.comment
+            beta_link.title  = self.title
+            beta_link.save()
+
+        if new_url:
+            post_to_user(
+                settings.VK_ADMIN_LOGIN,
+                render_to_string(
+                    'translation/includes/approve_link.txt', {
+                        'betalink_id': beta_link.id,
+                        'domain': settings.VN_HTTP_DOMAIN
+                    })
+            )
+
+        return beta_link.approved, beta_link.rejected
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
         self.validate_betalink_url(self.url)
+        self.validate_betalink_url_unique(self.betalink_id, self.url)

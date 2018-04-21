@@ -9,11 +9,11 @@ from translation.middlewares import HasPermissionToEditVNMiddleware
 
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
-    DeleteTranslationChapter, AddBetaLink
+    DeleteTranslationChapter, ManageBetaLink
 )
 from ..errors import (
     InvalidMoveToChildElement, TranslationNotFound, InvalidValueOnRowsQuantity, InvalidMoveParent,
-    CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl
+    CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
@@ -306,16 +306,17 @@ def unsubscribe_statistics(request, vn_alias):
 @api_view(['GET', 'POST', ])
 @decorator_from_middleware(IsAuthenticatedMiddleware)
 @decorator_from_middleware(HasPermissionToEditVNMiddleware)
-def add_betalink(request, vn_alias):
+def manage_betalink(request, vn_alias):
 
     data = {
         'translation_item_id': request.GET.get('data_translation_item', None),
         'title': request.GET.get('title', None),
         'url': request.GET.get('url', None),
         'comment': request.GET.get('comment', ''),
+        'betalink_id': request.GET.get('betalink_id', 0),
     }
 
-    serializer = BetaLinkSerializer(data=data)
+    serializer = BetaLinkSerializer(data=data, context={'user': request.user})
 
     try:
         serializer.is_valid(raise_exception=True)
@@ -326,11 +327,14 @@ def add_betalink(request, vn_alias):
         }, status=422)
 
     try:
-        AddBetaLink(data).execute()
-    except (TranslationNotFound, InvalidBetaLinkUrl) as exc:
+        approved, rejected = ManageBetaLink(serializer.data).execute()
+    except (TranslationNotFound, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists) as exc:
         return Response(data={'message': exc.message}, status=422)
 
     return_data = {**serializer.data}
+    return_data.pop('timezone', None)
+    return_data['approved'] = "True" if approved else "False"
+    return_data['rejected'] = "True" if rejected else "False"
 
     return Response(data={
         'message': 'Операция проведена успешно.',

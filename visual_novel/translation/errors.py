@@ -35,3 +35,7 @@ class CannotBeSiblingOfBaseTreeNode(TranslationError):
 
 class InvalidBetaLinkUrl(TranslationError):
     message = 'Не валидный URL.'
+
+
+class BetaLinkUrlAlreadyExists(TranslationError):
+    message = 'Ссылка с указанным URL уже существует.'

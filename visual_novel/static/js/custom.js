@@ -483,7 +483,7 @@ $(function () {
 
     $('.translation-betalink-edit').on('click', function(e){
         var edit_link = $( e.currentTarget );
-        edit_link.collapseBetaLinkAll();
+        edit_link.collapseBetaLinkAll().closeAlertRows();
         var edit_row = edit_link.closest('.betalink-row-collapsed');
         var approved = edit_row.attr("betalink_approved");
         var rejected = edit_row.attr("betalink_rejected");
@@ -505,14 +505,13 @@ $(function () {
             .removeClass("editing-row-hidden")
             .removeClass("betalink-row-collapsed")
             .addClass("betalink-row-expanded");
-        console.log(betalink_row_add);
         return false;
     });
 
     $('.add-betalink-link').on('click', function(e){
         var add_link = $( e.currentTarget );
         var add_row = add_link.closest('tr.add-betalink-row');
-        add_row.collapseBetaLinkAll();
+        add_row.collapseBetaLinkAll().closeAlertRows();
         var example_row = $(".add-betalink-example");
         add_row.replaceWith( example_row.clone(true, true) );
         var betalink_row_add = $(".add-betalink-row").first();
@@ -527,27 +526,26 @@ $(function () {
     $(".btn-cancel-betalink").on('click', function(e){
         var cancel_link = $( e.currentTarget );
         var edit_row = cancel_link.closest(".betalink-row-expanded");
-        edit_row.collapseBetaLinkEdit();
+        edit_row.collapseBetaLinkEdit().closeAlertRows();
         return false;
     });
 
     $(".btn-cancel-add-betalink").on("click", function(e){
         var cancel_link = $( e.currentTarget );
         var add_row = cancel_link.closest(".betalink-row-add-expanded");
-        add_row.collapseBetaLinkAdd();
+        add_row.collapseBetaLinkAdd().closeAlertRows();
         return false;
     });
 
     $(".btn-save-add-betalink").on('click', function(e){
         var add_link = $( e.currentTarget );
         var add_row = add_link.closest(".betalink-row-add-expanded");
+        add_row.closeAlertRows();
         var data = {};
         data['data_translation_item'] = parseInt(add_row.attr('data_translation_item'));
         data['title'] = add_row.find('.input_betalink_title').val();
         data['url'] = add_row.find('.input_betalink_url').val();
         data['comment'] = add_row.find('.input_betalink_comment').val();
-
-        console.log(data);
 
         $.ajax({
             url: add_link.attr('href'),
@@ -566,9 +564,64 @@ $(function () {
                     .removeClass('betalink-alert-row-example')
                     .addClass('alert-row')
                     .removeClass('editing-row-hidden');
+            } else {
+                var return_data = data['data'];
+                var example_row = $(".edit-betalink-example");
+                add_row.before( example_row.clone(true, true) );
+                var new_added_row = add_row.prev();
+                new_added_row.trigger('create');
+                new_added_row.attr('betalink_title', return_data['title']);
+                new_added_row.attr('betalink_url', return_data['url']);
+                new_added_row.attr('betalink_comment', return_data['comment']);
+                new_added_row.attr('betalink_approved', return_data['approved']);
+                new_added_row.attr('betalink_rejected', return_data['rejected']);
+                new_added_row.attr('data_translation_item', return_data['translation_item_id']);
+                new_added_row = new_added_row.collapseBetaLinkEdit().closeAlertRows();
+                add_row.collapseBetaLinkAdd();
             }
         });
 
+        return false;
+    });
+
+    $(".btn-save-betalink").on('click', function(e){
+        var edit_link = $( e.currentTarget );
+        var edit_row = edit_link.closest(".betalink-row-expanded");
+        edit_row.closeAlertRows();
+        var data = {};
+        data['data_translation_item'] = parseInt(edit_row.attr('data_translation_item'));
+        data['title'] = edit_row.find('.input_betalink_title').val();
+        data['url'] = edit_row.find('.input_betalink_url').val();
+        data['comment'] = edit_row.find('.input_betalink_comment').val();
+        data['betalink_id'] = parseInt(edit_row.attr('betalink_id'));
+        $.ajax({
+            url: edit_link.attr('href'),
+            method: 'GET',
+            type: 'json',
+            data: data
+        }).always(function(data){
+            if (data['status'] && (data['status'] !== 200)){
+                var alert_example = $('.betalink-alert-row-example');
+                edit_row.before( alert_example.clone(true, true) );
+                var alert_row = edit_row.prev();
+                alert_row.spawnAlert(data, window.betalink_errors_codes);
+                alert_row.find('div')
+                    .fadeIn();
+                alert_row
+                    .removeClass('betalink-alert-row-example')
+                    .addClass('alert-row')
+                    .removeClass('editing-row-hidden');
+            } else {
+                var return_data = data['data'];
+                edit_row.attr('betalink_title', return_data['title']);
+                edit_row.attr('betalink_url', return_data['url']);
+                edit_row.attr('betalink_comment', return_data['comment']);
+                edit_row.attr('betalink_approved', return_data['approved']);
+                edit_row.attr('betalink_rejected', return_data['rejected']);
+                edit_row.attr('data_translation_item', return_data['translation_item_id']);
+                edit_row = edit_row.collapseBetaLinkEdit().closeAlertRows();
+            }
+        });
         return false;
     });
 
