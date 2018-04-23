@@ -103,9 +103,9 @@ def profile_page(request, username):
             'alias': visual_novel.alias,
             'title': visual_novel.title
         })
+    context['has_subscriptions'] = (len(context['subscriptions']) > 0)
 
     weekdays_items = profile.weekdays.items()
-    context['has_subscriptions'] = (len(context['subscriptions']) > 0)
     if request.method == 'POST':
         profile.send_time = request.POST['time']
         print(request.POST['time'], type(request.POST['time']))
@@ -126,4 +126,5 @@ def profile_page(request, username):
     context['weekdays'] = weekdays
     context['distribution_time'] = profile.send_time
     context['distribution'] = profile.send_distributions
+
     return render(request, 'pages/profile.html', context)
