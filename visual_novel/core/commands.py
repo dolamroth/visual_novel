@@ -42,7 +42,6 @@ class ChangeUserSubsctiptionOptions(WeekdayValidator, IsSubscribedValidator, Tim
         profile.send_distributions = self.is_subscribed
         profile.weekdays = self.weekmap
         profile.save()
-        print(profile.__dict__)
         # TODO: refresh subscriptions in Celery Task
 
     def validate(self):

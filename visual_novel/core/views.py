@@ -114,7 +114,6 @@ def profile_page(request, username):
         ctrl_value *= 2
     context['weekdays'] = weekdays
     context['distribution_time'] = profile.send_time.isoformat()[:5]
-    print(context['distribution_time'])
     context['distribution'] = profile.send_distributions
 
     return render(request, 'pages/profile.html', context)
