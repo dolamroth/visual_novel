@@ -15,7 +15,6 @@ from .forms import CustomSignUpForm
 from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
-from .models import Profile
 
 
 def signup(request):
@@ -105,26 +104,17 @@ def profile_page(request, username):
         })
     context['has_subscriptions'] = (len(context['subscriptions']) > 0)
 
-    weekdays_items = profile.weekdays.items()
-    if request.method == 'POST':
-        profile.send_time = request.POST['time']
-        print(request.POST['time'], type(request.POST['time']))
-        profile.send_distributions = request.POST.get('distribution', False)
-        ctrl_summ = 0
-        for i in range(len(weekdays_items)):
-            if request.POST.get(weekdays_items[i][0], False):
-                ctrl_summ += 2**i
-        profile.weekdays = ctrl_summ
-        profile.save()
-
     weekdays = list()
     weekdays_items = profile.weekdays.items()
     weekdays_labels = profile.weekdays._labels
+    ctrl_value = 1
     for i in range(len(weekdays_items)):
-        weekdays.append({'name': weekdays_items[i][0], 'value': weekdays_items[i][1],
+        weekdays.append({'name': weekdays_items[i][0], 'value': ctrl_value, 'checked': weekdays_items[i][1],
                          'label': weekdays_labels[i]})
+        ctrl_value *= 2
     context['weekdays'] = weekdays
-    context['distribution_time'] = profile.send_time
+    context['distribution_time'] = profile.send_time.isoformat()[:5]
+    print(context['distribution_time'])
     context['distribution'] = profile.send_distributions
 
     return render(request, 'pages/profile.html', context)

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import json
+import datetime
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -216,3 +217,5 @@ VK_LOGIN = get_secret(section='VK', setting='LOGIN')
 VK_PASSWORD = get_secret(section='VK', setting='PASSWORD')
 VK_GROUP_ID = get_secret(section='VK', setting='GROUP_ID')
 VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
+
+DEFAULT_MAILING_SEND_TIME = datetime.time(10, 30)

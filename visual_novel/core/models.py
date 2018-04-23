@@ -10,6 +10,8 @@ from django.dispatch import receiver
 
 from timezone_field import TimeZoneField
 
+ALL_WEEKDAYS_BITMAP = 127
+
 
 class PublishQuerySet(QuerySet):
     def __init__(self, model=None, query=None, using=None):
@@ -46,11 +48,11 @@ class Profile(models.Model):
     timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE)
     email_confirmed = models.BooleanField(default=False)
     send_distributions = models.BooleanField(verbose_name='Отправлять рассылку', default=False)
-    send_time = models.TimeField(verbose_name='Время рассылки', default=datetime.time(10, 30))
+    send_time = models.TimeField(verbose_name='Время рассылки', default=settings.DEFAULT_MAILING_SEND_TIME)
     weekdays = BitField(verbose_name='Битовый код дней рассылки',
                         flags=(('monday', 'Понедельник'), ('tuesday', 'Вторник'), ('wednesday', 'Среда'),
                                ('thursday', 'Четверг'), ('friday', 'Пятница'), ('saturday', 'Суббота'),
-                               ('sunday', 'Воскреснье')), default=127)
+                               ('sunday', 'Воскресенье')), default=ALL_WEEKDAYS_BITMAP)
 
     class Meta:
         db_table = 'user_profile'

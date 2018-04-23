@@ -32,22 +32,19 @@
             {% endif %}
         </div>
         <div class="col-lg-6" style="margin-bottom: 16px;">
-            <form method="post">
-                {% csrf_token %}
-                <fieldset>
-                    <legend>Уведомления об обновлении статистики переводов</legend>
-                    <label for="distribution-time">Время рассылки</label>
-                    <input id="distribution-time" type="time" name="time" value="{{ distribution_time }}" class="form-control"><br />
-                    {% for day in weekdays %}
-                        <input type="checkbox" name="{{ day.name }}" value="{{ day.value }}"{% if day.value %} checked="checked"{% endif %} />&nbsp;{{ day.label }}<br />
-                    {% endfor %}
-                </fieldset><br />
+            <fieldset>
+                <legend>Уведомления об обновлении статистики переводов</legend>
+                <label for="distribution-time">Время рассылки</label>
+                <input id="distribution-time" type="time" name="time" value="{{ distribution_time }}" class="form-control"><br />
+                {% for day in weekdays %}
+                    <input type="checkbox" name="{{ day.name }}" value="{{ day.value }}"{% if day.checked %} checked="checked"{% endif %} class="weekday-checkbox" />&nbsp;{{ day.label }}<br />
+                {% endfor %}
+            </fieldset><br />
 
-                <input id="distribution-check" type="checkbox" name="distribution" {% if distribution %} checked="checked"{% endif %} />&nbsp;
-                <label for="distribution-check">Подписаться на рассылку</label><br /><br />
+            <input id="distribution-check" type="checkbox" name="distribution" {% if distribution %} checked="checked"{% endif %} />&nbsp;
+            <label for="distribution-check">Присылать уведомления об обновлении статистики переводов</label><br /><br />
 
-                <input type="submit" value="Применить" />
-            </form>
+            <input type="button" username="{{ username }}" value="Применить" class="form-control update-user-subscription-settings" />
         </div>
     </div>
 {% endblock %}

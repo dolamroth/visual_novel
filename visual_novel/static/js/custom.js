@@ -660,4 +660,26 @@ $(function () {
         return false;
     });
 
+    $('.update-user-subscription-settings').on('click', function(e){
+        var submit_link = $( e.currentTarget );
+        var weekdays = 0;
+        $.each( $(".weekday-checkbox:checked"), function(idx, val){ weekdays += parseInt(val.value) }  );
+        var is_subscribed = $('#distribution-check').prop('checked');
+        var time = $('#distribution-time').val();
+        var data = {
+            'weekmap': weekdays,
+            'is_subscribed': is_subscribed,
+            'time': time
+        };
+        $.ajax({
+            url: '/api/core/'+submit_link.attr('username')+'/subscriptions_edit',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            location.reload();
+        });
+        return false;
+    });
+
 });
