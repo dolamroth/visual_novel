@@ -1,5 +1,7 @@
-import pytz
 import datetime
+import os
+import pytz
+import uuid
 from itertools import chain
 
 from django.conf import settings
@@ -45,3 +47,14 @@ def offset_to_timezone(offset):
         (pytz.timezone(tz_name) for tz_name in get_prioritized_timezones()),
         key=lambda tz: abs(get_tz_offset(tz) - user_offset),
     )
+
+
+
+def get_directory_path(instance, filename, folder_name):
+    fileName, fileExtension = os.path.splitext(filename)
+    while True:
+        newFileName = str(uuid.uuid4()) + fileExtension
+        if os.path.isfile(os.path.join(folder_name, newFileName)):
+            continue
+        break
+    return os.path.join(folder_name, newFileName)

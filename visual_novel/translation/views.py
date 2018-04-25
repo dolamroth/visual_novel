@@ -6,6 +6,7 @@ from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
 from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription, TranslationBetaLink
+from .utils import statistics_name, select_like_statistics_name
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -39,7 +40,7 @@ def edit_statistics(request, vn_alias):
             'title': item.title.replace('"', '\''),
             'script_title': item.script_title.replace('"', '\''),
             'parent_id': 0 if not parent else parent.id,
-            'name': item.statistics_name().replace('"', '\''),
+            'name': statistics_name(item).replace('"', '\''),
             'is_editable': not not parent,
             'total_rows': item.total_rows,
             'translated': item.translated,
@@ -51,7 +52,7 @@ def edit_statistics(request, vn_alias):
         })
         context['move_to_list'].append({
             'id': item.id,
-            'title': item.select_like_statistics_name()
+            'title': select_like_statistics_name(item)
         })
 
     context['download_links'] = [
@@ -157,7 +158,7 @@ def translation_item_view(request, vn_alias):
 
     for item in all_items:
         context['items'].append({
-            'name': item.statistics_name(base_level=1).replace('"', '\''),
+            'name': statistics_name(item, base_level=1).replace('"', '\''),
             'total_rows': item.total_rows,
             'translated': item.translated,
             'edited_first_pass': item.edited_first_pass,
