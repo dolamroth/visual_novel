@@ -23,6 +23,13 @@ def screenshots_mini_directory_path(instance, filename):
     return get_directory_path(instance, filename, settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY)
 
 
+class VisualNovelQuerySet(models.query.QuerySet):
+    def delete(self):
+        for d in self:
+            d.delete_poster()
+        super(VisualNovelQuerySet, self).delete()
+
+
 class VisualNovel(PublishModel):
     title = models.CharField(verbose_name='название', max_length=256)
     alternative_title = models.CharField(verbose_name='альтернативные названия', max_length=500, default='')
@@ -42,6 +49,8 @@ class VisualNovel(PublishModel):
     rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
     popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
     vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
+
+    objects = VisualNovelQuerySet.as_manager()
 
     class Meta:
         db_table = 'vncore'
@@ -99,13 +108,9 @@ class VisualNovel(PublishModel):
                 vndb_socket_logout(sock)
         super(VisualNovel, self).save(*args, **kwargs)
 
-    def delete(self, force=True):
-        if force:
-            self.delete_poster()
-            super(VisualNovel, self).delete()
-        else:
-            self.is_published = False
-            super(VisualNovel, self).save()
+    def delete(self, *args, **kwargs):
+        self.delete_poster()
+        super(VisualNovel, self).delete(*args, **kwargs)
 
 
 class VNGenre(models.Model):
