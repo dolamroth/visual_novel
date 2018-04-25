@@ -5,8 +5,9 @@ from django.core.exceptions import PermissionDenied
 class IsAuthenticatedMiddleware(object):
     def process_request(self, request):
         user = request.user
+        if user.is_staff:
+            return None
         if not bool(user.is_authenticated) \
-                or not user.is_active \
                 or not hasattr(user, 'profile') \
                 or not bool(user.profile.email_confirmed):
             return HttpResponseRedirect("/login?next=" + request.path)

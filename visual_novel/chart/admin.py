@@ -7,6 +7,10 @@ class ScreenshotInline(admin.TabularInline):
     model = ChartItemScreenshot
     extra = 3
 
+    def get_queryset(self, request):
+        qs = super(ScreenshotInline, self).get_queryset(request)
+        return qs.exclude(image__exact='')
+
 
 class ChartItemAdmin(admin.ModelAdmin):
     inlines = (ScreenshotInline, )

@@ -17,6 +17,14 @@ class PublishModel(models.Model):
     class Meta:
         abstract = True
 
+    def publish(self):
+        self.is_published = True
+        super(PublishModel, self).save()
+
+    def unpublish(self):
+        self.is_published = False
+        super(PublishModel, self).save()
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
