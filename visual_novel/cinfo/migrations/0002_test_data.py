@@ -357,19 +357,56 @@ def add_staffs(apps, schema_editor):
     )
 
 
+def add_longevity_info(apps, schema_editor):
+    Longevity = apps.get_model('cinfo', 'Longevity')
+
+    very_short, _ = Longevity.objects.get_or_create(
+        title="очень короткая",
+        min_length = None,
+        max_length = 2,
+        alias='very-short'
+    )
+    short, _ = Longevity.objects.get_or_create(
+        title="короткая",
+        min_length=2,
+        max_length=10,
+        alias='short'
+    )
+    average, _ = Longevity.objects.get_or_create(
+        title="средняя",
+        min_length=10,
+        max_length=30,
+        alias='average'
+    )
+    long, _ = Longevity.objects.get_or_create(
+        title="длинная",
+        min_length=30,
+        max_length=50,
+        alias='long'
+    )
+    very_long, _ = Longevity.objects.get_or_create(
+        title="очень длинная",
+        min_length=50,
+        max_length=None,
+        alias='very-long'
+    )
+
+
 def create_data(apps, schema_editor):
     add_genres(apps, schema_editor)
     add_staff_roles(apps, schema_editor)
     add_staffs(apps, schema_editor)
     add_tags(apps, schema_editor)
     add_studios(apps, schema_editor)
+    add_longevity_info(apps, schema_editor)
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cinfo', '0008_add_alias_field'),
+        ('cinfo', '0001_new_cinfo_model'),
     ]
 
     operations = [
-        migrations.RunPython(create_data, migrations.RunPython.noop),
+	    migrations.RunPython(create_data, migrations.RunPython.noop),
     ]

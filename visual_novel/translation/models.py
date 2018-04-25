@@ -10,9 +10,9 @@ from vn_core.models import VisualNovel
 
 class TranslationStatistics(models.Model):
     tree_id = models.IntegerField(default=0)
-    pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='')
-    technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='')
-    comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='')
+    pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='', blank=True)
+    technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='', blank=True)
+    comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='', blank=True)
     last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
                                        auto_now_add=True, null=True, blank=True)
     total_rows = models.IntegerField(default=0, verbose_name='Всего строк')
@@ -28,8 +28,8 @@ class TranslationStatistics(models.Model):
 
 
 class TranslationStatisticsChapter(MPTTModel):
-    title = models.CharField(max_length=50, default='')
-    script_title = models.CharField(max_length=50, default='')
+    title = models.CharField(max_length=50, verbose_name='Пользовательское название')
+    script_title = models.CharField(max_length=50, verbose_name='Имя скрипта')
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
                             db_index=True, on_delete=models.CASCADE)
     is_chapter = models.BooleanField(default=False)
@@ -77,9 +77,9 @@ class TranslationStatisticsChapter(MPTTModel):
 
 
 class TranslationBetaLink(PublishModel):
-    title = models.CharField(max_length=50, default='')
-    url = models.CharField(max_length=200, default='')
-    comment = models.TextField(max_length=2000, default='', null=True, blank=True)
+    title = models.CharField(max_length=50, verbose_name="Название")
+    url = models.CharField(max_length=200, verbose_name="URL")
+    comment = models.TextField(max_length=2000, default='', blank=True, verbose_name="Комментарий")
     translation_item = models.ForeignKey('TranslationItem', on_delete=models.PROTECT, null=True, blank=True)
     approved = models.BooleanField(verbose_name="Подтверждена", default=False)
     rejected = models.BooleanField(verbose_name="Отклонена", default=False)

@@ -1,17 +1,16 @@
 from django.db import models
 from core.models import PublishModel
-from django.core.exceptions import ValidationError
 from notifications.service import send_email
 
 
 class Offer(PublishModel):
     name = models.CharField(verbose_name='название', blank=True, null=True, max_length=256, default='пользователь')
-    offer = models.TextField(verbose_name='предложение', max_length=5000, default='')
+    offer = models.TextField(verbose_name='предложение', max_length=5000, default='', blank=True)
     email = models.CharField(verbose_name='почта', max_length=256)
     is_considered = models.BooleanField(verbose_name='Рассмотрено', default=False)
     is_accepted = models.BooleanField(verbose_name='Принято', default=False)
     is_rejected = models.BooleanField(verbose_name='Отказано', default=False)
-    rejected_reasons = models.TextField(verbose_name='Причины отказа', max_length=5000, null=True, blank=True)
+    rejected_reasons = models.TextField(verbose_name='Причины отказа', max_length=5000, blank=True, default='')
     timestamp = models.DateTimeField(verbose_name='Время заявки', auto_now_add=True, editable=False)
 
     class Meta:

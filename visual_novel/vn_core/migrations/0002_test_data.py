@@ -1,9 +1,11 @@
+from __future__ import unicode_literals
+
 import datetime
 
 from django.db import migrations
 
 
-def add_test_visual_novel(apps, schema_editor):
+def add_test_visual_novels(apps, schema_editor):
     Genre = apps.get_model('cinfo', 'Genre')
     Tag = apps.get_model('cinfo', 'Tag')
     StaffRole = apps.get_model('cinfo', 'StaffRole')
@@ -71,6 +73,44 @@ def add_test_visual_novel(apps, schema_editor):
     VNStudio = apps.get_model('vn_core', 'VNStudio')
     VNStaff = apps.get_model('vn_core', 'VNStaff')
 
+    little_busters, _ = VisualNovel.objects.get_or_create(
+        title="Little busters!",
+        alternative_title="Маленькие проказники! / リトルバスターズ！",
+        description="""История повествует о Наоэ Рики, ученике старшей школы, в детстве лишившегося родителей и потерявшего веру в жизнь, но вновь обретшего её после знакомства с четырьмя ребятами, называвшими себя "Маленькие проказники". Общаясь и играя с ними, Рики смог пережить терзавшую его боль и вернуться к нормальной жизни. События новеллы происходят в предвыпускном одиннадцатом классе. Ребята по-прежнему дружны и наслаждаются школьной жизнью, но не за горами расставание... Чтобы провести последние школьные годы по полной, они решают сделать невероятное&nbsp;&#8211; собрать команду и сыграть в бейсбол!""",
+        date_of_release=datetime.date(2007, 9, 28),
+        vndb_id=5,
+        steam_link="http://store.steampowered.com/app/635940/",
+        alias="little-busters",
+        longevity=very_long
+    )
+
+    little_busters.save()
+
+    VNGenre = apps.get_model('vn_core', 'VNGenre')
+    VNTag = apps.get_model('vn_core', 'VNTag')
+    VNStudio = apps.get_model('vn_core', 'VNStudio')
+    VNStaff = apps.get_model('vn_core', 'VNStaff')
+
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=little_busters, genre=drama, weight=95)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=little_busters, genre=romance, weight=75)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=little_busters, genre=everyday_life, weight=60)
+    genre, _ = VNGenre.objects.get_or_create(visual_novel=little_busters, genre=comedy, weight=80)
+
+    tag, _ = VNTag.objects.get_or_create(visual_novel=little_busters, tag=nakige, weight=95)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=little_busters, tag=all_age, weight=10)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=little_busters, tag=adv, weight=0)
+    tag, _ = VNTag.objects.get_or_create(visual_novel=little_busters, tag=true_end, weight=20)
+
+    studio, _ = VNStudio.objects.get_or_create(visual_novel=little_busters, studio=visual_artskey, weight=100)
+
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=maeda_dzun, role=screenwriter, weight=100)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=maeda_dzun, role=composer, weight=60)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=orito_sindzi, role=composer, weight=80)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=hinou_itau, role=painter, weight=70)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=hinou_itau, role=chardiz, weight=65)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=tonokava_yto, role=screenwriter, weight=90)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=little_busters, staff=kagami_esihoki, role=screenwriter, weight=0)
+
     # Angel Beats!
     angel_beats, _ = VisualNovel.objects.get_or_create(
         title="Angel Beats! -1st beat-",
@@ -102,7 +142,8 @@ def add_test_visual_novel(apps, schema_editor):
     staff, _ = VNStaff.objects.get_or_create(visual_novel=angel_beats, staff=orito_sindzi, role=composer, weight=60)
     staff, _ = VNStaff.objects.get_or_create(visual_novel=angel_beats, staff=naga, role=chardiz, weight=50)
     staff, _ = VNStaff.objects.get_or_create(visual_novel=angel_beats, staff=kai, role=screenwriter, weight=80)
-    staff, _ = VNStaff.objects.get_or_create(visual_novel=angel_beats, staff=kagami_esihoki, role=screenwriter, weight=75)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=angel_beats, staff=kagami_esihoki, role=screenwriter,
+                                             weight=75)
 
     # Air
     air, _ = VisualNovel.objects.get_or_create(
@@ -199,7 +240,8 @@ def add_test_visual_novel(apps, schema_editor):
 
     studio, _ = VNStudio.objects.get_or_create(visual_novel=swan_song, studio=le_chocolat, weight=100)
 
-    staff, _ = VNStaff.objects.get_or_create(visual_novel=swan_song, staff=setoguchi_renya, role=screenwriter, weight=100)
+    staff, _ = VNStaff.objects.get_or_create(visual_novel=swan_song, staff=setoguchi_renya, role=screenwriter,
+                                             weight=100)
 
     # Forest
     forest, _ = VisualNovel.objects.get_or_create(
@@ -234,9 +276,10 @@ def add_test_visual_novel(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('vn_core', '0012_test-data-migration'),
+        ('vn_core', '0001_new_visual_novel_model'),
+        ('cinfo', '0002_test_data'),
     ]
 
     operations = [
-        migrations.RunPython(add_test_visual_novel, migrations.RunPython.noop),
+        migrations.RunPython(add_test_visual_novels, migrations.RunPython.noop),
     ]

@@ -1,4 +1,3 @@
-import uuid
 import os
 from PIL import Image
 
@@ -6,47 +5,30 @@ from django.conf import settings
 from django.db import models
 
 from core.models import PublishModel
+from core.utils import get_directory_path
 from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
 from .utils import vndb_socket_login, vndb_socket_logout, vndb_socket_update_vn
 
 
 def posters_directory_path(instance, filename):
-    fileName, fileExtension = os.path.splitext(filename)
-    while True:
-        newFileName = str(uuid.uuid4()) + fileExtension
-        if os.path.isfile(os.path.join(settings.MEDIA_VN_POSTER_DIRECTORY, newFileName)):
-            continue
-        break
-    return os.path.join(settings.MEDIA_VN_POSTER_DIRECTORY, newFileName)
+    return get_directory_path(instance, filename, settings.MEDIA_VN_POSTER_DIRECTORY)
 
 
 def screenshots_directory_path(instance, filename):
-    fileName, fileExtension = os.path.splitext(filename)
-    while True:
-        newFileName = str(uuid.uuid4()) + fileExtension
-        if os.path.isfile(os.path.join(settings.MEDIA_VN_SCREENSHOTS_DIRECTORY, newFileName)):
-            continue
-        break
-    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_DIRECTORY, newFileName)
+    return get_directory_path(instance, filename, settings.MEDIA_VN_SCREENSHOTS_DIRECTORY)
 
 
 def screenshots_mini_directory_path(instance, filename):
-    fileName, fileExtension = os.path.splitext(filename)
-    while True:
-        newFileName = str(uuid.uuid4()) + fileExtension
-        if os.path.isfile(os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, newFileName)):
-            continue
-        break
-    return os.path.join(settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY, newFileName)
+    return get_directory_path(instance, filename, settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY)
 
 
 class VisualNovel(PublishModel):
     title = models.CharField(verbose_name='название', max_length=256)
     alternative_title = models.CharField(verbose_name='альтернативные названия', max_length=500, default='')
     description = models.TextField(verbose_name='описание', max_length=8000, default='')
-    photo = models.ImageField(verbose_name='фотография', upload_to=posters_directory_path,
-                              null=True, blank=True)
+    photo = models.ImageField(verbose_name='фотография',
+        upload_to=posters_directory_path, null=True, blank=True)
     date_of_release = models.DateField(verbose_name='дата релиза')
     vndb_id = models.IntegerField(verbose_name='id на VNDb')
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
@@ -185,15 +167,13 @@ class VNStaff(models.Model):
 
 class VNScreenshot(PublishModel):
     title = models.CharField(verbose_name='подпись', max_length=256, null=True, blank=True)
-    image = models.ImageField(verbose_name='фотография', upload_to=screenshots_directory_path,
-        null=True, blank=True)
-    miniature = models.ImageField(verbose_name='миниатюра', upload_to=screenshots_mini_directory_path,
-        null=True, blank=True, editable=False)
+    image = models.ImageField(verbose_name='фотография',
+        upload_to=screenshots_directory_path, null=True, blank=True)
+    miniature = models.ImageField(verbose_name='миниатюра', editable=False,
+        upload_to=screenshots_mini_directory_path, null=True, blank=True)
 
     class Meta:
-        db_table = 'vn_screenshot'
-        verbose_name = 'Скриншот'
-        verbose_name_plural = 'Скриншоты'
+        abstract = True
 
     def old_miniature_path_if_changed(self):
         try:
@@ -256,4 +236,4 @@ class VNScreenshot(PublishModel):
             super(VNScreenshot, self).delete()
         else:
             self.is_published = False
-            super(VNScreenshot, self).save()
+        super(VNScreenshot, self).save()
