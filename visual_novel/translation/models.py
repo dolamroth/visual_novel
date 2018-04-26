@@ -78,6 +78,8 @@ class TranslationBetaLink(PublishModel):
 
     class Meta:
         db_table = 'statistics_betalink'
+        verbose_name = 'Ссылка на патч'
+        verbose_name_plural = 'Ссылки на патчи'
 
     def __str__(self):
         return self.url
