@@ -276,7 +276,7 @@ def add_test_visual_novels(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('vn_core', '0001_new_visual_novel_model'),
+        ('vn_core', '0001_base_models_for_visual_novels'),
         ('cinfo', '0002_test_data'),
     ]
 

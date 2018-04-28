@@ -22,7 +22,7 @@ class ChartItemScreenshot(VNScreenshot):
     item = models.ForeignKey(ChartItem, on_delete=models.CASCADE)
     order = models.IntegerField(verbose_name='порядок', default=0)
 
-    class Meta:
+    class Meta(VNScreenshot.Meta):
         db_table = 'chart_item_to_screenshot'
         verbose_name = 'Скриншот'
         verbose_name_plural = 'Скриншоты'
