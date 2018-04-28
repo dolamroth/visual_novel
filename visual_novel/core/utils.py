@@ -51,8 +51,8 @@ def offset_to_timezone(offset):
 
 def file_directory_path(field, instance, filename):
     all_file_fields = instance._meta.__dict__.get('file_fields', [])
-    selected_field = [d for d in all_file_fields if d['field_name']==field.name]
-    if len(selected_field)>0:
+    selected_field = [d for d in all_file_fields if d['field_name'] == field.name]
+    if len(selected_field) > 0:
         directory_path = selected_field[0]['path']
     else:
         directory_path = settings.MEDIA_VN_DEFAULT_FILE_DIRECTORY
