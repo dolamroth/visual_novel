@@ -49,12 +49,17 @@ def offset_to_timezone(offset):
     )
 
 
-
-def get_directory_path(instance, filename, folder_name):
-    fileName, fileExtension = os.path.splitext(filename)
+def file_directory_path(field, instance, filename):
+    all_file_fields = instance._meta.__dict__.get('file_fields', [])
+    selected_field = [d for d in all_file_fields if d['field_name']==field.name]
+    if len(selected_field)>0:
+        directory_path = selected_field[0]['path']
+    else:
+        directory_path = settings.MEDIA_VN_DEFAULT_FILE_DIRECTORY
+    file_name, file_extension = os.path.splitext(filename)
     while True:
-        newFileName = str(uuid.uuid4()) + fileExtension
-        if os.path.isfile(os.path.join(folder_name, newFileName)):
+        new_file_name = str(uuid.uuid4()) + file_extension
+        if os.path.isfile(os.path.join(directory_path, new_file_name)):
             continue
         break
-    return os.path.join(folder_name, newFileName)
+    return os.path.join(directory_path, new_file_name)
