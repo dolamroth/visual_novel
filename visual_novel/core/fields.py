@@ -8,6 +8,8 @@ from .utils import file_directory_path
 
 class ImageFieldWithEnhancedUploadTo(ImageField):
     def __init__(self, verbose_name=None, name=None, storage=None, **kwargs):
+        # To secure from the case, when 'upload_to' is passed by force.
+        kwargs.pop('upload_to', None)
         kwargs['upload_to'] = file_directory_path
         super(ImageFieldWithEnhancedUploadTo, self).__init__(
             verbose_name=verbose_name, name=name, storage=storage, **kwargs
@@ -15,6 +17,7 @@ class ImageFieldWithEnhancedUploadTo(ImageField):
 
     def deconstruct(self):
         name, path, args, kwargs = super(ImageFieldWithEnhancedUploadTo, self).deconstruct()
+        # Deleting 'upload_to' attribute is necessary for Django to stop spawning migrations for ImageFields.
         del kwargs['upload_to']
         return name, path, args, kwargs
 

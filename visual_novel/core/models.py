@@ -85,8 +85,6 @@ class PublishFileModel(PublishModel):
                 old_path = getattr(instance, fieldname).path
             except ValueError:
                 old_path = ''
-            print(new_path)
-            print(old_path)
             if new_path != old_path:
                 list_of_field_names.append(fieldname)
         return list_of_field_names
