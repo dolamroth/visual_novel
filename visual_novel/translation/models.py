@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -107,6 +108,9 @@ class TranslationItem(PublishModel):
 
     def __str__(self):
         return 'Перевод {}'.format(self.visual_novel.title)
+
+    def get_absolute_url(self):
+        return reverse('translation_item', kwargs={'vn_alias': self.visual_novel.alias})
 
     def save(self, *args, **kwargs):
         if not self.id:

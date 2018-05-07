@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 from core.models import PublishModel
 
 
@@ -14,3 +16,6 @@ class Studio(PublishModel):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('chart_index_with_studio', kwargs={'studio_alias': self.alias})

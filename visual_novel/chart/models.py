@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from core.models import PublishModel
 from vn_core.models import VisualNovel, VNScreenshot
@@ -16,6 +17,9 @@ class ChartItem(PublishModel):
 
     def __str__(self):
         return self.visual_novel.title
+
+    def get_absolute_url(self):
+        return reverse('detail_chart', kwargs={'vn_alias': self.visual_novel.alias})
 
 
 class ChartItemScreenshot(VNScreenshot):

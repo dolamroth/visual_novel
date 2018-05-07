@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.urls import path, include
 
@@ -15,6 +16,19 @@ from . import api_urls
 import chart.urls
 import offer_service.urls
 import translation.urls
+
+from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap
+from chart.sitemap import ChartItemSitemap
+from translation.sitemap import TranslationItemSitemap
+
+sitemaps = {
+    'genres': GenreSitemap,
+    'tags': TagSitemap,
+    'studios': StudioSitemap,
+    'staff': StaffSitemap,
+    'chart': ChartItemSitemap,
+    'translations': TranslationItemSitemap,
+}
 
 urlpatterns = [
     # Admin panel views
@@ -58,6 +72,7 @@ urlpatterns = [
     # Plain pages views
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('profile/<str:username>', core_views.profile_page, name='profile_page'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}),
 
     # Apps views
     path('offers/', include(offer_service.urls)),
