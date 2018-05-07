@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 
+{% block metatags %}
+    <meta name="keywords" content="{{ title|safe }}, визуальная новелла, визуальный роман, перевод, русский">
+    <meta name="description" content="Статистика перевода {{ title|safe }}" />
+{% endblock %}
+
 {% block title %}
-    Редактирование перевода {{ title|safe }}
+    Перевод {{ title|safe }}
 {% endblock %}
 
 {% block content %}

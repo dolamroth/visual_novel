@@ -196,6 +196,8 @@ def chart_page(request, vn_alias):
     vn_context['comment'] = chart_item.comment
     vn_context['has_comment'] = not not vn_context['comment']
 
+    keywords = list()
+
     # Genres list
     vn_context['genres'] = list()
     for genre in visual_novel.vngenre_set.filter(genre__is_published=True).order_by('-weight'):
@@ -206,6 +208,7 @@ def chart_page(request, vn_alias):
             'has_description': not not genre.genre.description,
             'alias': genre.genre.alias
         })
+        keywords.append(genre.genre.title)
     vn_context['has_genres'] = (len(vn_context['genres']) > 0)
 
     # Studios list
@@ -218,6 +221,7 @@ def chart_page(request, vn_alias):
             'has_description': not not studio.studio.description,
             'alias': studio.studio.alias
         })
+        keywords.append(studio.studio.title)
     vn_context['has_studios'] = (len(vn_context['studios']) > 0)
 
     # Tags list
@@ -230,6 +234,7 @@ def chart_page(request, vn_alias):
             'has_description': not not tag.tag.description,
             'alias': tag.tag.alias
         })
+        keywords.append(tag.tag.title)
     vn_context['has_tags'] = (len(vn_context['tags']) > 0)
 
     # Staff list
@@ -249,8 +254,10 @@ def chart_page(request, vn_alias):
             'roles': roles,
             'alias': staff.alias
         })
-    print(vn_context['staffs'])
+        keywords.append(staff.title)
     vn_context['has_staffs'] = (len(vn_context['staffs']) > 0)
+
+    vn_context['keywords'] = ", ".join(keywords)
 
     # Screenshots list
     vn_context['screenshots'] = list()
