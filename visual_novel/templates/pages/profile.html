@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block metatags %}
+    {% include "includes/no_robots.html" %}
+{% endblock %}
+
 {% block title %}
     Профиль&nbsp;{{ username }}
 {% endblock %}
@@ -12,28 +16,39 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-12" style="margin-bottom: 16px;">
+        <div class="col-lg-6" style="margin-bottom: 16px;">
             <h4>Мои подписки на статистику переводов</h4>
             {% if has_subscriptions %}
-            <p><ul>{% for translation in subscriptions %}
-                <li><a href="/translation/{{ translation.alias }}">{{ translation.title }}</a></li>
-            {% endfor %}</ul></p>
+                <p><ul>{% for translation in subscriptions %}
+                    <li><a href="/translation/{{ translation.alias }}">{{ translation.title }}</a></li>
+                {% endfor %}</ul></p>
             {% else %}
-            <p>Список подписок пуст.</p>
+                <p>Список подписок пуст.</p>
             {% endif %}
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-lg-12" style="margin-bottom: 16px;">
             <h4>Мои редактируемые переводы</h4>
             {% if has_moderated_translations %}
-            <p><ul>{% for translation in moderated_translations %}
-                <li><a href="/translation/{{ translation.alias }}/edit">{{ translation.title }}</a></li>
-            {% endfor %}</ul></p>
+                <p><ul>{% for translation in moderated_translations %}
+                    <li><a href="/translation/{{ translation.alias }}/edit">{{ translation.title }}</a></li>
+                {% endfor %}</ul></p>
             {% else %}
-            <p>Нет модерируемых переводов.</p>
+                <p>Нет модерируемых переводов.</p>
             {% endif %}
+        </div>
+        <div class="col-lg-6" style="margin-bottom: 16px;">
+            <fieldset>
+                <legend>Уведомления об обновлении статистики переводов</legend>
+                <label for="distribution-time">Время рассылки</label>
+                <input id="distribution-time" type="time" name="time" value="{{ distribution_time }}" class="form-control"><br />
+                {% for day in weekdays %}
+                    <input type="checkbox" name="{{ day.name }}" value="{{ day.value }}"{% if day.checked %} checked="checked"{% endif %} class="weekday-checkbox" />&nbsp;{{ day.label }}<br />
+                {% endfor %}
+            </fieldset><br />
+
+            <input id="distribution-check" type="checkbox" name="distribution" {% if distribution %} checked="checked"{% endif %} />&nbsp;
+            <label for="distribution-check">Присылать уведомления об обновлении статистики переводов</label><br /><br />
+
+            <input type="button" username="{{ username }}" value="Применить" class="form-control update-user-subscription-settings" />
         </div>
     </div>
 {% endblock %}

@@ -42,3 +42,19 @@ class StatisticsDescription(serializers.Serializer):
 
 class StatisticsComment(serializers.Serializer):
     comment = serializers.CharField(max_length=2000)
+
+
+class BetaLinkSerializer(serializers.Serializer):
+    translation_item_id = serializers.IntegerField(min_value=1)
+    title = serializers.CharField(min_length=1, max_length=50)
+    comment = serializers.CharField(max_length=2000, allow_blank=True)
+    url = serializers.CharField(min_length=1, max_length=200)
+    betalink_id = serializers.IntegerField(min_value=0)
+    timezone = serializers.SerializerMethodField()
+
+    def get_timezone(self, obj):
+        user = self.context['user']
+        if hasattr(user, 'profile') and user.profile.timezone:
+            return user.profile.timezone
+        else:
+            return settings.DEFAULT_TIME_ZONE

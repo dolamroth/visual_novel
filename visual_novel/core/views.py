@@ -15,7 +15,6 @@ from .forms import CustomSignUpForm
 from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
-from .models import Profile
 
 
 def signup(request):
@@ -104,5 +103,17 @@ def profile_page(request, username):
             'title': visual_novel.title
         })
     context['has_subscriptions'] = (len(context['subscriptions']) > 0)
+
+    weekdays = list()
+    weekdays_items = profile.weekdays.items()
+    weekdays_labels = profile.weekdays._labels
+    ctrl_value = 1
+    for i in range(len(weekdays_items)):
+        weekdays.append({'name': weekdays_items[i][0], 'value': ctrl_value, 'checked': weekdays_items[i][1],
+                         'label': weekdays_labels[i]})
+        ctrl_value *= 2
+    context['weekdays'] = weekdays
+    context['distribution_time'] = profile.send_time.isoformat()[:5]
+    context['distribution'] = profile.send_distributions
 
     return render(request, 'pages/profile.html', context)

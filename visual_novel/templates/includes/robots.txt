@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /api/
+Disallow: /login/
+Disallow: /logout/
+Disallow: /activate/
+Disallow: /signup/
+Disallow: /reset/
+Disallow: /password_reset/
+Sitemap: {{ http_domain }}/sitemap.xml

@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block metatags %}
+    <meta name="robots" content="none" />
+{% endblock %}
+
 {% block title %}
     Редактирование перевода {{ title|safe }}
 {% endblock %}
@@ -17,6 +21,15 @@
         <p id="delete-chapter-popup-additional-text"></p>
         <p>
             <a class="delete-chapter-btn btn btn-xs btn-danger" href="#">Подтвердить удаление</a>
+            <a class="popup-modal-dismiss btn btn-xs btn-default" href="#">Отмена</a>
+        </p>
+    </div>
+
+    <div id="delete-betalink-popup" class="white-popup-block mfp-hide"
+         data_id="0" data_translation_item="{{ translation_item }}" data_alias="{{ alias }}">
+        <h3>Действительно удалить ссылку?</h3>
+        <p>
+            <a class="delete-betalink-btn btn btn-xs btn-danger" href="#">Подтвердить удаление</a>
             <a class="popup-modal-dismiss btn btn-xs btn-default" href="#">Отмена</a>
         </p>
     </div>
@@ -146,5 +159,70 @@
             <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-comment-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
         </div>
     </div>
+
+    <table class="table table-hover table-sm">
+        <caption>Ссылки для патчей</caption>
+        <thead>
+            <tr>
+                <th class="col-md-11 col-sm-10 small-td-padding">Название</th>
+                <th class="col-md-1 col-sm-2 small-td-padding">#</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in download_links %}
+                <tr class="betalink-row-collapsed"
+                betalink_title="{{ link.title }}"
+                betalink_url="{{ link.url }}"
+                betalink_comment="{{ link.comment }}"
+                betalink_approved="{{ link.approved }}"
+                betalink_rejected="{{ link.rejected }}"
+                data_translation_item="{{ translation_item }}"
+                betalink_id="{{ link.id }}">
+                    <td>
+                        <strong>{{ link.title }}</strong><br />
+                        <a href="{{ link.url }}" target="_blank">{{ link.url }}</a><br />
+                        {{ link.comment }}<br />
+                        {% if link.approved %}
+                            <span style="color:#118339">Подтвержденная ссылка</span>
+                        {% else %}
+                            {% if link.rejected %}
+                                <span style="color:#dc301f">Ссылка отклонена</span>
+                            {% else %}
+                                <span style="color:#ffa121">Ссылка не подтверждена</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="#" class="translation-betalink-edit translation-chapter-pin"><span class="glyphicon glyphicon-edit"></span></a>
+                        <a href="#delete-betalink-popup" class="translation-betalink-delete-popup translation-chapter-pin"><span class="glyphicon glyphicon-remove"></span></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr class="add-betalink-row betalink-row-add-collapsed" data_translation_item="{{ translation_item }}">
+                {% include "translation/betalink_add_example.html" %}
+            </tr>
+            <tr class="edit-betalink-example editing-row-hidden" data_translation_item="{{ translation_item }}">
+                {% include "translation/betalink_edit.html" %}
+            </tr>
+            <tr class="add-betalink-row add-betalink-example editing-row-hidden" data_translation_item="{{ translation_item }}">
+                {% include "translation/betalink_add.html" %}
+            </tr>
+            <tr class="betallink-collapsed-edit-row-example editing-row-hidden" data_translation_item="{{ translation_item }}">
+                {% include "translation/betalink_edit_example.html" %}
+            </tr>
+            <tr class="add-betalink-row betallink-collapsed-add-row-example editing-row-hidden" data_translation_item="{{ translation_item }}">
+                {% include "translation/betalink_add_example.html" %}
+            </tr>
+            <tr class="editing-row-hidden betalink-alert-row-example">
+                <td>
+                    <div class="alert alert-danger alert alert-success alert-dismissable fade in">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <span class="alert-text-div"></span>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
 
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -10,9 +11,9 @@ from vn_core.models import VisualNovel
 
 class TranslationStatistics(models.Model):
     tree_id = models.IntegerField(default=0)
-    pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='')
-    technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='')
-    comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='')
+    pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='', blank=True)
+    technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='', blank=True)
+    comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='', blank=True)
     last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
                                        auto_now_add=True, null=True, blank=True)
     total_rows = models.IntegerField(default=0, verbose_name='Всего строк')
@@ -28,8 +29,8 @@ class TranslationStatistics(models.Model):
 
 
 class TranslationStatisticsChapter(MPTTModel):
-    title = models.CharField(max_length=50, default='')
-    script_title = models.CharField(max_length=50, default='')
+    title = models.CharField(max_length=50, verbose_name='Пользовательское название')
+    script_title = models.CharField(max_length=50, verbose_name='Имя скрипта')
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
                             db_index=True, on_delete=models.CASCADE)
     is_chapter = models.BooleanField(default=False)
@@ -45,16 +46,6 @@ class TranslationStatisticsChapter(MPTTModel):
 
     def __str__(self):
         return self.script_title
-
-    def statistics_name(self, base_level = 0):
-        name = self.script_title
-        if self.is_chapter:
-            name = '<strong>' + name + '</strong>'
-        name = '<span style="margin-left:{}em">{}</span>'.format(self.get_level()-base_level, name)
-        return name
-
-    def select_like_statistics_name(self, base_level = 0):
-        return '---' * (self.get_level() - base_level) + ' ' + str(self.script_title)
 
     def delete(self):
         super(TranslationStatisticsChapter, self).delete()
@@ -77,13 +68,19 @@ class TranslationStatisticsChapter(MPTTModel):
 
 
 class TranslationBetaLink(PublishModel):
-    title = models.CharField(max_length=50, default='')
-    url = models.CharField(max_length=200, default='')
-    comment = models.TextField(max_length=2000, default='')
+    title = models.CharField(max_length=50, verbose_name="Название")
+    url = models.CharField(max_length=200, verbose_name="URL")
+    comment = models.TextField(max_length=2000, default='', blank=True, verbose_name="Комментарий")
     translation_item = models.ForeignKey('TranslationItem', on_delete=models.PROTECT, null=True, blank=True)
+    approved = models.BooleanField(verbose_name="Подтверждена", default=False)
+    rejected = models.BooleanField(verbose_name="Отклонена", default=False)
+    last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
+                                       auto_now_add=True, null=True, blank=True)
 
     class Meta:
         db_table = 'statistics_betalink'
+        verbose_name = 'Ссылка на патч'
+        verbose_name_plural = 'Ссылки на патчи'
 
     def __str__(self):
         return self.url
@@ -111,6 +108,9 @@ class TranslationItem(PublishModel):
 
     def __str__(self):
         return 'Перевод {}'.format(self.visual_novel.title)
+
+    def get_absolute_url(self):
+        return reverse('translation_item', kwargs={'vn_alias': self.visual_novel.alias})
 
     def save(self, *args, **kwargs):
         if not self.id:

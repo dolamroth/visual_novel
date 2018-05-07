@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block metatags %}
+    <meta name="keywords" content="чарт, визуальная новелла, визуальный роман, {{ keywords }}">
+    <meta name="description" content="Визуальная новелла {{ title|safe }}" />
+{% endblock %}
+
 {% block title %}
     {{ title|safe }}
 {% endblock %}
@@ -91,6 +96,14 @@
 
             <p class="vnhome-genre">
                 <span class="sh-desc">Оценка на VNDb:</span> <strong>{{ vndb_mark }}</strong>
+            </p>
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">Популярность на VNDb:</span> <strong>{{ vndb_popularity }}</strong>
+            </p>
+
+            <p class="vnhome-genre">
+                <span class="sh-desc">Число голосов на VNDb:</span> <strong>{{ vndb_vote_count }}</strong>
             </p>
 
             <p class="vnhome-genre">

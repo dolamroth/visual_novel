@@ -9,16 +9,17 @@ from translation.middlewares import HasPermissionToEditVNMiddleware
 
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
-    DeleteTranslationChapter
+    DeleteTranslationChapter, ManageBetaLink, DeleteBetaLink
 )
 from ..errors import (
     InvalidMoveToChildElement, TranslationNotFound, InvalidValueOnRowsQuantity, InvalidMoveParent,
-    CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist
+    CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists,
+    BetaLinkDoesNotExist
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
     AddTranslationChapterPartSerializer, AddTranslationChapterSerializer,
-    StatisticsDescription, StatisticsComment
+    StatisticsDescription, StatisticsComment, BetaLinkSerializer
 )
 from ..models import (
     TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
@@ -179,7 +180,11 @@ def get_current_statistics_for_translation_item(request, vn_alias):
     data, is_chapter = get_data(request)
 
     try:
-        tree_id = TranslationItem.objects.get(id=int(data['translation_item_id'])).statistics.tree_id
+        tree_id = TranslationItem.objects.get(
+            id=int(data['translation_item_id']),
+            visual_novel__is_published=True,
+            is_published=True
+        ).statistics.tree_id
         base_node = TranslationStatisticsChapter.objects.get(lft=1, tree_id=tree_id)
         data = {
             'total_rows': base_node.total_rows,
@@ -217,7 +222,11 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
 
     try:
         translation_item_id = int(translation_item_id)
-        translation_item = TranslationItem.objects.get(id=translation_item_id)
+        translation_item = TranslationItem.objects.get(
+            id=translation_item_id,
+            visual_novel__is_published=True,
+            is_published=True
+        )
         translation_statistics = TranslationStatistics.objects.get(pk=translation_item.statistics.pk)
     except (TypeError, TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
         return Response(data={
@@ -251,7 +260,11 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
 @decorator_from_middleware(IsAuthenticatedMiddleware)
 def subscribe_statistics(request, vn_alias):
     try:
-        translation_item = TranslationItem.objects.get(visual_novel__alias=vn_alias)
+        translation_item = TranslationItem.objects.get(
+            visual_novel__alias=vn_alias,
+            visual_novel__is_published=True,
+            is_published=True
+        )
     except (TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
         return Response(data={
             'message': 'Перевод с указанным идентификатором не найден.'
@@ -271,7 +284,11 @@ def subscribe_statistics(request, vn_alias):
 @decorator_from_middleware(IsAuthenticatedMiddleware)
 def unsubscribe_statistics(request, vn_alias):
     try:
-        translation_item = TranslationItem.objects.get(visual_novel__alias=vn_alias)
+        translation_item = TranslationItem.objects.get(
+            visual_novel__alias=vn_alias,
+            visual_novel__is_published=True,
+            is_published=True
+        )
     except (TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
         return Response(data={
             'message': 'Перевод с указанным идентификатором не найден.'
@@ -284,4 +301,64 @@ def unsubscribe_statistics(request, vn_alias):
 
     return Response(data={
         'message': 'Операция проведена успешно.'
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def manage_betalink(request, vn_alias):
+
+    data = {
+        'translation_item_id': request.GET.get('data_translation_item', None),
+        'title': request.GET.get('title', None),
+        'url': request.GET.get('url', None),
+        'comment': request.GET.get('comment', ''),
+        'betalink_id': request.GET.get('betalink_id', 0),
+    }
+
+    serializer = BetaLinkSerializer(data=data, context={'user': request.user})
+
+    try:
+        serializer.is_valid(raise_exception=True)
+    except restValidationError as exc:
+        return Response(data={
+            'message': 'При попытке сохранения возникли ошибки.',
+            'errors': serializer.errors
+        }, status=422)
+
+    try:
+        betalink_id, approved, rejected = ManageBetaLink(serializer.data).execute()
+    except (TranslationNotFound, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist) as exc:
+        return Response(data={'message': exc.message}, status=422)
+
+    return_data = {**serializer.data}
+    return_data.pop('timezone', None)
+    return_data['approved'] = "True" if approved else "False"
+    return_data['rejected'] = "True" if rejected else "False"
+    return_data['betalink_id'] = betalink_id
+
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'data': return_data
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def delete_betalink(request, vn_alias):
+
+    data = {
+        'betalink_id': request.GET.get('betalink_id', 0),
+    }
+
+    try:
+        deleted_n = DeleteBetaLink(data).execute()
+    except BetaLinkDoesNotExist as exc:
+        return Response(data={'message': exc.message}, status=404)
+
+    return Response(data={
+        'message': 'Операция проведена успешно.',
+        'delete_results': deleted_n
     }, status=200)

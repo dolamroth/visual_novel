@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import json
+import datetime
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -57,7 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 
+    'bitfield',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -176,6 +179,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
+MEDIA_VN_DEFAULT_FILE_DIRECTORY = 'default'
 MEDIA_VN_POSTER_DIRECTORY = 'vn_poster'
 MEDIA_VN_SCREENSHOTS_DIRECTORY = 'vn_screenshot'
 MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY = 'vn_screenshot_mini'
@@ -214,3 +218,6 @@ SERVER_EMAIL = get_secret(section='EMAIL_SETTINGS', setting='SERVER_EMAIL')
 VK_LOGIN = get_secret(section='VK', setting='LOGIN')
 VK_PASSWORD = get_secret(section='VK', setting='PASSWORD')
 VK_GROUP_ID = get_secret(section='VK', setting='GROUP_ID')
+VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
+
+DEFAULT_MAILING_SEND_TIME = datetime.time(10, 30)
