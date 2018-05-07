@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block metatags %}
+    {% include "includes/no_robots.html" %}
+{% endblock %}
+
 {% block title %}
     Вход на сайт
 {% endblock %}

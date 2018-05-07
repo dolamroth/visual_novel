@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block metatags %}
+    <meta name="keywords" content="чарт, визуальная новелла, визуальный роман, {{ keywords }}">
+    <meta name="description" content="Визуальная новелла {{ title|safe }}" />
+{% endblock %}
+
 {% block title %}
     {{ title|safe }}
 {% endblock %}
