@@ -3,7 +3,6 @@ from PIL import Image
 
 from django.conf import settings
 from django.db import models
-from django.utils.html import format_html
 
 from core.models import PublishModel, PublishFileModel
 from core.fields import ImageFieldWithEnhancedUploadTo
@@ -44,12 +43,6 @@ class VisualNovel(PublishFileModel):
 
     def __str__(self):
         return self.title
-
-    def photo_tag(self):
-        return format_html('<img src="%s" width=200 height=150 />' % self.photo.url if self.photo else '')
-
-    photo_tag.short_description = 'Фотография'
-    photo_tag.allow_tags = True
 
     def get_rate(self):
         return "{0:.2f}".format(self.rate / 100.0)

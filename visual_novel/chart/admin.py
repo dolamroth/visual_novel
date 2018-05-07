@@ -5,8 +5,8 @@ from .models import ChartItem, ChartItemScreenshot
 
 
 class ScreenshotInline(admin.TabularInline):
-    def image_tag(self):
-        return format_html('<img src="%s" width=200 height=150 />' % self.image.url if self.image else '')
+    def image_tag(self, obj):
+        return format_html('<img src="%s" width="150" height="auto" />' % obj.image.url if obj.image else '')
 
     image_tag.short_description = 'Фотография'
     image_tag.allow_tags = True
