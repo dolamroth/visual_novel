@@ -72,7 +72,9 @@ urlpatterns = [
     # Plain pages views
     path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('profile/<str:username>', core_views.profile_page, name='profile_page'),
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemaps'),
+    path('robots.txt', TemplateView.as_view(template_name="includes/robots.txt"),
+         {'http_domain': settings.VN_HTTP_DOMAIN}, name='robots'),
 
     # Apps views
     path('offers/', include(offer_service.urls)),
