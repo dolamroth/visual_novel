@@ -170,11 +170,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
@@ -185,7 +182,7 @@ MEDIA_VN_SCREENSHOTS_DIRECTORY = 'vn_screenshot'
 MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY = 'vn_screenshot_mini'
 
 CHART_NUMBER_OF_VN_IN_ROW = 4
-POSTER_STOPPER_URL = '/media/other/file-not-found-rect.jpg'
+POSTER_STOPPER_URL = '/media/other/file-not-found-rect.png'
 STEAM_ICON_URL = '/media/other/steam-icon.png'
 
 VNDB_API_HOST = get_secret(section='VNDB_API', setting='HOST')

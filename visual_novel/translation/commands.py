@@ -2,11 +2,7 @@ import arrow
 
 from mptt.exceptions import InvalidMove
 
-from django.conf import settings
-from django.template.loader import render_to_string
-
 from core.commands import Command
-from core.vk_api import post_to_user
 
 from .mixins import (
     TranslationChapterExistsValidator,
@@ -276,15 +272,7 @@ class ManageBetaLink(
             if changed:
                 beta_link.save()
 
-        if new_url:
-            post_to_user(
-                settings.VK_ADMIN_LOGIN,
-                render_to_string(
-                    'translation/includes/approve_link.txt', {
-                        'betalink_id': beta_link.id,
-                        'domain': settings.VN_HTTP_DOMAIN
-                    })
-            )
+        # TODO: post to admin in VK
 
         return beta_link.id, beta_link.approved, beta_link.rejected
 
