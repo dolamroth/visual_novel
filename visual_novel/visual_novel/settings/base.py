@@ -74,7 +74,8 @@ INSTALLED_APPS = [
     'vn_core.apps.VnCoreConfig',
     'chart.apps.ChartConfig',
     'offer_service.apps.OfferServiceConfig',
-    'translation.apps.TranslationConfig'
+    'translation.apps.TranslationConfig',
+    'news.apps.NewsConfig'
 ]
 
 PASSWORD_HASHERS = [
@@ -180,6 +181,7 @@ MEDIA_VN_DEFAULT_FILE_DIRECTORY = 'default'
 MEDIA_VN_POSTER_DIRECTORY = 'vn_poster'
 MEDIA_VN_SCREENSHOTS_DIRECTORY = 'vn_screenshot'
 MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY = 'vn_screenshot_mini'
+MEDIA_VN_NEWS = 'vn_news'
 
 CHART_NUMBER_OF_VN_IN_ROW = 4
 POSTER_STOPPER_URL = '/media/other/file-not-found-rect.png'
