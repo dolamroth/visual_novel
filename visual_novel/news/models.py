@@ -16,7 +16,7 @@ class News(PublishFileModel):
     description = SanitizedTextField(max_length=255, allowed_tags=['a', 'p', 'img'], default='', blank=True,
                                      allowed_attributes=['href', 'src'], strip=False, verbose_name='Описание')
     created_at = models.DateTimeField(verbose_name='Время создания новости', auto_now_add=True)
-    author = models.ForeignKey(User, blank=True, verbose_name="Автор", on_delete=models.CASCADE)
+    author = models.ForeignKey(User, blank=True, null=True, verbose_name="Автор", on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'news'
