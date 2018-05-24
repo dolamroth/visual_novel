@@ -4,38 +4,18 @@ from PIL import Image
 from django.conf import settings
 from django.db import models
 
-from core.models import PublishModel
-from core.utils import get_directory_path
+from core.models import PublishModel, PublishFileModel
+from core.fields import ImageFieldWithEnhancedUploadTo
 from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
 from .utils import vndb_socket_login, vndb_socket_logout, vndb_socket_update_vn
 
 
-def posters_directory_path(instance, filename):
-    return get_directory_path(instance, filename, settings.MEDIA_VN_POSTER_DIRECTORY)
-
-
-def screenshots_directory_path(instance, filename):
-    return get_directory_path(instance, filename, settings.MEDIA_VN_SCREENSHOTS_DIRECTORY)
-
-
-def screenshots_mini_directory_path(instance, filename):
-    return get_directory_path(instance, filename, settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY)
-
-
-class VisualNovelQuerySet(models.query.QuerySet):
-    def delete(self):
-        for d in self:
-            d.delete_poster()
-        super(VisualNovelQuerySet, self).delete()
-
-
-class VisualNovel(PublishModel):
+class VisualNovel(PublishFileModel):
     title = models.CharField(verbose_name='название', max_length=256)
     alternative_title = models.CharField(verbose_name='альтернативные названия', max_length=500, default='')
     description = models.TextField(verbose_name='описание', max_length=8000, default='')
-    photo = models.ImageField(verbose_name='фотография',
-        upload_to=posters_directory_path, null=True, blank=True)
+    photo = ImageFieldWithEnhancedUploadTo(verbose_name='фотография', null=True, blank=True)
     date_of_release = models.DateField(verbose_name='дата релиза')
     vndb_id = models.IntegerField(verbose_name='id на VNDb')
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
@@ -50,12 +30,16 @@ class VisualNovel(PublishModel):
     popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
     vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
 
-    objects = VisualNovelQuerySet.as_manager()
-
     class Meta:
         db_table = 'vncore'
         verbose_name = 'Визуальная новелла'
         verbose_name_plural = 'Визуальные новеллы'
+        file_fields = [
+            {
+                'field_name': 'photo',
+                'path': settings.MEDIA_VN_POSTER_DIRECTORY
+            }
+        ]
 
     def __str__(self):
         return self.title
@@ -66,56 +50,20 @@ class VisualNovel(PublishModel):
     def get_popularity(self):
         return "{0:.2f}".format(self.popularity / 100.0)
 
-    def delete_poster(self):
-        try:
-            obj = VisualNovel.objects.get(pk=self.pk)
-        except VisualNovel.DoesNotExist:
-            return
-        # Delete poster
-        try:
-            path = obj.photo.path
-            if os.path.isfile(path):
-                os.remove(path)
-        except ValueError:
-            pass
-
-    def old_poster_path_if_changed(self):
-        try:
-            old_poster = VisualNovel.objects.get(pk=self.pk).photo
-            if self.photo != old_poster:
-                return old_poster.path
-        except VisualNovel.DoesNotExist:
-            pass
-        except ValueError:
-            pass
-        return None
-
-    def save(self, *args, **kwargs):
-        # Delete old poster in file system
-        old_poster = self.old_poster_path_if_changed()
-        if old_poster:
-            self.delete_poster()
-
-        # Update VNDb rating on create
-        vn_id = self.id
+    def additional_action_on_save(self, list_of_changed_fields, created):
         vndb_id = self.vndb_id
-        if (not vn_id) and (type(vndb_id) == int):
+        if created and (type(vndb_id) == int):
             sock = None
             try:
                 sock = vndb_socket_login()
                 self.rate, self.popularity, self.vote_count = vndb_socket_update_vn(sock, vndb_id)
             finally:
                 vndb_socket_logout(sock)
-        super(VisualNovel, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        self.delete_poster()
-        super(VisualNovel, self).delete(*args, **kwargs)
 
 
 class VNGenre(models.Model):
-    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
-    genre = models.ForeignKey(Genre, on_delete=models.PROTECT, related_name='genres_set')
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, related_name='genres_set')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:
@@ -128,8 +76,8 @@ class VNGenre(models.Model):
 
 
 class VNTag(models.Model):
-    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
-    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, related_name='tags_set')
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tags_set')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:
@@ -142,8 +90,8 @@ class VNTag(models.Model):
 
 
 class VNStudio(models.Model):
-    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
-    studio = models.ForeignKey(Studio, on_delete=models.PROTECT, related_name='studios_set')
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
+    studio = models.ForeignKey(Studio, on_delete=models.CASCADE, related_name='studios_set')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:
@@ -156,8 +104,8 @@ class VNStudio(models.Model):
 
 
 class VNStaff(models.Model):
-    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
-    staff = models.ForeignKey(Staff, on_delete=models.PROTECT, related_name='staff_set')
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_set')
     role = models.ForeignKey(StaffRole, on_delete=models.PROTECT)
     weight = models.IntegerField(verbose_name='вес', default=0)
 
@@ -170,35 +118,23 @@ class VNStaff(models.Model):
         return self.staff.title
 
 
-class VNScreenshotQuerySet(models.query.QuerySet):
-    def delete(self):
-        for d in self:
-            d.delete_images()
-        super(VNScreenshotQuerySet, self).delete()
-
-
-class VNScreenshot(PublishModel):
+class VNScreenshot(PublishFileModel):
     title = models.CharField(verbose_name='подпись', max_length=256, null=True, blank=True)
-    image = models.ImageField(verbose_name='фотография', upload_to=screenshots_directory_path)
-    miniature = models.ImageField(verbose_name='миниатюра', editable=False,
-        upload_to=screenshots_mini_directory_path, blank=True)
-
-    objects = VNScreenshotQuerySet.as_manager()
+    image = ImageFieldWithEnhancedUploadTo(verbose_name='фотография')
+    miniature = ImageFieldWithEnhancedUploadTo(verbose_name='миниатюра', editable=False, blank=True)
 
     class Meta:
         abstract = True
-
-    def old_miniature_path_if_changed(self):
-        model = self.__class__
-        try:
-            old_miniature = model.objects.get(pk=self.pk).image
-            if self.image != old_miniature:
-                return old_miniature.path
-        except model.DoesNotExist:
-            pass
-        except ValueError:
-            pass
-        return None
+        file_fields = [
+            {
+                'field_name': 'image',
+                'path': settings.MEDIA_VN_SCREENSHOTS_DIRECTORY
+            },
+            {
+                'field_name': 'miniature',
+                'path': settings.MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY
+            }
+        ]
 
     def update_miniature(self, mini_width=150):
         if not self.image:
@@ -216,36 +152,11 @@ class VNScreenshot(PublishModel):
         self.miniature = path
         return path
 
-    def delete_images(self):
-        model = self.__class__
+    def additional_action_on_save(self, list_of_changed_image_fields, created):
+        if 'image' in list_of_changed_image_fields:
+            self.delete_files(['miniature'])
         try:
-            obj = model.objects.get(pk=self.pk)
-        except model.DoesNotExist:
+            path = self.image.path
+            self.update_miniature()
+        except ValueError:
             return
-        # Delete miniature from file system
-        try:
-            path_mini = obj.miniature.path
-            if os.path.isfile(path_mini):
-                os.remove(path_mini)
-        except ValueError:
-            pass
-        # Delete main image from file system
-        try:
-            path = obj.image.path
-            if os.path.isfile(path):
-                os.remove(path)
-        except ValueError:
-            pass
-
-    def save(self, *args, **kwargs):
-        old_miniature = self.old_miniature_path_if_changed()
-        if old_miniature:
-            self.delete_images()
-        super(PublishModel, self).save(*args, **kwargs)
-        self.update_miniature()
-        super(PublishModel, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        self.delete_images()
-        super(PublishModel, self).save(*args, **kwargs)
-        super(PublishModel, self).delete(*args, **kwargs)

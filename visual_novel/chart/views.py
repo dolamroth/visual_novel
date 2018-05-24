@@ -82,7 +82,7 @@ def chart_index_page(
     # This array shows all the possible GET parameters for "sort"
     all_sortings = ['-date_of_translation', 'date_of_translation', 'visual_novel__rate', '-visual_novel__rate',
                     '-visual_novel__date_of_release', 'visual_novel__date_of_release', '-visual_novel__title',
-                    'visual_novel__title']
+                    'visual_novel__title', 'visual_novel__popularity', '-visual_novel__popularity']
     # This array provides alternative sorting for one selected parameter, which is chosen by user,
     # and a title of glyphoicon from Bootstrap
     all_sortings_context_links = [
@@ -93,7 +93,9 @@ def chart_index_page(
         ('date_of_release', 'visual_novel__date_of_release', 'glyphicon glyphicon-arrow-down'),
         ('date_of_release', '-visual_novel__date_of_release', 'glyphicon glyphicon-arrow-up'),
         ('title', 'visual_novel__title', 'glyphicon glyphicon-arrow-down'),
-        ('title', '-visual_novel__title', 'glyphicon glyphicon-arrow-up')
+        ('title', '-visual_novel__title', 'glyphicon glyphicon-arrow-up'),
+        ('popularity', '-visual_novel__popularity', 'glyphicon glyphicon-arrow-up'),
+        ('popularity', 'visual_novel__popularity', 'glyphicon glyphicon-arrow-down'),
     ]
     # This is base data for providing icons and links, in case nothing is selected by user
     context['date_of_translation'] = '-date_of_translation'
@@ -104,6 +106,8 @@ def chart_index_page(
     context['date_of_release_icon'] = ''
     context['title'] = 'visual_novel__title'
     context['title_icon'] = ''
+    context['popularity'] = '-visual_novel__popularity'
+    context['popularity_icon'] = ''
     # In case of sort selected, sort and provide respective links and icons
     if sort_by and sort_by in all_sortings:
         all_chart_items = all_chart_items.order_by(sort_by)
@@ -129,6 +133,7 @@ def chart_index_page(
         vn_context['vndb_id'] = visual_novel.vndb_id
         vn_context['chart_link'] = os.path.join('/chart/', visual_novel.alias)
         vn_context['vndb_mark'] = visual_novel.get_rate()
+        vn_context['vndb_popularity'] = visual_novel.get_popularity()
 
         for genre in visual_novel.vngenre_set.all().order_by('-weight'):
             vn_context['genres'].append({
@@ -168,7 +173,7 @@ def chart_page(request, vn_alias):
         chart_item = ChartItem.objects.get(
             is_published=True, visual_novel__is_published=True, visual_novel__alias=vn_alias
         )
-    except:
+    except ChartItem.DoesNotExist:
         raise Http404
 
     visual_novel = chart_item.visual_novel
@@ -189,12 +194,16 @@ def chart_page(request, vn_alias):
     vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
     vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
     vn_context['vndb_mark'] = visual_novel.get_rate()
+    vn_context['vndb_popularity'] = visual_novel.get_popularity()
+    vn_context['vndb_vote_count'] = visual_novel.vote_count
 
     vn_context['description'] = visual_novel.description
     vn_context['has_description'] = not not vn_context['description']
 
     vn_context['comment'] = chart_item.comment
     vn_context['has_comment'] = not not vn_context['comment']
+
+    keywords = list()
 
     # Genres list
     vn_context['genres'] = list()
@@ -206,6 +215,7 @@ def chart_page(request, vn_alias):
             'has_description': not not genre.genre.description,
             'alias': genre.genre.alias
         })
+        keywords.append(genre.genre.title)
     vn_context['has_genres'] = (len(vn_context['genres']) > 0)
 
     # Studios list
@@ -218,6 +228,7 @@ def chart_page(request, vn_alias):
             'has_description': not not studio.studio.description,
             'alias': studio.studio.alias
         })
+        keywords.append(studio.studio.title)
     vn_context['has_studios'] = (len(vn_context['studios']) > 0)
 
     # Tags list
@@ -230,6 +241,7 @@ def chart_page(request, vn_alias):
             'has_description': not not tag.tag.description,
             'alias': tag.tag.alias
         })
+        keywords.append(tag.tag.title)
     vn_context['has_tags'] = (len(vn_context['tags']) > 0)
 
     # Staff list
@@ -249,8 +261,10 @@ def chart_page(request, vn_alias):
             'roles': roles,
             'alias': staff.alias
         })
-    print(vn_context['staffs'])
+        keywords.append(staff.title)
     vn_context['has_staffs'] = (len(vn_context['staffs']) > 0)
+
+    vn_context['keywords'] = ", ".join(keywords)
 
     # Screenshots list
     vn_context['screenshots'] = list()

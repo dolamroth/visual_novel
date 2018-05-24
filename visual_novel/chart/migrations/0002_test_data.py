@@ -49,7 +49,7 @@ def add_test_chartitem(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('chart', '0001_new_chart_model'),
+        ('chart', '0001_initial'),
         ('vn_core', '0002_test_data'),
     ]
 

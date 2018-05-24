@@ -17,6 +17,5 @@ Pillow==4.3.0
 psycopg2==2.7.3.1
 urllib3==1.22
 vine==1.1.4
-vk_api==9.3.2
 django-recaptcha2==1.0.3
 django-bitfield==1.9.3
