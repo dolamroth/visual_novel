@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block metatags %}
+    {% include "includes/no_robots.html" %}
+{% endblock %}
+
+{% block title %}
+    Регистрация
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+            <h3><a href="/">Главная</a>&nbsp;&#47;&nbsp;Завершение регистрации</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+            {{ request.user }}, ваш аккаунт успешно зарегистрирован.
+        </div>
+    </div>
+{% endblock %}
