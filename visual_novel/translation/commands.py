@@ -2,7 +2,12 @@ import arrow
 
 from mptt.exceptions import InvalidMove
 
+from django.conf import settings
+from django.template import loader
+from django.urls import reverse
+
 from core.commands import Command
+from notifications.vk import VK
 
 from .mixins import (
     TranslationChapterExistsValidator,
@@ -241,14 +246,13 @@ class ManageBetaLink(
         self.timezone = data['timezone']
 
     def execute_validated(self):
-        new_url = False
         # Additional check to reduce number of queries to database and to use PostgreSQL feature
         # to put newly saved instances at the end of filtered list when selecting
         changed = False
 
         # New betalink
         if self.betalink_id == 0:
-            new_url = True
+            changed=True
             beta_link, _ = TranslationBetaLink.objects.get_or_create(
                 title=self.title,
                 url=self.url,
@@ -259,7 +263,6 @@ class ManageBetaLink(
         else:
             beta_link = TranslationBetaLink.objects.get(id=self.betalink_id)
             if beta_link.url != self.url:
-                new_url = True
                 beta_link.approved = False
                 beta_link.rejected = False
                 beta_link.last_update = arrow.utcnow().to(self.timezone).datetime
@@ -272,7 +275,21 @@ class ManageBetaLink(
             if changed:
                 beta_link.save()
 
-        # TODO: post to admin in VK
+        if changed:
+            vk = VK()
+            context = {
+                'link': reverse('admin:{}_{}_change'.format(
+                            beta_link._meta.app_label,
+                            beta_link._meta.model_name
+                        ), args=(beta_link.pk,))
+            }
+            try:
+                vk.send_to_user(
+                    msg=loader.render_to_string('notifications/betalink_changed.txt', context),
+                    user_id=settings.VK_ADMIN_LOGIN
+                )
+            except vk.VkError:
+                pass
 
         return beta_link.id, beta_link.approved, beta_link.rejected
 

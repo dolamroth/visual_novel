@@ -214,8 +214,7 @@ EMAIL_USE_TLS = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_USE_TLS')
 SERVER_EMAIL = get_secret(section='EMAIL_SETTINGS', setting='SERVER_EMAIL')
 
 # VK settings
-VK_LOGIN = get_secret(section='VK', setting='LOGIN')
-VK_PASSWORD = get_secret(section='VK', setting='PASSWORD')
+VK_API_KEY = get_secret(section='VK', setting='API_KEY')
 VK_GROUP_ID = get_secret(section='VK', setting='GROUP_ID')
 VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
 
