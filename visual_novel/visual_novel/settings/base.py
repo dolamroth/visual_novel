@@ -36,6 +36,7 @@ def get_secret(setting, section=None, secrets=secrets):
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '..'))
+os.makedirs(os.path.join(BASE_DIR, 'logs'), exist_ok=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -167,9 +168,45 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
+LOGGING = {
+    'version': 1.0,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s: %(levelname)s] %(message)s',
+        },
+    },
+    'handlers': {
+        'visual_novel_handler': {
+            'filename': os.path.join(BASE_DIR, 'logs', 'visual_novel.log'),
+            'mode': 'a+',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'simple',
+            'maxBytes': 1024 * 1024 * 500,
+            'backupCount': 5,
+        },
+        'vk_handler': {
+            'filename': os.path.join(BASE_DIR, 'logs', 'vk.log'),
+            'mode': 'a+',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'simple',
+            'maxBytes': 1024 * 1024 * 500,
+            'backupCount': 5,
+        },
+    },
+    'loggers': {
+        'vn_logger': {
+            'handlers': ['visual_novel_handler'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'vk_logger': {
+            'handlers': ['vk_handler'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

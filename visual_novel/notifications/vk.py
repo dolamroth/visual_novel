@@ -1,4 +1,5 @@
 import json
+import logging
 import urllib3
 
 from django.conf import settings
@@ -7,6 +8,8 @@ __version__ = '0.1'
 
 # last version as of 2018-04-26, api changelog can be viewed at https://vk.com/dev/versions
 VK_API_VERSION = '5.78'
+
+vk_logger = logging.getLogger('vk_logger')
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -28,8 +31,7 @@ class VK(object):
         try:
             return json.loads(r.data)
         except json.decoder.JSONDecodeError:
-            # TODO: logging
-            pass
+            vk_logger.error('VK API returned {}'.format(r.data))
 
     # TODO: authorization check inside __query() & raising corresponding exceptions
     def __query(self, method, params_q):
@@ -47,7 +49,6 @@ class VK(object):
         except AssertionError:
             raise self.VkWrongTypeError()
 
-    # TODO: log messages' ids
     def send_to_user(self, msg='', user_id=None):
         self.__assert(msg, str)
         self.__assert(user_id, str)
@@ -57,9 +58,9 @@ class VK(object):
             'message': msg
         }
         r = self.__query('messages.send', context)
+        vk_logger.info('Message id {}'.format(r['response']))
         return r['response']
 
-    # TODO: log wall posts' ids
     def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID):
         self.__assert(msg, str)
         self.__assert(group_id, str)
@@ -70,6 +71,7 @@ class VK(object):
             'from_group': 1
         }
         r = self.__query('wall.post', context)
+        vk_logger.info('Wall Post id {}'.format(r['response']))
         return r['response']
 
     class VkError(Exception):
