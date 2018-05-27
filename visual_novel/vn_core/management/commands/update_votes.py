@@ -18,17 +18,17 @@ class Command(BaseCommand):
             all_visual_novels = VisualNovel.objects.all().values_list('vndb_id', flat=True)
             now_date = datetime.datetime.utcnow().date()
             for vndb_id in all_visual_novels:
-                rating, popularity, vote_count = vndb.update_vn(vndb_id)
-                print(vndb_id, rating, popularity, vote_count)
-                vn = VisualNovel.objects.filter(vndb_id=vndb_id)
-                vn.update(
-                    rate=rating,
-                    popularity=popularity,
-                    vote_count=vote_count
-                )
                 try:
                     VisualNovelStats.objects.get(visual_novel=vn, data=now_date)
                 except VisualNovelStats.DoesNotExist:
+                    rating, popularity, vote_count = vndb.update_vn(vndb_id)
+                    print(vndb_id, rating, popularity, vote_count)
+                    vn = VisualNovel.objects.filter(vndb_id=vndb_id)
+                    vn.update(
+                        rate=rating,
+                        popularity=popularity,
+                        vote_count=vote_count
+                    )
                     VisualNovelStats.objects.create(visual_novel=vn, rate=rating, popularity=popularity,
                                                     vote_count=vote_count)
         finally:
