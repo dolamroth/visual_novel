@@ -8,7 +8,7 @@ from core.models import PublishModel, PublishFileModel
 from core.fields import ImageFieldWithEnhancedUploadTo
 from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
-from .utils import vndb_socket_login, vndb_socket_logout, vndb_socket_update_vn
+from vn_core.utils import VndbStats
 
 
 class VisualNovel(PublishFileModel):
@@ -53,16 +53,16 @@ class VisualNovel(PublishFileModel):
     def additional_action_on_save(self, list_of_changed_fields, created):
         vndb_id = self.vndb_id
         if created and (type(vndb_id) == int):
-            sock = None
             try:
-                sock = vndb_socket_login()
-                rate, popularity, vote_count = vndb_socket_update_vn(sock, vndb_id)
+                vndb = VndbStats()
+                vndb.login()
+                rate, popularity, vote_count = vndb.update_vn(vndb_id)
                 self.rate = rate
                 self.popularity = popularity
                 self.vote_count = vote_count
                 VisualNovelStats.objects.create(rate=rate, popularity=popularity, vote_count=vote_count)
             finally:
-                vndb_socket_logout(sock)
+                vndb.logout()
 
 
 class VisualNovelStats(models.Model):
