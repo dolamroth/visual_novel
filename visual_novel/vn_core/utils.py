@@ -3,12 +3,37 @@ import json
 
 from django.conf import settings
 
+__version__ = '0.1'
 
-class VndbStats:
+
+class VndbStats(object):
     def __init__(self):
         self.sock = None
         self.status = 'Not connection'
         self.connected = False
+        self.protocol = settings.VNDB_API_PROTOCOL
+        self.client = settings.VNDB_API_CLIENT
+        self.clientver = settings.VNDB_API_CLIENTVER
+        self.username = settings.VNDB_API_USERNAME
+        self.password = settings.VNDB_API_PASSWORD
+
+    class VndbError(Exception):
+        message = ''
+
+        def __str__(self):
+            return self.message
+
+    class VndbAuthError(VndbError):
+        message = 'Проблемы с подключением'
+
+    class VndbTypeError(VndbError):
+        message = 'Vndb_id должно быть целым числом'
+
+    def __assert(self, param, type):
+        try:
+            assert type(param), type
+        except AssertionError:
+            raise self.VndbTypeError()
 
     def login(self):
         HOST, PORT = settings.VNDB_API_HOST, settings.VNDB_API_PORT
@@ -16,11 +41,11 @@ class VndbStats:
 
         vndblogin = dict()
 
-        vndblogin["protocol"] = settings.VNDB_API_PROTOCOL
-        vndblogin["client"] = settings.VNDB_API_CLIENT
-        vndblogin["clientver"] = settings.VNDB_API_CLIENTVER
-        vndblogin["username"] = settings.VNDB_API_USERNAME
-        vndblogin["password"] = settings.VNDB_API_PASSWORD
+        vndblogin["protocol"] = self.protocol
+        vndblogin["client"] = self.client
+        vndblogin["clientver"] = self.clientver
+        vndblogin["username"] = self.username
+        vndblogin["password"] = self.password
 
         bindata = ("login " + json.dumps(vndblogin))
 
@@ -36,19 +61,21 @@ class VndbStats:
             self.sock = None
             self.status = 'Connection was failed'
             self.connected = False
+            raise self.VndbAuthError()
 
     def logout(self):
         if self.sock is None:
-            return
+            raise self.VndbAuthError()
         self.sock.close()
         self.status = 'not connection (logout)'
         self.connected = False
 
     def update_vn(self, vndb_id):
+        self.__assert(vndb_id, int)
         if self.sock is None:
             self.status = 'Connection was failed'
             self.connected = False
-            return
+            raise self.VndbAuthError()
         eot = u"\u0004"
         bindata = 'get vn stats (id = {})'.format(vndb_id)
         self.sock.sendall(bytes(bindata + eot, "utf-8"))
@@ -59,3 +86,4 @@ class VndbStats:
         popularity = int(float(vn_obj['items'][0]['popularity']) * 100.0)
         vote_count = int(vn_obj['items'][0]['votecount'])
         return rating, popularity, vote_count
+
