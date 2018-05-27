@@ -56,9 +56,29 @@ class VisualNovel(PublishFileModel):
             sock = None
             try:
                 sock = vndb_socket_login()
-                self.rate, self.popularity, self.vote_count = vndb_socket_update_vn(sock, vndb_id)
+                rate, popularity, vote_count = vndb_socket_update_vn(sock, vndb_id)
+                self.rate = rate
+                self.popularity = popularity
+                self.vote_count = vote_count
+                VisualNovelStats.objects.create(rate=rate, popularity=popularity, vote_count=vote_count)
             finally:
                 vndb_socket_logout(sock)
+
+
+class VisualNovelStats(models.Model):
+    visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
+    data = models.DateField(auto_now_add=True, verbose_name='Дата')
+    rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
+    popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
+    vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
+
+    class Meta:
+        db_table = 'vnstats'
+        verbose_name = 'Оценка визуальной новеллы'
+        verbose_name_plural = 'Оценки визуальных новелл'
+
+    def __str__(self):
+        return 'Оценка для {}'.format(self.visual_novel.title)
 
 
 class VNGenre(models.Model):
