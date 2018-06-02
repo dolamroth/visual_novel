@@ -114,3 +114,5 @@ secrets.json
 # static files
 **/static/admin
 **/static/rest_framework
+
+**/visual_novel/wsgi.py
