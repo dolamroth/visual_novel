@@ -60,7 +60,12 @@ class VisualNovel(PublishFileModel):
                 self.rate = rate
                 self.popularity = popularity
                 self.vote_count = vote_count
-                VisualNovelStats.objects.create(rate=rate, popularity=popularity, vote_count=vote_count)
+                VisualNovelStats.objects.create(
+                    rate=rate,
+                    popularity=popularity,
+                    vote_count=vote_count,
+                    visual_novel=self
+                )
             finally:
                 vndb.logout()
 
