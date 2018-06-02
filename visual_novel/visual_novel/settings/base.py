@@ -242,6 +242,8 @@ os.makedirs(os.path.join(MEDIA_ROOT, MEDIA_VN_SCREENSHOTS_MINI_DIRECTORY), exist
 RECAPTCHA_PRIVATE_KEY = get_secret(section='CAPTCHA', setting='PRIVATE_KEY')
 RECAPTCHA_PUBLIC_KEY = get_secret(section='CAPTCHA', setting='PUBLIC_KEY')
 
+FILE_UPLOAD_MAX_MEMORY_SIZE = 200000000
+
 # email settings
 EMAIL_HOST = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST')
 EMAIL_PORT = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_PORT')
