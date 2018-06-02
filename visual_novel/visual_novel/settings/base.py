@@ -243,6 +243,7 @@ RECAPTCHA_PRIVATE_KEY = get_secret(section='CAPTCHA', setting='PRIVATE_KEY')
 RECAPTCHA_PUBLIC_KEY = get_secret(section='CAPTCHA', setting='PUBLIC_KEY')
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 200000000
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 # email settings
 EMAIL_HOST = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST')
