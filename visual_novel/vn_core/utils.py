@@ -9,13 +9,12 @@ __version__ = '0.1'
 class VndbStats(object):
     def __init__(self):
         self.sock = None
-        self.status = 'Not connection'
-        self.connected = False
         self.protocol = settings.VNDB_API_PROTOCOL
         self.client = settings.VNDB_API_CLIENT
         self.clientver = settings.VNDB_API_CLIENTVER
         self.username = settings.VNDB_API_USERNAME
         self.password = settings.VNDB_API_PASSWORD
+        self.eot = u"\u0004"
 
     class VndbError(Exception):
         message = ''
@@ -24,10 +23,10 @@ class VndbStats(object):
             return self.message
 
     class VndbAuthError(VndbError):
-        message = 'Проблемы с подключением'
+        message = 'Подключение не выполнено'
 
     class VndbTypeError(VndbError):
-        message = 'Vndb_id должно быть целым числом'
+        message = 'Передано значение неверного типа'
 
     def __assert(self, param, type):
         try:
@@ -37,7 +36,6 @@ class VndbStats(object):
 
     def login(self):
         HOST, PORT = settings.VNDB_API_HOST, settings.VNDB_API_PORT
-        eot = u"\u0004"
 
         vndblogin = dict()
 
@@ -52,38 +50,31 @@ class VndbStats(object):
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((HOST, PORT))
-            self.sock.sendall(bytes(bindata + eot, "utf-8"))
+            self.sock.sendall(bytes(bindata + self.eot, "utf-8"))
             # Read the response "Ok" in order to clear pipe for next call
             received = str(self.sock.recv(1024), "utf-8")
-            self.status = 'Connected'
-            self.connected = True
         except:
             self.sock = None
-            self.status = 'Connection was failed'
-            self.connected = False
             raise self.VndbAuthError()
 
     def logout(self):
-        if self.sock is None:
-            raise self.VndbAuthError()
-        self.sock.close()
-        self.status = 'not connection (logout)'
-        self.connected = False
+        try:
+            self.sock.close()
+        except:
+            pass
 
     def update_vn(self, vndb_id):
         self.__assert(vndb_id, int)
         if self.sock is None:
-            self.status = 'Connection was failed'
-            self.connected = False
             raise self.VndbAuthError()
-        eot = u"\u0004"
         bindata = 'get vn stats (id = {})'.format(vndb_id)
-        self.sock.sendall(bytes(bindata + eot, "utf-8"))
+        self.sock.sendall(bytes(bindata + self.eot, "utf-8"))
         received = str(self.sock.recv(1024), "utf-8")
+
         # The answer is always in format "results %json_object%" + terminate symbol u"\u0004"
         vn_obj = json.loads(received[8:-1])
-        rating = int(float(vn_obj['items'][0]['rating']) * 100.0)
-        popularity = int(float(vn_obj['items'][0]['popularity']) * 100.0)
-        vote_count = int(vn_obj['items'][0]['votecount'])
+        rating = round(float(vn_obj['items'][0]['rating']) * 100.0)
+        popularity = round(float(vn_obj['items'][0]['popularity']) * 100.0)
+        vote_count = round(vn_obj['items'][0]['votecount'])
         return rating, popularity, vote_count
 
