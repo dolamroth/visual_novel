@@ -72,7 +72,7 @@ class VisualNovel(PublishFileModel):
 
 class VisualNovelStats(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT)
-    data = models.DateField(auto_now_add=True, verbose_name='Дата')
+    date = models.DateField(auto_now_add=True, verbose_name='Дата')
     rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
     popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
     vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
