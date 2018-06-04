@@ -13,6 +13,7 @@ class Genre(PublishModel):
         db_table = 'genres'
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+        ordering = ('title', )
 
     def __str__(self):
         return self.title

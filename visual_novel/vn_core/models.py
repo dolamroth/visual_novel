@@ -40,6 +40,7 @@ class VisualNovel(PublishFileModel):
                 'path': settings.MEDIA_VN_POSTER_DIRECTORY
             }
         ]
+        ordering = ('title', )
 
     def __str__(self):
         return self.title
@@ -88,7 +89,7 @@ class VisualNovelStats(models.Model):
 
 class VNGenre(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, related_name='genres_set')
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, related_name='genres_set', verbose_name='Жанр')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:
@@ -102,7 +103,7 @@ class VNGenre(models.Model):
 
 class VNTag(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tags_set')
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='tags_set', verbose_name='Тэг')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:
@@ -116,7 +117,7 @@ class VNTag(models.Model):
 
 class VNStudio(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
-    studio = models.ForeignKey(Studio, on_delete=models.CASCADE, related_name='studios_set')
+    studio = models.ForeignKey(Studio, on_delete=models.CASCADE, related_name='studios_set', verbose_name='Студия')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:
@@ -130,7 +131,7 @@ class VNStudio(models.Model):
 
 class VNStaff(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_set')
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_set', verbose_name='Персона')
     role = models.ForeignKey(StaffRole, on_delete=models.PROTECT)
     weight = models.IntegerField(verbose_name='вес', default=0)
 

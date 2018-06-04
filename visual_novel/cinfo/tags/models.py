@@ -13,6 +13,7 @@ class Tag(PublishModel):
         db_table = 'tags'
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+        ordering = ('title', )
 
     def __str__(self):
         return self.title

@@ -13,6 +13,7 @@ class Studio(PublishModel):
         db_table = 'studios'
         verbose_name = 'Студия'
         verbose_name_plural = 'Студии'
+        ordering = ('title', )
 
     def __str__(self):
         return self.title
