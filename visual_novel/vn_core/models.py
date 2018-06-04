@@ -40,6 +40,7 @@ class VisualNovel(PublishFileModel):
                 'path': settings.MEDIA_VN_POSTER_DIRECTORY
             }
         ]
+        ordering = ('title', )
 
     def __str__(self):
         return self.title
