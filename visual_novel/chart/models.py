@@ -14,6 +14,7 @@ class ChartItem(PublishModel):
         db_table = 'chart_items'
         verbose_name = 'Итем чарта'
         verbose_name_plural = 'Итемы чарта'
+        ordering = ('visual_novel__title', )
 
     def __str__(self):
         return self.visual_novel.title

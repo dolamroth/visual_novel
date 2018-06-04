@@ -35,9 +35,10 @@ class VisualNovelAdmin(admin.ModelAdmin):
         'title', 'is_published', 'alternative_title', 'photo_tag', 'description', 'date_of_release', 'longevity',
         'vndb_id', 'steam_link', 'alias'
     )
-    fields = ('title', 'photo_tag', 'photo', 'alternative_title', 'description', 'date_of_release', 'vndb_id',
-              'steam_link', 'longevity', 'alias', 'rate', 'popularity', 'vote_count')
+    fields = ('is_published', 'title', 'photo_tag', 'photo', 'alternative_title', 'description', 'date_of_release',
+              'vndb_id', 'steam_link', 'longevity', 'alias', 'rate', 'popularity', 'vote_count')
     readonly_fields = ['photo_tag']
+    list_per_page = 20
 
 
 admin.site.register(VisualNovel, VisualNovelAdmin)
