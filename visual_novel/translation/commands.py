@@ -158,6 +158,10 @@ class AddTranslationPartChapter(
                 script_title=self.script_title,
                 is_chapter=self.is_chapter,
                 last_update=arrow.utcnow().to(self.timezone).datetime,
+                total_rows=0,
+                translated=0,
+                edited_first_pass=0,
+                edited_second_pass=0
             )
 
             translation_chapter.insert_at(
