@@ -37,11 +37,11 @@ class TranslationChapterSerializer(AddTranslationChapterSerializer):
 
 
 class StatisticsDescription(serializers.Serializer):
-    description = serializers.CharField(max_length=500)
+    description = serializers.CharField(max_length=500, allow_blank=True)
 
 
 class StatisticsComment(serializers.Serializer):
-    comment = serializers.CharField(max_length=2000)
+    comment = serializers.CharField(max_length=2000, allow_blank=True)
 
 
 class BetaLinkSerializer(serializers.Serializer):
