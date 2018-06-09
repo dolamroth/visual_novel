@@ -1,3 +1,7 @@
+import arrow
+import pytz
+
+from django.conf import settings
 from django.shortcuts import render
 from django.http import Http404
 from django.utils.decorators import decorator_from_middleware
@@ -88,17 +92,25 @@ def all_translations(request):
             lft=1
         )
 
+        user_timezone = pytz.timezone(settings.DEFAULT_TIME_ZONE) \
+            if not hasattr(request.user, 'profile') \
+            else request.user.profile.timezone
+
+        last_update = arrow.get((statistics.last_update).replace(tzinfo=pytz.utc)).to(user_timezone).datetime
+
+        total = statistics.total_rows if statistics.total_rows>0 else 1
+
         context['novels'].append({
             'title': visual_novel.title,
             'total_rows': statistics.total_rows,
             'translated': statistics.translated,
             'edited_first_pass': statistics.edited_first_pass,
             'edited_second_pass': statistics.edited_second_pass,
-            'last_update': statistics.last_update.__str__()[:19],
+            'last_update': last_update.__str__()[:19],
             'alias': visual_novel.alias,
-            'translated_perc': "{0:.2f}%".format(statistics.translated / statistics.total_rows * 100.0),
-            'edited_first_pass_perc': "{0:.2f}%".format(statistics.edited_first_pass / statistics.total_rows * 100.0),
-            'edited_second_pass_perc': "{0:.2f}%".format(statistics.edited_second_pass / statistics.total_rows * 100.0)
+            'translated_perc': "{0:.2f}%".format(statistics.translated / total * 100.0),
+            'edited_first_pass_perc': "{0:.2f}%".format(statistics.edited_first_pass / total * 100.0),
+            'edited_second_pass_perc': "{0:.2f}%".format(statistics.edited_second_pass / total * 100.0)
         })
 
     return render(request, 'translation/all.html', context)
@@ -127,6 +139,10 @@ def translation_item_view(request, vn_alias):
     context['pictures_statistics'] = statistics.pictures_statistics
     context['technical_statistics'] = statistics.technical_statistics
     context['comment'] = statistics.comment
+
+    context['has_pictures_statistics'] = not not statistics.pictures_statistics
+    context['has_technical_statistics'] = not not statistics.technical_statistics
+    context['has_comment'] = not not statistics.comment
 
     base_node = TranslationStatisticsChapter.objects.get(
         tree_id=statistics.tree_id,
@@ -158,7 +174,7 @@ def translation_item_view(request, vn_alias):
 
     for item in all_items:
         context['items'].append({
-            'name': statistics_name(item, base_level=1).replace('"', '\''),
+            'name': statistics_name(item, base_level=1, script=False).replace('"', '\''),
             'total_rows': item.total_rows,
             'translated': item.translated,
             'edited_first_pass': item.edited_first_pass,

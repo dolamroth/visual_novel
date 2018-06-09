@@ -27,19 +27,21 @@ from ..models import (
 
 
 def get_data(request):
-    data = {
-        'translation_item_id': request.GET.get('translation_item_id', None),
-        'translation_chapter_id': request.GET.get('translation_chapter_id', None),
-        'new_parent': request.GET.get('parent', None),
-        'new_move_to': request.GET.get('move_to', None),
-        'script_title': request.GET.get('script_title', None),
-        'total': request.GET.get('total', None),
-        'new_translated': request.GET.get('translated', None),
-        'new_edited_first_pass': request.GET.get('edited_first_pass', None),
-        'new_edited_second_pass': request.GET.get('edited_second_pass', None)
-    }
+    data = dict()
+    data['translation_item_id'] = request.GET.get('translation_item_id', None)
+    data['translation_chapter_id'] = request.GET.get('translation_chapter_id', None)
+    data['new_parent'] = request.GET.get('parent', None)
+    data['new_move_to'] = request.GET.get('move_to', None)
+    data['script_title'] = request.GET.get('script_title', None)
+    data['total'] = request.GET.get('total', None)
+    data['new_translated'] = request.GET.get('translated', None)
+    data['new_edited_first_pass'] = request.GET.get('edited_first_pass', None)
+    data['new_edited_second_pass'] = request.GET.get('edited_second_pass', None)
 
-    data['title'] = request.GET.get('script_title', data['script_title'])
+    data['title'] = request.GET.get('title', None)
+    if not data['title']:
+        data['title'] = data['script_title']
+
     is_chapter = (request.GET.get('is_chapter', None) == 'true')
 
     return data, is_chapter

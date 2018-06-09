@@ -58,11 +58,13 @@ class TranslationStatisticsChapter(MPTTModel):
                 total_edited_first_pass=Sum('edited_first_pass'),
                 total_edited_second_pass=Sum('edited_second_pass')
             )
-            self.total_rows = all_counts['total_rows_all']
-            self.translated = all_counts['total_translated']
-            self.edited_first_pass = all_counts['total_edited_first_pass']
-            self.edited_second_pass = all_counts['total_edited_second_pass']
-            super(TranslationStatisticsChapter, self).save()
+            # Additional check for empty chapter, which has all "Sums" == None
+            if all_counts['total_rows_all'] is not None:
+                self.total_rows = all_counts['total_rows_all']
+                self.translated = all_counts['total_translated']
+                self.edited_first_pass = all_counts['total_edited_first_pass']
+                self.edited_second_pass = all_counts['total_edited_second_pass']
+                super(TranslationStatisticsChapter, self).save()
         if self.parent:
             self.parent.recalculate()
 
@@ -114,7 +116,7 @@ class TranslationItem(PublishModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            parental_translation_node, _ = TranslationStatisticsChapter.objects.get_or_create(
+            parental_translation_node = TranslationStatisticsChapter.objects.create(
                 parent=None,
                 title='Раздел самого высокого уровня',
                 script_title='Раздел самого высокого уровня',
