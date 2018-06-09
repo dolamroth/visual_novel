@@ -65,6 +65,12 @@ class TranslationStatisticsChapter(MPTTModel):
                 self.edited_first_pass = all_counts['total_edited_first_pass']
                 self.edited_second_pass = all_counts['total_edited_second_pass']
                 super(TranslationStatisticsChapter, self).save()
+            else:
+                self.total_rows = 0
+                self.translated = 0
+                self.edited_first_pass = 0
+                self.edited_second_pass = 0
+                super(TranslationStatisticsChapter, self).save()
         if self.parent:
             self.parent.recalculate()
 

@@ -83,9 +83,14 @@ class EditTranslationPartChapter(
             try:
                 current_parent = translation_chapter.parent
                 translation_chapter.move_to(parent, self.new_move_to)
+
+                # Required for recalculate methods
+                translation_chapter.refresh_from_db()
+                parent.refresh_from_db()
+
                 translation_chapter.save()
-                current_parent.recalculate()
                 translation_chapter.recalculate()
+                current_parent.recalculate()
                 movement = True
             except InvalidMove:
                 raise InvalidMoveToChildElement()
