@@ -153,9 +153,12 @@ def translation_item_view(request, vn_alias):
     context['translated'] = base_node.translated
     context['edited_first_pass'] = base_node.edited_first_pass
     context['edited_second_pass'] = base_node.edited_second_pass
-    context['translated_perc'] = "{0:.2f}%".format(base_node.translated / base_node.total_rows * 100.0)
-    context['edited_first_pass_perc'] = "{0:.2f}%".format(base_node.edited_first_pass / base_node.total_rows * 100.0)
-    context['edited_second_pass_perc'] = "{0:.2f}%".format(base_node.edited_second_pass / base_node.total_rows * 100.0)
+
+    total = context['total_rows'] if context['total_rows']>0 else 1
+
+    context['translated_perc'] = "{0:.2f}%".format(base_node.translated / total * 100.0)
+    context['edited_first_pass_perc'] = "{0:.2f}%".format(base_node.edited_first_pass / total * 100.0)
+    context['edited_second_pass_perc'] = "{0:.2f}%".format(base_node.edited_second_pass / total * 100.0)
 
     context['download_links'] = [
         d for d in TranslationBetaLink.objects.filter(
