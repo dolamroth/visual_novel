@@ -43,7 +43,6 @@ var reloadNewsOnPage = function(news){
     table.find('tr.news').remove();
     for(i=news.length-1; i>=0; i--){
         var val = news[i];
-        console.log(val);
         var row = example_row
             .clone(true, true)
             .trigger('create')
@@ -52,7 +51,7 @@ var reloadNewsOnPage = function(news){
         row.find('div.title').html( val['title'] );
         row.find('div.short_description').html( val['short_description'] );
         row.find('div.poster').html( '<img src="'+val['poster_url']+'" style="height: 350px; width: auto;">' );
-        row.find('div.author').html( 'Автор новости: ' + val['author'] );
+        row.find('div.author').html( 'Дата добавления: ' + val['created_at'] + '; автор: ' + val['author'] );
         table.prepend(row);
     }
 };
