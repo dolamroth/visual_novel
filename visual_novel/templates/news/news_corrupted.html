@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block metatags %}
+    {% include "includes/no_robots.html" %}
+{% endblock %}
+
+{% block title %}
+    Не удалось загрузить новость
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+            <h3><a href="/">Главная</a>&nbsp;&#47;&nbsp;Ошибка</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
+            При попытке загрузить новость произошла ошибка.
+        </div>
+    </div>
+{% endblock %}
