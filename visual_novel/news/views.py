@@ -11,3 +11,7 @@ def get_news(request, alias):
     except News.DoesNotExist:
         raise Http404
     return render(request, 'news/news_item.html', context=NewsSerializer(news).data)
+
+
+def news_list(request):
+    return render(request, 'news/news_main.html', context=dict())

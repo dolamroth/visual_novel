@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block metatags %}
+    {% include "includes/no_robots.html" %}
+{% endblock %}
+
+{% block title %}
+    Новости
+{% endblock %}
+
+{% block content %}
+    {% include "news/news_list.html" %}
+{% endblock %}
