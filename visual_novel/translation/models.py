@@ -159,19 +159,17 @@ class TranslationSubscription(models.Model):
 class TranslationItemSendToVKManager(models.Manager):
 
     def create_from_translation_item(self, translation_item, vk_group_id):
-
-        transl_item_vk = TranslationItemSendToVK(translation_item=translation_item,
-                                                 vk_group_id=vk_group_id)
-        translation_statistic = translation_item.statistics
-        transl_item_vk.pictures_statistics = translation_statistic.pictures_statistics
-        transl_item_vk.technical_statistics = translation_statistic.technical_statistics
-        transl_item_vk.comment = translation_statistic.comment
-        transl_item_vk.last_update = translation_statistic.last_update
-        transl_item_vk.total_rows = translation_statistic.total_rows
-        transl_item_vk.translated = translation_statistic.translated
-        transl_item_vk.edited_first_pass = translation_statistic.edited_first_pass
-        transl_item_vk.edited_second_pass = translation_statistic.edited_second_pass
-        transl_item_vk.save()
+        ts = translation_item.statistics
+        transl_item_vk = self.create(translation_item=translation_item,
+                                     vk_group_id=vk_group_id,
+                                     pictures_statistics=ts.pictures_statistics,
+                                     technical_statistics=ts.technical_statistics,
+                                     comment=ts.comment,
+                                     last_update=ts.last_update,
+                                     total_rows=ts.total_rows,
+                                     translated=ts.translated,
+                                     edited_first_pass=ts.edited_first_pass,
+                                     edited_second_pass=ts.edited_second_pass)
         return transl_item_vk
 
 
