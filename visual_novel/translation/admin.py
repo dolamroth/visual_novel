@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TranslationItem, TranslationBetaLink
+from .models import TranslationItem, TranslationBetaLink, TranslationItemSendToVK
 
 
 class TranslationBetaLinkInline(admin.TabularInline):
@@ -27,3 +27,4 @@ class TranslationItemAdmin(admin.ModelAdmin):
 
 admin.site.register(TranslationItem, TranslationItemAdmin)
 admin.site.register(TranslationBetaLink)
+admin.site.register(TranslationItemSendToVK)

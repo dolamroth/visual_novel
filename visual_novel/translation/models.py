@@ -154,3 +154,39 @@ class TranslationSubscription(models.Model):
     def __str__(self):
         return 'Подписка {} на рассылку статистики перевода {}'.format(
             self.profile.user.username, self.translation.visual_novel.title)
+
+
+class TranslationItemSendToVK(models.Model):
+    translation_item = models.ForeignKey(TranslationItem, verbose_name='Перевод', on_delete=models.CASCADE)
+    translation_statistic = models.ForeignKey(TranslationStatistics, verbose_name='Статистика перевода',
+                                              on_delete=models.CASCADE)
+    vk_group_id = models.CharField(verbose_name='ID группы ВК', max_length=255, default='')
+    post_date = models.DateField(verbose_name='Дата', auto_now_add=True)
+
+    pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='',
+                                           blank=True)
+    technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='',
+                                            blank=True)
+    comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='', blank=True)
+    last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
+                                       null=True, blank=True)
+    total_rows = models.IntegerField(default=0, verbose_name='Всего строк')
+    translated = models.IntegerField(default=0, verbose_name='Переведено')
+    edited_first_pass = models.IntegerField(default=0, verbose_name='Первый проход редактуры')
+    edited_second_pass = models.IntegerField(default=0, verbose_name='Второй проход редактуры')
+
+    def create(self, translation_item, translation_statistic, vk_group_id):
+        transl_item_vk = TranslationItemSendToVK(translation_item=translation_item,
+                                                 translation_statistic=translation_statistic,
+                                                 vk_group_id=vk_group_id)
+        transl_item_vk.pictures_statistics = translation_statistic.pictures_statistics
+        transl_item_vk.technical_statistics = translation_statistic.technical_statistics
+        transl_item_vk.comment = translation_statistic.comment
+        transl_item_vk.last_update = translation_statistic.last_update
+        transl_item_vk.total_rows = translation_statistic.total_rows
+        transl_item_vk.translated = translation_statistic.translated
+        transl_item_vk.edited_first_pass = translation_statistic.edited_first_pass
+        transl_item_vk.edited_second_pass = translation_statistic.edited_second_pass
+        transl_item_vk.save()
+        return transl_item_vk
+
