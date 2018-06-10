@@ -1,0 +1,27 @@
+{% load static %}
+
+<table class="table">
+    <tbody id="news-list-table">
+    <tr class="hidden-news">
+        <td>
+            <div class="row row-no-margin title">
+            </div>
+            <div class="row row-no-margin short_description">
+            </div>
+            <div class="row row-no-margin poster">
+            </div>
+            <div class="row row-no-margin author">
+            </div>
+        </td>
+    </tr>
+    <tr class="pagination-tr">
+        <td>
+            <nav>
+                <ul class="pagination" id="ul-pagination"></ul>
+            </nav>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script src="{% static 'js/news_list.js' %}"></script>

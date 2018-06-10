@@ -264,6 +264,39 @@ a.tooltip{
     position: relative;
 }
 
+.hidden-news{
+    display: none;
+}
+
+.row-no-margin.row{
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#ul-pagination{
+    margin-top: 0px;
+    margin-bottom: -5px;
+}
+
+.row-no-margin.row.title{
+    margin-bottom: 10px;
+    font-size: 14pt;
+    text-transform: uppercase;
+}
+
+.row-no-margin.row.short_description{
+    margin: 10px 0px;
+}
+
+.row-no-margin.row.poster{
+    text-align: center;
+    margin: 10px 0px;
+}
+
+.row-no-margin.row.author{
+    font-size: 10pt;
+}
+
 /* Media selectors */
 @media all and (max-width: 494px){
     .col-xxs-6{
