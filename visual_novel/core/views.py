@@ -1,6 +1,9 @@
+import os
+
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
+from django.http import HttpResponse, Http404
 from django.utils.encoding import force_text, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
@@ -117,3 +120,11 @@ def profile_page(request, username):
     context['distribution'] = profile.send_distributions
 
     return render(request, 'pages/profile.html', context)
+
+
+def favicon(request):
+    try:
+        image_data = open(os.path.join(settings.BASE_DIR, "static/favicon.ico"), "rb").read()
+        return HttpResponse(image_data, content_type="image/png")
+    except FileNotFoundError:
+        raise Http404

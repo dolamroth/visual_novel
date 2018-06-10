@@ -76,6 +76,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemaps'),
     path('robots.txt', TemplateView.as_view(template_name="includes/robots.txt"),
          {'http_domain': settings.VN_HTTP_DOMAIN}, name='robots'),
+    path('favicon.ico', core_views.favicon, name='favicon'),
 
     # Apps views
     path('offers/', include(offer_service.urls)),

@@ -116,3 +116,4 @@ secrets.json
 **/static/rest_framework
 
 **/visual_novel/wsgi.py
+**/favicon.ico
