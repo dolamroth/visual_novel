@@ -156,6 +156,25 @@ class TranslationSubscription(models.Model):
             self.profile.user.username, self.translation.visual_novel.title)
 
 
+class TranslationItemSendToVKManager(models.Manager):
+
+    def create_from_translation_item(self, translation_item, vk_group_id):
+
+        transl_item_vk = TranslationItemSendToVK(translation_item=translation_item,
+                                                 vk_group_id=vk_group_id)
+        translation_statistic = translation_item.statistics
+        transl_item_vk.pictures_statistics = translation_statistic.pictures_statistics
+        transl_item_vk.technical_statistics = translation_statistic.technical_statistics
+        transl_item_vk.comment = translation_statistic.comment
+        transl_item_vk.last_update = translation_statistic.last_update
+        transl_item_vk.total_rows = translation_statistic.total_rows
+        transl_item_vk.translated = translation_statistic.translated
+        transl_item_vk.edited_first_pass = translation_statistic.edited_first_pass
+        transl_item_vk.edited_second_pass = translation_statistic.edited_second_pass
+        transl_item_vk.save()
+        return transl_item_vk
+
+
 class TranslationItemSendToVK(models.Model):
     translation_item = models.ForeignKey(TranslationItem, verbose_name='Перевод', on_delete=models.CASCADE)
     vk_group_id = models.CharField(verbose_name='ID группы ВК', max_length=255, default='')
@@ -173,21 +192,7 @@ class TranslationItemSendToVK(models.Model):
     edited_first_pass = models.IntegerField(default=0, verbose_name='Первый проход редактуры')
     edited_second_pass = models.IntegerField(default=0, verbose_name='Второй проход редактуры')
 
-    def create_from_translation_item(self, translation_item, vk_group_id):
-
-        transl_item_vk = TranslationItemSendToVK(translation_item=translation_item,
-                                                 vk_group_id=vk_group_id)
-        translation_statistic = translation_item.statistics
-        transl_item_vk.pictures_statistics = translation_statistic.pictures_statistics
-        transl_item_vk.technical_statistics = translation_statistic.technical_statistics
-        transl_item_vk.comment = translation_statistic.comment
-        transl_item_vk.last_update = translation_statistic.last_update
-        transl_item_vk.total_rows = translation_statistic.total_rows
-        transl_item_vk.translated = translation_statistic.translated
-        transl_item_vk.edited_first_pass = translation_statistic.edited_first_pass
-        transl_item_vk.edited_second_pass = translation_statistic.edited_second_pass
-        transl_item_vk.save()
-        return transl_item_vk
+    objects = TranslationItemSendToVKManager()
 
     class Meta:
         db_table = 'translation_item_send_to_vk'
