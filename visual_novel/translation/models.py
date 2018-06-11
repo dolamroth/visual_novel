@@ -154,3 +154,49 @@ class TranslationSubscription(models.Model):
     def __str__(self):
         return 'Подписка {} на рассылку статистики перевода {}'.format(
             self.profile.user.username, self.translation.visual_novel.title)
+
+
+class TranslationItemSendToVKManager(models.Manager):
+
+    def create_from_translation_item(self, translation_item, vk_group_id):
+        ts = translation_item.statistics
+        transl_item_vk = self.create(translation_item=translation_item,
+                                     vk_group_id=vk_group_id,
+                                     pictures_statistics=ts.pictures_statistics,
+                                     technical_statistics=ts.technical_statistics,
+                                     comment=ts.comment,
+                                     last_update=ts.last_update,
+                                     total_rows=ts.total_rows,
+                                     translated=ts.translated,
+                                     edited_first_pass=ts.edited_first_pass,
+                                     edited_second_pass=ts.edited_second_pass)
+        return transl_item_vk
+
+
+class TranslationItemSendToVK(models.Model):
+    translation_item = models.ForeignKey(TranslationItem, verbose_name='Перевод', on_delete=models.CASCADE)
+    vk_group_id = models.CharField(verbose_name='ID группы ВК', max_length=255, default='')
+    post_date = models.DateField(verbose_name='Дата', auto_now_add=True)
+
+    pictures_statistics = models.TextField(verbose_name='Статистика изображений', max_length=500, default='',
+                                           blank=True)
+    technical_statistics = models.TextField(verbose_name='Статистика тех. части', max_length=500, default='',
+                                            blank=True)
+    comment = models.TextField(verbose_name='Статистика изображений', max_length=2000, default='', blank=True)
+    last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
+                                       null=True, blank=True)
+    total_rows = models.IntegerField(default=0, verbose_name='Всего строк')
+    translated = models.IntegerField(default=0, verbose_name='Переведено')
+    edited_first_pass = models.IntegerField(default=0, verbose_name='Первый проход редактуры')
+    edited_second_pass = models.IntegerField(default=0, verbose_name='Второй проход редактуры')
+
+    objects = TranslationItemSendToVKManager()
+
+    class Meta:
+        db_table = 'translation_item_send_to_vk'
+        verbose_name = 'Перевод отпраленный в группу ВК'
+        verbose_name_plural = 'Переводы отпраленные в группы ВК'
+
+    def __str__(self):
+        return 'Перевод {} отправленный в ВК для группы {}'.format(
+            self.translation_item.visual_novel.title, self.vk_group_id)
