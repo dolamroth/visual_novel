@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError as restValidationError
 
 from core.middlewares import IsAuthenticatedMiddleware
-from translation.middlewares import HasPermissionToEditVNMiddleware
+from ..middlewares import HasPermissionToEditVNMiddleware
+from ..utils import select_like_statistics_name
 
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
@@ -135,10 +136,9 @@ def add_chapter(request, vn_alias):
 @decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def get_chapter_children(request, vn_alias):
     translation_chapter_id = request.GET.get('translation_chapter_id', None)
-
     try:
         translation_chapter_id = int(translation_chapter_id)
-    except ValueError:
+    except (ValueError, TypeError):
         return Response(data={'message': "Неверный формат идентификатора главы."}, status=422)
 
     try:
@@ -147,7 +147,7 @@ def get_chapter_children(request, vn_alias):
         return Response(data={'message': TranslationNotFound().message}, status=422)
 
     children = [{
-        'title': d.select_like_statistics_name(base_level=translation_chapter.level)
+        'title': select_like_statistics_name(d, base_level=translation_chapter.level)
     } for d in translation_chapter.get_descendants(include_self=True)]
 
     return Response(data={
