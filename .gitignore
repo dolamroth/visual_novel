@@ -117,3 +117,4 @@ secrets.json
 
 **/visual_novel/wsgi.py
 **/favicon.ico
+**/google*.html
