@@ -18,7 +18,7 @@ import news.urls
 import offer_service.urls
 import translation.urls
 
-from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap
+from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap, TranslatorSitemap
 from chart.sitemap import ChartItemSitemap
 from translation.sitemap import TranslationItemSitemap
 
@@ -29,6 +29,7 @@ sitemaps = {
     'staff': StaffSitemap,
     'chart': ChartItemSitemap,
     'translations': TranslationItemSitemap,
+    'translators': TranslatorSitemap
 }
 
 urlpatterns = [
