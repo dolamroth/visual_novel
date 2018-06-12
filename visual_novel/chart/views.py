@@ -303,7 +303,8 @@ def chart_page(request, vn_alias):
             'description': translator.translator.description.replace('\"', '\''),
             'link': reverse('chart_index_with_translator', kwargs={'translator_alias': translator.translator.alias}),
             'has_description': not not translator.translator.description,
-            'alias': translator.translator.alias
+            'alias': translator.translator.alias,
+            'language': translator.language.title
         })
         keywords.append(translator.translator.title)
     vn_context['has_translators'] = (len(vn_context['translators']) > 0)
