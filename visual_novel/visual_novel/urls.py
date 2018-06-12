@@ -77,6 +77,7 @@ urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name="includes/robots.txt"),
          {'http_domain': settings.VN_HTTP_DOMAIN}, name='robots'),
     path('favicon.ico', core_views.favicon, name='favicon'),
+    path('google<str:google_key>.html', core_views.google_site_verification, name='google-site-verification'),
 
     # Apps views
     path('offers/', include(offer_service.urls)),

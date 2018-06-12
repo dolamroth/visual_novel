@@ -128,3 +128,7 @@ def favicon(request):
         return HttpResponse(image_data, content_type="image/png")
     except FileNotFoundError:
         raise Http404
+
+
+def google_site_verification(request, google_key):
+    return render(request, 'google{}.html'.format(google_key), {})
