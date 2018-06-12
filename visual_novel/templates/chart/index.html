@@ -32,13 +32,21 @@
                             <div class="vn-genres vn-params">
                                 <span class="sh-desc">Жанры:&nbsp;</span>
                                 {% for genre in visual_novel.genres %}
-                                    <a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}
+                                    {% if genre.has_description %}
+                                        <a href="{{ genre.link }}" class="tooltip" data-tooltip-content="#{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.title|safe }}<span class="tooltip_templates"><span id="{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.description|safe }}</span></span>{% include "includes/comma.html" %}
+                                    {% else %}
+                                        <a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                             <div class="vn-params">
                                 <span class="sh-desc">Студия:&nbsp;</span>
                                 {% for studio in visual_novel.studios %}
-                                    <a href="{{ studio.link }}">{{ studio.title|safe }}</a>{% include "includes/comma.html" %}
+                                    {% if studio.has_description %}
+                                        <a href="{{ studio.link }}" class="tooltip" data-tooltip-content="#{{ visual_novel.alias }}{{ studio.alias }}">{{ studio.title|safe }}</a><span class="tooltip_templates"><span id="{{ visual_novel.alias }}{{ studio.alias }}">{{ studio.description|safe }}</span></span>{% include "includes/comma.html" %}
+                                    {% else %}
+                                        <a href="{{ studio.link }}">{{ studio.title|safe }}</a>{% include "includes/comma.html" %}
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                             <div class="vn-params">
