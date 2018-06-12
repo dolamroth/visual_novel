@@ -30,6 +30,8 @@ def chart_index_page(
     context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
     context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
 
+    context['additional_description'] = ''
+
     # Optional endpoint parameters
     if genre_alias:
         vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
@@ -37,6 +39,8 @@ def chart_index_page(
         try:
             genre = Genre.objects.get(alias=genre_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
+            if genre.description:
+                context['additional_description'] = genre.description
         except Genre.DoesNotExist:
             pass
 
@@ -46,6 +50,8 @@ def chart_index_page(
         try:
             tag = Tag.objects.get(alias=tag_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
+            if tag.description:
+                context['additional_description'] = tag.description
         except Tag.DoesNotExist:
             pass
 
@@ -55,6 +61,8 @@ def chart_index_page(
         try:
             studio = Studio.objects.get(alias=studio_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
+            if studio.description:
+                context['additional_description'] = studio.description
         except Studio.DoesNotExist:
             pass
 
@@ -64,6 +72,8 @@ def chart_index_page(
         try:
             staff = Staff.objects.get(alias=staff_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
+            if staff.description:
+                context['additional_description'] = staff.description
         except Staff.DoesNotExist:
             pass
 
