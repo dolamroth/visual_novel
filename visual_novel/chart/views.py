@@ -3,17 +3,19 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 from django.http import Http404
+from django.urls import reverse
 
 from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
-from cinfo.models import Genre, Tag, Studio, Staff, Longevity
+from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
 from core.utils import printable_russian_date
 
-from .models import ChartItem
+from .models import ChartItem, ChartItemTranslator
 
 
 def chart_index_page(
         request,
-        genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None
+        genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None,
+        translator_alias=None
     ):
     context = dict()
     context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;Чарт'
@@ -83,6 +85,18 @@ def chart_index_page(
             duration = Longevity.objects.get(alias=duration_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
+            pass
+
+    if translator_alias:
+        translators_ids = ChartItemTranslator.objects.filter(translator__alias=translator_alias)\
+            .values_list('item__id', flat=True)
+        all_chart_items = all_chart_items.filter(id__in=translators_ids)
+        try:
+            translator = Translator.objects.get(alias=translator_alias)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
+            if translator.description:
+                context['additional_description'] = translator.description
+        except Translator.DoesNotExist:
             pass
 
     # Sorting list of visual novels
@@ -228,7 +242,7 @@ def chart_page(request, vn_alias):
         vn_context['genres'].append({
             'title': genre.genre.title,
             'description': genre.genre.description,
-            'link': ('/chart/genre/' + genre.genre.alias),
+            'link': reverse('chart_index_with_genre', kwargs={'genre_alias': genre.genre.alias}),
             'has_description': not not genre.genre.description,
             'alias': genre.genre.alias
         })
@@ -241,7 +255,7 @@ def chart_page(request, vn_alias):
         vn_context['studios'].append({
             'title': studio.studio.title,
             'description': studio.studio.description,
-            'link': ('/chart/studio/' + studio.studio.alias),
+            'link': reverse('chart_index_with_studio', kwargs={'studio_alias': studio.studio.alias}),
             'has_description': not not studio.studio.description,
             'alias': studio.studio.alias
         })
@@ -254,7 +268,7 @@ def chart_page(request, vn_alias):
         vn_context['tags'].append({
             'title': tag.tag.title,
             'description': tag.tag.description.replace('\"', '\''),
-            'link': ('/chart/tag/' + tag.tag.alias),
+            'link': reverse('chart_index_with_tag', kwargs={'tag_alias': tag.tag.alias}),
             'has_description': not not tag.tag.description,
             'alias': tag.tag.alias
         })
@@ -272,7 +286,7 @@ def chart_page(request, vn_alias):
         roles = [vnstaffs[i].role for i in range(len(vnstaffs))]
         vn_context['staffs'].append({
             'title': staff.title,
-            'link': ('/chart/staff/' + staff.alias),
+            'link': reverse('chart_index_with_staff', kwargs={'staff_alias': staff.alias}),
             'description': staff.description,
             'has_description': not not staff.description,
             'roles': roles,
@@ -280,6 +294,20 @@ def chart_page(request, vn_alias):
         })
         keywords.append(staff.title)
     vn_context['has_staffs'] = (len(vn_context['staffs']) > 0)
+
+    # Translators list
+    vn_context['translators'] = list()
+    for translator in chart_item.chartitemtranslator_set.filter(translator__is_published=True):
+        vn_context['translators'].append({
+            'title': translator.translator.title,
+            'description': translator.translator.description.replace('\"', '\''),
+            'link': reverse('chart_index_with_translator', kwargs={'translator_alias': translator.translator.alias}),
+            'has_description': not not translator.translator.description,
+            'alias': translator.translator.alias,
+            'language': translator.language.title
+        })
+        keywords.append(translator.translator.title)
+    vn_context['has_translators'] = (len(vn_context['translators']) > 0)
 
     vn_context['keywords'] = ", ".join(keywords)
 

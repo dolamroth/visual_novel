@@ -5,3 +5,4 @@ from .studios.admin import *
 from .tags.admin import *
 from .translation_languages.admin import *
 from .longevity.admin import *
+from .translators.admin import *

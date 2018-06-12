@@ -10,4 +10,5 @@ urlpatterns = [
     path(r'studio/<str:studio_alias>', chart_views.chart_index_page, name='chart_index_with_studio'),
     path(r'staff/<str:staff_alias>', chart_views.chart_index_page, name='chart_index_with_staff'),
     path(r'duration/<str:duration_alias>', chart_views.chart_index_page, name='chart_index_with_duration'),
+    path(r'translator/<str:translator_alias>', chart_views.chart_index_page, name='chart_index_with_translator'),
 ]

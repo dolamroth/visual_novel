@@ -1,5 +1,5 @@
 from django.contrib import sitemaps
-from .models import Genre, Tag, Studio, Staff
+from .models import Genre, Tag, Studio, Staff, Translator
 
 
 class GenreSitemap(sitemaps.Sitemap):
@@ -32,3 +32,11 @@ class StaffSitemap(sitemaps.Sitemap):
 
     def items(self):
         return Staff.objects.filter(is_published=True)
+
+
+class TranslatorSitemap(sitemaps.Sitemap):
+    priority = 0.2
+    changefreq = "monthly"
+
+    def items(self):
+        return Translator.objects.filter(is_published=True)

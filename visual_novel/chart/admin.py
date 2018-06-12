@@ -1,8 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import ChartItem, ChartItemScreenshot
+from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator
 
+
+class ChartItemTranslatorInline(admin.TabularInline):
+    model = ChartItemTranslator
+    extra = 3
 
 class ScreenshotInline(admin.TabularInline):
     def image_tag(self, obj):
@@ -21,7 +25,7 @@ class ScreenshotInline(admin.TabularInline):
 
 
 class ChartItemAdmin(admin.ModelAdmin):
-    inlines = (ScreenshotInline, )
+    inlines = (ScreenshotInline, ChartItemTranslatorInline, )
     list_display = (
         'visual_novel', 'is_published', 'date_of_translation'
     )
