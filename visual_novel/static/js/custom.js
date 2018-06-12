@@ -383,7 +383,7 @@ $(function () {
         text.css('display', 'none');
         text.text('');
         $.ajax({
-            url: '/api/translation/'+delete_chapter_link.attr('alias')+'/get-children',
+            url: '/api/translation/'+translation_row.attr('data_alias')+'/get-children',
             method: 'GET',
             data: {'translation_chapter_id': item_id},
             type: 'json'
