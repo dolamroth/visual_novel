@@ -38,12 +38,12 @@ class News(PublishFileModel):
 
 
 News._meta.get_field('short_description').help_text = "Допустимо использовать html-теги {} и парамеры {}".format(
-        str(News._meta.get_field('short_description')._sanitizer_allowed_tags),
-        str(News._meta.get_field('short_description')._sanitizer_allowed_attributes)
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('short_description')._sanitizer_allowed_tags]),
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('short_description')._sanitizer_allowed_attributes])
     )
 
 News._meta.get_field('description').help_text = "Допустимо использовать html-теги {} и парамеры {}".format(
-        str(News._meta.get_field('description')._sanitizer_allowed_tags),
-        str(News._meta.get_field('description')._sanitizer_allowed_attributes)
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('description')._sanitizer_allowed_tags]),
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('description')._sanitizer_allowed_attributes])
     )
 
