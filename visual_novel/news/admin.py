@@ -39,6 +39,11 @@ class NewsAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'created_at'
     list_filter = ['is_published', SuperAuthorsFilter]
-    list_display = ('is_published', 'title', 'author_name', 'poster_tag')
-    fields = ('is_published', 'author', 'title', 'alias', ('poster', 'poster_tag'), 'short_description', 'description')
+    list_display = ('title', 'is_published', 'author_name', 'poster_tag')
+    fields = ('title', 'author', 'is_published', 'alias', ('poster', 'poster_tag'), 'short_description', 'description')
     readonly_fields = ['poster_tag', 'author_name']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(NewsAdmin, self).get_form(request, obj=None, **kwargs)
+        form.base_fields['author'].queryset = User.objects.filter(is_superuser=True)
+        return form
