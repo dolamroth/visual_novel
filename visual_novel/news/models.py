@@ -36,3 +36,14 @@ class News(PublishFileModel):
     def __str__(self):
         return self.title
 
+
+News._meta.get_field('short_description').help_text = "Допустимо использовать html-теги {} и парамеры {}".format(
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('short_description')._sanitizer_allowed_tags]),
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('short_description')._sanitizer_allowed_attributes])
+    )
+
+News._meta.get_field('description').help_text = "Допустимо использовать html-теги {} и парамеры {}".format(
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('description')._sanitizer_allowed_tags]),
+        ', '.join(['<b>' + d + '</b>' for d in News._meta.get_field('description')._sanitizer_allowed_attributes])
+    )
+

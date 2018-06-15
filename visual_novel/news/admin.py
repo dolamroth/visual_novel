@@ -1,7 +1,26 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.utils.html import format_html
 
 from .models import News
+
+
+class SuperAuthorsFilter(admin.SimpleListFilter):
+    title = 'Авторы'
+    parameter_name = 'author'
+
+    def lookups(self, request, model_admin):
+        return_tuple = []
+        all_authors_super = User.objects.filter(is_superuser=True)
+        for obj in all_authors_super:
+            return_tuple.append((obj.pk, obj.username))
+        return return_tuple
+
+    def queryset(self, request, queryset):
+        if self.value():
+            supuser = queryset.filter(author=self.value())
+            return queryset if supuser.__len__() == 0 else supuser
+        return queryset
 
 
 @admin.register(News)
@@ -19,7 +38,12 @@ class NewsAdmin(admin.ModelAdmin):
     author_name.short_description = 'Автор'
 
     date_hierarchy = 'created_at'
-    list_filter = ['is_published', 'author', 'alias']
-    list_display = ('is_published', 'title', 'author_name', 'poster_tag')
-    fields = ('is_published', 'author', 'title', 'alias', ('poster', 'poster_tag'), 'short_description', 'description')
+    list_filter = ['is_published', SuperAuthorsFilter]
+    list_display = ('title', 'is_published', 'author_name', 'poster_tag')
+    fields = ('title', 'author', 'is_published', 'alias', ('poster', 'poster_tag'), 'short_description', 'description')
     readonly_fields = ['poster_tag', 'author_name']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(NewsAdmin, self).get_form(request, obj=None, **kwargs)
+        form.base_fields['author'].queryset = User.objects.filter(is_superuser=True)
+        return form
