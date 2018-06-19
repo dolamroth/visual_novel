@@ -31,7 +31,7 @@ class Command(BaseCommand):
         )
 
         post_flag = False
-        post_text = 'Прогресс перевода визуальных новелл:\n'
+        post_text = 'Прогресс перевода визуальных новелл:\n\n'
         vk = VK()
 
         for translation_item in all_translations:
@@ -69,15 +69,21 @@ class Command(BaseCommand):
                 notify_translation = True
 
             if base_root.translated != translated:
-                post_text_by_translation += 'Перевод: {}\n'.format(base_root.translated)
+                post_text_by_translation += 'Перевод: {}/{}\n'.format(
+                    base_root.translated, base_root.total_rows
+                )
                 notify_translation = True
 
             if base_root.edited_first_pass != edited_1:
-                post_text_by_translation += 'Редактура: {}\n'.format(base_root.edited_first_pass)
+                post_text_by_translation += 'Редактура: {}/{}\n'.format(
+                    base_root.edited_first_pass, base_root.total_rows
+                )
                 notify_translation = True
 
             if base_root.edited_second_pass != edited_2:
-                post_text_by_translation += 'Вычитка: {}\n'.format(base_root.edited_second_pass)
+                post_text_by_translation += 'Вычитка: {}/{}\n'.format(
+                    base_root.edited_second_pass, base_root.total_rows
+                )
                 notify_translation = True
 
             if translation_statistics.pictures_statistics != pictures_statistics:
@@ -103,7 +109,7 @@ class Command(BaseCommand):
                 TranslationItemSendToVK.objects.create_from_translation_item(translation_item, vk_group_id)
 
         if post_flag:
-            post_text += 'Статистика предоставлена сайтом {}\n{}'.format(
+            post_text += 'Статистика предоставлена сайтом {}\nВсе переводы: {}'.format(
                 settings.VN_HTTP_DOMAIN,
                 settings.VN_HTTP_DOMAIN + reverse('translations_all')
             )
