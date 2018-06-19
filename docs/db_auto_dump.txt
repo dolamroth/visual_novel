@@ -1,0 +1,8 @@
+Performs daily database dump.
+Temp files locate in /tmp/vn_dumps/
+Only one dump is stored at the time: the latest.
+The script is configured to run via cron as root (required for the dump command).
+Script auto_db_dump_vn.sh located in the main directory of the visual_novel project.
+As the mail daemon used mailx.
+
+Use the mcedit /etc/mail.rc command to configure mail.
