@@ -1,8 +1,8 @@
-Выполняет ежедневный дамп БД.
-Временные файлы лежат в /tmp/vn_dumps/
-Всегда хранится один отчет - предпоследний
-Скрипт настроен на запуск кроном под пользователем root (необходимо для команды дампа)
-Скрипт auto_db_dump_vn.sh расположен в главном каталоге проекта visual_novel
-В качестве почтового демона используется mailx
+Performs daily database dump.
+Temp files locate in /tmp/vn_dumps/
+One report is always stored - the penultimate.
+The script is configured to run the cron as root (required for the dump command).
+Script auto_db_dump_vn.sh located in the main directory of the visual_novel project.
+As the mail daemon used mailx.
 
-Для настроек почты использовать команду mcedit /etc/mail.rc
+Use the mcedit /etc/mail.rc command to configure mail.
