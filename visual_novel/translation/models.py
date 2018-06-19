@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth.models import User
@@ -160,16 +161,18 @@ class TranslationItemSendToVKManager(models.Manager):
 
     def create_from_translation_item(self, translation_item, vk_group_id):
         ts = translation_item.statistics
+        translation_chapter_model = apps.get_model('translation', 'TranslationStatisticsChapter')
+        base_node = translation_chapter_model.objects.get(tree_id=ts.tree_id, lft=1, parent=None)
         transl_item_vk = self.create(translation_item=translation_item,
                                      vk_group_id=vk_group_id,
                                      pictures_statistics=ts.pictures_statistics,
                                      technical_statistics=ts.technical_statistics,
                                      comment=ts.comment,
                                      last_update=ts.last_update,
-                                     total_rows=ts.total_rows,
-                                     translated=ts.translated,
-                                     edited_first_pass=ts.edited_first_pass,
-                                     edited_second_pass=ts.edited_second_pass)
+                                     total_rows=base_node.total_rows,
+                                     translated=base_node.translated,
+                                     edited_first_pass=base_node.edited_first_pass,
+                                     edited_second_pass=base_node.edited_second_pass)
         return transl_item_vk
 
 
