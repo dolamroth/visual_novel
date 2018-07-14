@@ -8,6 +8,7 @@ class Translator(PublishModel):
     title = models.CharField(verbose_name='Переводчик', max_length=256)
     description = models.TextField(verbose_name='описание', max_length=5000, blank=True, default='')
     alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30)
+    url = models.CharField(max_length=200, verbose_name="базовая ссылка", null=True, blank=True)
 
     class Meta:
         db_table = 'translator_teams'

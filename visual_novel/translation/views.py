@@ -132,6 +132,15 @@ def translation_item_view(request, vn_alias):
 
     context['title'] = visual_novel.title
     context['alias'] = visual_novel.alias
+
+    translator = translation.translator
+    context['translator'] = None
+    context['translator_link'] = None
+    if translator:
+        context['translator'] = translator.title
+        if translator.url:
+            context['translator_link'] = translator.url
+
     context['items'] = list()
 
     statistics = translation.statistics
