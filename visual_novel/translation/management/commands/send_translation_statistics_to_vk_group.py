@@ -48,7 +48,12 @@ class Command(BaseCommand):
             technical_statistics = ''
             comment = ''
 
-            post_text_by_translation = '{}\n'.format(translation_item.visual_novel.title)
+            visual_novel = translation_item.visual_novel
+
+            post_text_by_translation = '{} – {}\n'.format(
+                visual_novel.title,
+                'https://vndb.org/v' + str(visual_novel.vndb_id)
+            )
             notify_translation = False
 
             if TranslationItemSendToVK.objects.filter(
@@ -97,6 +102,14 @@ class Command(BaseCommand):
             if translation_statistics.comment != comment:
                 post_text_by_translation += 'Комментарий: {}\n'.format(translation_statistics.comment)
                 notify_translation = True
+
+            translator = translation_item.translator
+
+            if translator:
+                post_text_by_translation += 'Переводчики: {}{}\n'.format(
+                    translator.title,
+                    '' if not translator.url else ' – {}'.format(translator.url)
+                )
 
             post_text_by_translation += 'Страница перевода: {}\n\n'.format(
                 settings.VN_HTTP_DOMAIN + translation_item.get_absolute_url()

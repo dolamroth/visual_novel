@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+from cinfo.models import Translator
 from core.models import PublishModel, Profile
 from vn_core.models import VisualNovel
 
@@ -109,6 +110,8 @@ class TranslationItem(PublishModel):
     moderators = models.ManyToManyField(User, blank=True, verbose_name="Модераторы")
     subscriber = models.ManyToManyField(Profile, blank=True,
                                         verbose_name="Подписчики", through='TranslationSubscription')
+    translator = models.ForeignKey(Translator, verbose_name='Переводчик', on_delete=models.PROTECT,
+                                   null=True, blank=True)
 
     class Meta:
         db_table = 'translation_items'
