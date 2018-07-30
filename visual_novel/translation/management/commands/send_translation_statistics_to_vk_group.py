@@ -111,10 +111,6 @@ class Command(BaseCommand):
                     '' if not translator.url else ' – {}'.format(translator.url)
                 )
 
-            post_text_by_translation += 'Страница перевода: {}\n\n'.format(
-                settings.VN_HTTP_DOMAIN + translation_item.get_absolute_url()
-            )
-
             post_flag = post_flag or notify_translation
             if notify_translation:
                 post_text += post_text_by_translation
