@@ -1,11 +1,11 @@
 {% extends "admin/base.html" %}
 
 {% block title %}
-    Администрирование vn-russian
+    {{ custom_admin_header_settings.header_title }}
 {% endblock %}
 
 {% block branding %}
-    <h1 id="site-name">Администрирование vn-russian</h1>
+    <h1 id="site-name">{{ custom_admin_header_settings.header_title }}</h1>
 {% endblock %}
 
 {% block nav-global %}
