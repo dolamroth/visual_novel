@@ -57,7 +57,6 @@ class EditTranslationPartChapter(
         translation_chapter.title = self.title
         translation_chapter.script_title = self.script_title
 
-        # TODO: pass user and add timestamp as arrow.utcnow() at user's timezone
         translation_chapter.last_update = arrow.utcnow().to(self.timezone).datetime
         translation_chapter.save()
 

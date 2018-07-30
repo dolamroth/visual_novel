@@ -106,7 +106,7 @@ def all_translations(request):
             'translated': statistics.translated,
             'edited_first_pass': statistics.edited_first_pass,
             'edited_second_pass': statistics.edited_second_pass,
-            'last_update': last_update.__str__()[:19],
+            'last_update': last_update.__str__()[:16],
             'alias': visual_novel.alias,
             'translated_perc': "{0:.2f}%".format(statistics.translated / total * 100.0),
             'edited_first_pass_perc': "{0:.2f}%".format(statistics.edited_first_pass / total * 100.0),

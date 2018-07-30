@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -58,23 +58,26 @@ class TranslationStatisticsChapter(MPTTModel):
                 total_rows_all=Sum('total_rows'),
                 total_translated=Sum('translated'),
                 total_edited_first_pass=Sum('edited_first_pass'),
-                total_edited_second_pass=Sum('edited_second_pass')
+                total_edited_second_pass=Sum('edited_second_pass'),
+                last_updated=Max('last_update')
             )
+
             # Additional check for empty chapter, which has all "Sums" == None
-            if all_counts['total_rows_all'] is not None:
-                self.total_rows = all_counts['total_rows_all']
-                self.translated = all_counts['total_translated']
-                self.edited_first_pass = all_counts['total_edited_first_pass']
-                self.edited_second_pass = all_counts['total_edited_second_pass']
-                super(TranslationStatisticsChapter, self).save()
-            else:
-                self.total_rows = 0
-                self.translated = 0
-                self.edited_first_pass = 0
-                self.edited_second_pass = 0
-                super(TranslationStatisticsChapter, self).save()
+            self.total_rows = all_counts['total_rows_all'] or 0
+            self.translated = all_counts['total_translated'] or 0
+            self.edited_first_pass = all_counts['total_edited_first_pass'] or 0
+            self.edited_second_pass = all_counts['total_edited_second_pass'] or 0
+
+            # Update last update for all parent chapters
+            if all_counts['last_updated'] is not None and all_counts['last_updated'] > self.last_update:
+                self.last_update = all_counts['last_updated']
+
+            super(TranslationStatisticsChapter, self).save()
+
         if self.parent:
             self.parent.recalculate()
+        elif self.lft == 1:
+            TranslationStatistics.objects.filter(tree_id=self.tree_id).update(last_update=self.last_update)
 
 
 class TranslationBetaLink(PublishModel):
