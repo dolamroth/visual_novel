@@ -132,7 +132,7 @@ class VNStudio(models.Model):
 class VNStaff(models.Model):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.CASCADE)
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='staff_set', verbose_name='Персона')
-    role = models.ForeignKey(StaffRole, on_delete=models.PROTECT)
+    role = models.ForeignKey(StaffRole, on_delete=models.PROTECT, verbose_name='роль')
     weight = models.IntegerField(verbose_name='вес', default=0)
 
     class Meta:

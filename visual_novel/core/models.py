@@ -111,9 +111,9 @@ class PublishFileModel(PublishModel):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE)
-    email_confirmed = models.BooleanField(default=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE, verbose_name='Временная зона')
+    email_confirmed = models.BooleanField(default=False, verbose_name='Email подтвержден')
     send_distributions = models.BooleanField(verbose_name='Отправлять рассылку', default=False)
     send_time = models.TimeField(verbose_name='Время рассылки', default=settings.DEFAULT_MAILING_SEND_TIME)
     weekdays = BitField(verbose_name='Битовый код дней рассылки',
