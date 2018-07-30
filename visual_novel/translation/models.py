@@ -81,7 +81,8 @@ class TranslationBetaLink(PublishModel):
     title = models.CharField(max_length=50, verbose_name="Название")
     url = models.CharField(max_length=200, verbose_name="URL")
     comment = models.TextField(max_length=2000, default='', blank=True, verbose_name="Комментарий")
-    translation_item = models.ForeignKey('TranslationItem', on_delete=models.PROTECT, null=True, blank=True)
+    translation_item = models.ForeignKey('TranslationItem', on_delete=models.PROTECT, null=True, blank=True,
+                                         verbose_name='Перевод')
     approved = models.BooleanField(verbose_name="Подтверждена", default=False)
     rejected = models.BooleanField(verbose_name="Отклонена", default=False)
     last_update = models.DateTimeField(verbose_name='Дата последнего обновления',
@@ -146,9 +147,9 @@ class TranslationItem(PublishModel):
 
 
 class TranslationSubscription(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
-    translation = models.ForeignKey(TranslationItem,
-                                    on_delete=models.CASCADE, null=True, blank=True, related_name='translations_set')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Пользователь')
+    translation = models.ForeignKey(TranslationItem, on_delete=models.CASCADE, verbose_name='Перевод',
+                                    null=True, blank=True, related_name='translations_set')
 
     class Meta:
         db_table = 'translation_subscriptions'
