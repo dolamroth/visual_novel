@@ -12,7 +12,6 @@ from ..errors import WrongWeekdayBitmap, WrongIsSubscribed, WrongTime, WrongVkPr
 @decorator_from_middleware(IsAuthenticatedMiddleware)
 @decorator_from_middleware(HasPermissionToEditProfile)
 def update_subscription_time(request, username):
-
     data = {
         'weekmap': request.GET.get('weekmap', '127'),
         'is_subscribed': request.GET.get('is_subscribed', 'false'),
@@ -22,9 +21,7 @@ def update_subscription_time(request, username):
 
     try:
         ChangeUserSubsctiptionOptions(data, request.user).execute()
-        print('try change vk')
         ChangeUserVkLinkOption(data, request.user).execute()
-        print('vk end')
     except(WrongWeekdayBitmap, WrongIsSubscribed, WrongTime, WrongVkProfile) as exc:
         Response(data={'message': exc.message}, status=422)
 

@@ -60,12 +60,9 @@ class ChangeUserVkLinkOption(VkProfileValidator, Command):
         self.user = user
 
     def execute_validated(self):
-        print('start')
         profile = Profile.objects.get(user=self.user)
         profile.vk_link = self.vk_link
-        print(self.vk_link)
         profile.save()
-        print('profile:', profile.vk_link)
         # TODO: refresh subscriptions in Celery Task
 
     def validate(self):

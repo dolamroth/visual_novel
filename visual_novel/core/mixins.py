@@ -1,11 +1,20 @@
 import datetime
 
-from .errors import WrongWeekdayBitmap, WrongIsSubscribed, WrongTime
+from notifications.vk import VK
+from .errors import WrongWeekdayBitmap, WrongIsSubscribed, WrongTime, WrongVkProfile
 
 
 class VkProfileValidator(object):
     def check_vk_profile(self, vk_link):
-        # TODO
+        # when user want delete link
+        if vk_link.__len__() == 0:
+            return vk_link
+        vk = VK()
+        alias = vk_link[vk_link.rfind('/')+1:]
+        try:
+            _ = vk._get_user_id(user_alias=alias)
+        except VK.VkGetUserError:
+            raise WrongVkProfile
         return vk_link
 
 
