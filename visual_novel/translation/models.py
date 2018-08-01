@@ -121,7 +121,9 @@ class TranslationItem(PublishModel):
                                    null=True, blank=True)
     status = BitField(verbose_name='Битовый код статуса',
                         flags=(('active', 'Активный'), ('frozen', 'Замороженный'), ('onhold', 'Давно не обновлялся'),
-                           ('finished', 'Завершен'), ('readytogo', 'Готовится к выпуску'), ('test', 'Тестирование')),
+                            ('finished', 'Завершен'), ('readytogo', 'Готовится к выпуску'), ('intest', 'Тестирование'),
+                            ('dropped', 'Заброшен')
+                        ),
                         default=TRANSLATION_ITEM_ACTIVE_BITCODE)
 
     class Meta:

@@ -19,10 +19,16 @@
     <table class="table table-hover">
         <tbody>
             {% for novel in novels %}
-                <tr>
+                <tr class="{{ novel.status_style }}">
                     <td>
-                        <strong><a href="/translation/{{ novel.alias }}">{{ novel.title|safe }}</a></strong>
-                        <em>(последнее обновление: {{ novel.last_update }})</em><br /><br />
+                        <strong>
+                            <a href="/translation/{{ novel.alias }}">{{ novel.title|safe }}</a>
+                        </strong>
+                        <em>(последнее обновление: {{ novel.last_update }})</em>
+                        <strong>
+                            <span class="text-{{ novel.status_style }} pull-right">{{ novel.status_name }}</span>
+                        </strong>
+                        <br /><br />
                         <span class="monospaced">
                             Всего строк&nbsp;: <span id="translation_total_rows">{{ novel.total_rows|safe }}</span><br />
                             Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="translation_translation">{{ novel.translated|safe }}
