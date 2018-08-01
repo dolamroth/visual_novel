@@ -36,7 +36,7 @@ class WeekdaysFilter(admin.SimpleListFilter):
 class ProfileAdmin(admin.ModelAdmin):
     inlines = (TranslationSubscriptionInline,)
     list_display = (
-        '__str__', 'is_staff', 'is_superuser', 'email_confirmed'
+        '__str__', 'is_staff', 'is_superuser', 'email_confirmed', 'vk_link'
     )
     list_filter = (
         'user__is_staff', WeekdaysFilter

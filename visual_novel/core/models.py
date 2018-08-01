@@ -120,6 +120,7 @@ class Profile(models.Model):
                         flags=(('monday', 'Понедельник'), ('tuesday', 'Вторник'), ('wednesday', 'Среда'),
                                ('thursday', 'Четверг'), ('friday', 'Пятница'), ('saturday', 'Суббота'),
                                ('sunday', 'Воскресенье')), default=ALL_WEEKDAYS_BITMAP)
+    vk_link = models.CharField(verbose_name='Ссылка на страницу ВК', max_length=255, blank=True, default='')
 
     class Meta:
         db_table = 'user_profile'

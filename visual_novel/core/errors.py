@@ -19,3 +19,7 @@ class WrongIsSubscribed(ProfileError):
 
 class WrongTime(ProfileError):
     message = 'Время в недопустимом формате.'
+
+
+class WrongVkProfile(ProfileError):
+    message = 'Такого пользователя не существует'

@@ -3,6 +3,12 @@ import datetime
 from .errors import WrongWeekdayBitmap, WrongIsSubscribed, WrongTime
 
 
+class VkProfileValidator(object):
+    def check_vk_profile(self, vk_link):
+        # TODO
+        return vk_link
+
+
 class WeekdayValidator(object):
     def validate_weekday_is_correct(self, weekmap):
         try:

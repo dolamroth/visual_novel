@@ -118,6 +118,7 @@ def profile_page(request, username):
     context['weekdays'] = weekdays
     context['distribution_time'] = profile.send_time.isoformat()[:5]
     context['distribution'] = profile.send_distributions
+    context['vk_link'] = profile.vk_link
 
     return render(request, 'pages/profile.html', context)
 
