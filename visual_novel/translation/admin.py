@@ -1,6 +1,9 @@
+from bitfield import BitField
+
 from django.contrib import admin
 
 from .models import TranslationItem, TranslationBetaLink, TranslationItemSendToVK
+from .widgets import StatusBitFieldWidget
 
 
 class TranslationBetaLinkInline(admin.TabularInline):
@@ -17,6 +20,12 @@ class TranslationItemAdmin(admin.ModelAdmin):
     list_display = (
         '__str__', 'is_published', 'visual_novel'
     )
+    fields = (
+        'is_published', 'moderators', 'translator', 'status', 'statistics', 'visual_novel'
+    )
+    formfield_overrides = {
+        BitField: {'widget': StatusBitFieldWidget},
+    }
     readonly_fields = ('statistics',)
 
     def get_readonly_fields(self, request, obj=None):

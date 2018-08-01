@@ -1,5 +1,4 @@
 import os
-import uuid
 from bitfield import BitField
 
 from django.db import models
