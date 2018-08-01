@@ -286,7 +286,7 @@ class ManageBetaLink(
         if changed:
             vk = VK()
             context = {
-                'link': reverse('admin:{}_{}_change'.format(
+                'link': settings.VN_HTTP_DOMAIN + reverse('admin:{}_{}_change'.format(
                             beta_link._meta.app_label,
                             beta_link._meta.model_name
                         ), args=(beta_link.pk,))

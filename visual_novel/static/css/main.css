@@ -304,6 +304,12 @@ a.tooltip{
     }
 }
 
+@media all and (max-width: 992px){
+    .hidden-md-down{
+        display: none;
+    }
+}
+
 /* Do not collapse navbar on small screens */
 @media only screen and (min-width: 120px) {
     .collapse {

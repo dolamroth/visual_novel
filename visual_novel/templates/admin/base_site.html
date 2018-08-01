@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+    {{ custom_admin_header_settings.header_title }}
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">{{ custom_admin_header_settings.header_title }}</h1>
+{% endblock %}
+
+{% block nav-global %}
+    <a href="{% url 'main' %}">Сайт</a>
+    /
+    <a href="{% url 'chart_index' %}">Чарт</a>
+    /
+    <a href="{% url 'translations_all' %}">Переводы</a>
+{% endblock %}
