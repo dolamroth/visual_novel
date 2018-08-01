@@ -37,5 +37,5 @@ class NewsSerializer(serializers.Serializer):
             user_timezone = pytz.timezone(settings.DEFAULT_TIME_ZONE)
         return arrow.get(
             (obj.created_at).replace(tzinfo=pytz.utc)
-        ).to(user_timezone).datetime.isoformat()[:16].replace('T', ' ')
+        ).to(user_timezone).datetime.strftime("%Y-%m-%d %H:%M:%S")
 
