@@ -150,7 +150,7 @@
         <label for="pictures_statistics">Изображения</label>
         <div class="input-group">
             <textarea id="pictures_statistics" class="form-control">{{ pictures_statistics }}</textarea>
-            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-pictures-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-pictures-description" data_text="{{ pictures_statistics }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
         </div>
     </div>
 
@@ -158,7 +158,7 @@
         <label for="technical_statistics">Тех. часть</label>
         <div class="input-group">
             <textarea id="technical_statistics" class="form-control">{{ technical_statistics }}</textarea>
-            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-tech-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-tech-description" data_text="{{ technical_statistics }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
         </div>
     </div>
 
@@ -166,7 +166,7 @@
         <label for="comment">Комментарий</label>
         <div class="input-group">
             <textarea id="comment" class="form-control">{{ comment }}</textarea>
-            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-comment-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-comment-description" data_text="{{ comment }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
         </div>
     </div>
 

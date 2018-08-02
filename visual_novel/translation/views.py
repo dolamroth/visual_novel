@@ -11,7 +11,7 @@ from translation.middlewares import HasPermissionToEditVNMiddleware
 
 from .choices import TRANSLATION_ITEMS_STATUSES
 from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription, TranslationBetaLink
-from .utils import statistics_name, select_like_statistics_name
+from .utils import statistics_name, select_like_statistics_name, get_status_tuple_for_translation_item
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -127,8 +127,7 @@ def all_translations(request):
         total = statistics.total_rows if statistics.total_rows > 0 else 1
 
         try:
-            status = [d for d in translation.status if d[1]][0][0]
-            status_tuple = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == status][0]
+            status_tuple = get_status_tuple_for_translation_item(translation)
             status_name = status_tuple[1]
             status_bootstrap_tr_style = status_tuple[2]
         except KeyError:
@@ -170,8 +169,7 @@ def translation_item_view(request, vn_alias):
     context['alias'] = visual_novel.alias
 
     try:
-        status = [d for d in translation.status if d[1]][0][0]
-        status_tuple = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == status][0]
+        status_tuple = get_status_tuple_for_translation_item(translation)
         status_name = status_tuple[1]
         status_bootstrap_tr_style = status_tuple[2]
     except KeyError:

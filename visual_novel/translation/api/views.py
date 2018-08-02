@@ -6,7 +6,7 @@ from rest_framework.exceptions import ValidationError as restValidationError
 
 from core.middlewares import IsAuthenticatedMiddleware
 from ..middlewares import HasPermissionToEditVNMiddleware
-from ..utils import select_like_statistics_name
+from ..utils import select_like_statistics_name, get_status_tuple_for_translation_item
 
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
@@ -15,7 +15,7 @@ from ..commands import (
 from ..errors import (
     InvalidMoveToChildElement, TranslationNotFound, InvalidValueOnRowsQuantity, InvalidMoveParent,
     CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists,
-    BetaLinkDoesNotExist, TranslationStatusDoesNotExist
+    BetaLinkDoesNotExist, TranslationStatusDoesNotExist, TranslationCannotBeEditedDueToStatus
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
@@ -77,7 +77,7 @@ def edit_chapter(request, vn_alias):
         return Response(data={'message': exc.message}, status=404)
     except (
             InvalidMoveToChildElement, InvalidValueOnRowsQuantity, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode,
-            ParentDoesNotExist
+            ParentDoesNotExist, TranslationCannotBeEditedDueToStatus
     ) as exc:
         return Response(data={'message': exc.message}, status=422)
 
@@ -121,7 +121,7 @@ def add_chapter(request, vn_alias):
         return Response(data={'message': exc.message}, status=404)
     except (
         InvalidMoveToChildElement, InvalidValueOnRowsQuantity, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode,
-        ParentDoesNotExist
+        ParentDoesNotExist, TranslationCannotBeEditedDueToStatus
     ) as exc:
         return Response(data={'message': exc.message}, status=422)
 
@@ -167,6 +167,8 @@ def delete_translation_chapter(request, vn_alias):
         deleted_n = DeleteTranslationChapter(data).execute()
     except TranslationNotFound as exc:
         return Response(data={'message': exc.message}, status=404)
+    except TranslationCannotBeEditedDueToStatus as exc:
+        return Response(data={'message': exc.message}, status=422)
 
     return Response(data={
         'message': 'Операция проведена успешно.',
@@ -214,7 +216,7 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
 
     if not type in ['pictures', 'tech', 'comment']:
         return Response(data={
-            'message': 'Необходимо указать корректный тип редактируемого описания.'
+            'message': 'Неизвестный тип запроса.'
         }, status=422)
 
     if type == 'comment':
@@ -234,6 +236,12 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
         return Response(data={
             'message': 'Перевод с указанным идентификатором не найден.'
         }, status=404)
+
+    status_tuple = get_status_tuple_for_translation_item(translation_item)
+    if not status_tuple[6]:
+        return Response(data={
+            'message': TranslationCannotBeEditedDueToStatus().message
+        }, status=422)
 
     try:
         serializer.is_valid(raise_exception=True)

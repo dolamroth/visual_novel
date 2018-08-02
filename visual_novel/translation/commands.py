@@ -17,7 +17,8 @@ from .mixins import (
     BetaLinkUrlValidator,
     BetaLinkUrlUniqueValidator,
     BetaLinkExistsValidator,
-    TranslationStatusExistsValidator
+    TranslationStatusExistsValidator,
+    TranslationCanBeEditedValidator
 )
 
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
@@ -25,7 +26,8 @@ from .models import TranslationStatisticsChapter, TranslationBetaLink
 
 
 class EditTranslationPartChapter(
-    TranslationChapterExistsValidator, TranslationExistsValidator, InputNumberValidator, Command
+    TranslationChapterExistsValidator, TranslationExistsValidator, TranslationCanBeEditedValidator,
+    InputNumberValidator, Command
 ):
     """
     :raises TranslationNotFound: Raises if either translation item or translation chapter
@@ -101,6 +103,7 @@ class EditTranslationPartChapter(
 
     def validate(self):
         translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        self.validate_translation_can_be_edited(translation_item)
         self.validate_chapter_exists(chapter_id=self.translation_chapter_id,translation_item=translation_item)
 
 
@@ -131,7 +134,8 @@ class EditTranslationChapter(EditTranslationPartChapter):
 
 
 class AddTranslationPartChapter(
-    TranslationChapterExistsValidator, TranslationExistsValidator, InputNumberValidator, ParentExistsValidator, Command
+    TranslationChapterExistsValidator, TranslationExistsValidator, TranslationCanBeEditedValidator,
+    InputNumberValidator, ParentExistsValidator, Command
 ):
     """
     :raises TranslationNotFound: Raises if either translation item or translation chapter
@@ -184,6 +188,7 @@ class AddTranslationPartChapter(
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        self.validate_translation_can_be_edited(self.translation_item)
         self.parent = self.validate_parent_section_exists(self.translation_item, self.new_parent, self.new_move_to)
 
 
@@ -214,7 +219,7 @@ class AddTranslationChapter(AddTranslationPartChapter):
 
 
 class DeleteTranslationChapter(
-    TranslationChapterExistsValidator, TranslationExistsValidator, Command
+    TranslationChapterExistsValidator, TranslationExistsValidator, TranslationCanBeEditedValidator, Command
 ):
     """
     :raises TranslationNotFound: Raises if either translation item or translation chapter
@@ -235,6 +240,7 @@ class DeleteTranslationChapter(
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        self.validate_translation_can_be_edited(self.translation_item)
         self.validate_chapter_exists(chapter_id=self.translation_chapter_id, translation_item=self.translation_item)
 
 
