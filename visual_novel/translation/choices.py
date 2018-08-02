@@ -1,10 +1,10 @@
-# 1. shortlink for status_name, should be the same as bitfield keys in model
-# 2. Status name (in Russian)
-# 3. Bootstrap 3 style for text or table row
-# 4. Whether user can change TranslationItem status TO this exact status by himself.
+# 0. shortlink for status_name, should be the same as bitfield keys in model
+# 1. Status name (in Russian)
+# 2. Bootstrap 3 style for text or table row
+# 3. Whether user can change TranslationItem status TO this exact status by himself.
 #           "False" means, that this status can be only changed TO automatically
-# 5. Whether mailing should inform about changing TO this status.
-# 6. Description of status for TranslationItem editing page
+# 4. Whether mailing should inform about changing TO this status.
+# 5. Description of status for TranslationItem editing page
 
 TRANSLATION_ITEMS_STATUSES = (
     ('active', 'Активный', 'default', True, False, 'Когда перевод активный, можно редактировать прогресс перевода.'),

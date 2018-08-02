@@ -3,8 +3,10 @@ from django.conf import settings
 from django.urls import reverse
 
 from notifications.vk import VK
-from translation.models import (
-    TranslationItemSendToVK, TranslationItem, TranslationStatisticsChapter, TranslationStatistics
+
+from ...choices import TRANSLATION_ITEMS_STATUSES
+from ...models import (
+    TranslationItemSendToVK, TranslationItem, TranslationStatisticsChapter, TRANSLATION_ITEM_ACTIVE_BITCODE
 )
 
 
@@ -47,6 +49,7 @@ class Command(BaseCommand):
             pictures_statistics = ''
             technical_statistics = ''
             comment = ''
+            status = TRANSLATION_ITEM_ACTIVE_BITCODE
 
             visual_novel = translation_item.visual_novel
 
@@ -68,6 +71,14 @@ class Command(BaseCommand):
                 pictures_statistics = last_statistics.pictures_statistics
                 technical_statistics = last_statistics.technical_statistics
                 comment = last_statistics.comment
+                status = last_statistics.status
+
+            if translation_item.status.mask != status:
+                bitfield_key = [d for d in translation_item.status.items() if d[1]][0][0]
+                status_expanded = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == bitfield_key]
+                if status_expanded[4]:
+                    post_text_by_translation += 'Статус перевода: {}\n'.format(status_expanded[1])
+                    notify_translation = True
 
             if base_root.total_rows != total:
                 post_text_by_translation += 'Всего: {}\n'.format(base_root.total_rows)

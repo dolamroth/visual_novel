@@ -188,7 +188,8 @@ class TranslationItemSendToVKManager(models.Manager):
                                      total_rows=base_node.total_rows,
                                      translated=base_node.translated,
                                      edited_first_pass=base_node.edited_first_pass,
-                                     edited_second_pass=base_node.edited_second_pass)
+                                     edited_second_pass=base_node.edited_second_pass,
+                                     status=translation_item.status.mask)
         return transl_item_vk
 
 
