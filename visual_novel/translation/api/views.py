@@ -10,12 +10,12 @@ from ..utils import select_like_statistics_name
 
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
-    DeleteTranslationChapter, ManageBetaLink, DeleteBetaLink
+    DeleteTranslationChapter, ManageBetaLink, DeleteBetaLink, ChangeTranslationStatus
 )
 from ..errors import (
     InvalidMoveToChildElement, TranslationNotFound, InvalidValueOnRowsQuantity, InvalidMoveParent,
     CannotBeSiblingOfBaseTreeNode, ParentDoesNotExist, InvalidBetaLinkUrl, BetaLinkUrlAlreadyExists,
-    BetaLinkDoesNotExist
+    BetaLinkDoesNotExist, TranslationStatusDoesNotExist
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer,
@@ -363,4 +363,22 @@ def delete_betalink(request, vn_alias):
     return Response(data={
         'message': 'Операция проведена успешно.',
         'delete_results': deleted_n
+    }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@decorator_from_middleware(IsAuthenticatedMiddleware)
+@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+def change_status(request, vn_alias):
+
+    status_key = request.GET.get('status', None)
+    translation_item_id = request.GET.get('translation_item_id', 0)
+
+    try:
+        ChangeTranslationStatus(status_key, translation_item_id).execute()
+    except (TranslationNotFound, TranslationStatusDoesNotExist) as exc:
+        return Response(data={'message': exc.message}, status=404)
+
+    return Response(data={
+        'message': 'Операция проведена успешно.'
     }, status=200)

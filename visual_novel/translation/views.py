@@ -67,6 +67,31 @@ def edit_statistics(request, vn_alias):
         ).values('id', 'title', 'url', 'comment', 'approved', 'rejected')
     ]
 
+    context['statuses'] = list()
+    for translation_status in TRANSLATION_ITEMS_STATUSES:
+        if translation_status[3]:
+            context['statuses'].append({
+                'key': translation_status[0],
+                'name': translation_status[1],
+                'style': translation_status[2],
+                'mailing_inform': translation_status[4],
+                'description': translation_status[5]
+            })
+
+    try:
+        status = [d for d in translation_item.status if d[1]][0][0]
+        status_tuple = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == status][0]
+        status_key = status_tuple[0]
+        status_name = status_tuple[1]
+        status_bootstrap_tr_style = status_tuple[2]
+    except KeyError:
+        status_key = 'unknown'
+        status_name = 'Неизвестно'
+        status_bootstrap_tr_style = 'warning'
+    context['status_key'] = status_key
+    context['status_name'] = status_name
+    context['status_style'] = status_bootstrap_tr_style
+
     context['pictures_statistics'] = statistics.pictures_statistics
     context['technical_statistics'] = statistics.technical_statistics
     context['comment'] = statistics.comment

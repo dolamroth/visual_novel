@@ -682,4 +682,60 @@ $(function () {
         return false;
     });
 
+    $('.select-translation-status-popup').on('click', function(e){
+        var status_link = $( e.currentTarget );
+        var popup_window = $('#change-translation-status-popup');
+        var current_status = $('#current-translation-status').attr('data-status');
+        var new_status = status_link.attr('data-key');
+
+        var text = $("p#change-status-popup-additional-text");
+        text.css('display', 'none');
+        text.text('');
+
+        if (current_status === new_status){
+            $('#translation-statuses').dropdown('toggle');
+            $(e).preventDefault();
+            return false;
+        }
+        popup_window.attr('data_status', new_status);
+
+        var status_span = status_link.find('span');
+        popup_window.attr('data_status_name', status_span.text() );
+        popup_window.attr('data_status_style', status_span.attr('class') );
+
+        text.text( status_link.attr('data-description') );
+        text.css('display', 'block');
+    });
+
+    $('.select-translation-status-popup').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        modal: true
+    });
+
+    $('.change-status-btn').on('click', function(e){
+        var popup_window = $('#change-translation-status-popup');
+        var data = {
+            'status': popup_window.attr('data_status'),
+            'translation_item_id': popup_window.attr('data_translation_item')
+        };
+        $.ajax({
+            url: '/api/translation/'+popup_window.attr('data_alias')+'/change-status',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            $.magnificPopup.close();
+            var current_status = $('#current-translation-status');
+            if(data['status'] && data['status'] !== 200){
+
+            } else {
+                current_status.removeClass();
+                current_status.text( popup_window.attr('data_status_name') );
+                current_status.addClass( popup_window.attr('data_status_style') );
+            }
+        });
+        return false;
+    });
+
 });

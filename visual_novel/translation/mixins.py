@@ -5,7 +5,7 @@ from .models import TranslationItem, TranslationStatisticsChapter, TranslationBe
 
 from .errors import (
     TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl,
-    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist
+    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist, TranslationStatusDoesNotExist
 )
 
 
@@ -90,3 +90,11 @@ class BetaLinkExistsValidator(object):
             return TranslationBetaLink.objects.get(id=id)
         except TranslationBetaLink.DoesNotExist:
             raise BetaLinkDoesNotExist()
+
+
+class TranslationStatusExistsValidator(object):
+    def validate_translation_status_exists(self, status):
+        try:
+            return list(TranslationItem.status).index(status)
+        except ValueError:
+            raise TranslationStatusDoesNotExist()

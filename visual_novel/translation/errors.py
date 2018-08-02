@@ -43,3 +43,7 @@ class BetaLinkUrlAlreadyExists(TranslationError):
 
 class BetaLinkDoesNotExist(TranslationError):
     message = 'Указанная ссылка не существует.'
+
+
+class TranslationStatusDoesNotExist(TranslationError):
+    message = 'Такого статуса перевода не существует.'

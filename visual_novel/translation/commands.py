@@ -16,8 +16,10 @@ from .mixins import (
     ParentExistsValidator,
     BetaLinkUrlValidator,
     BetaLinkUrlUniqueValidator,
-    BetaLinkExistsValidator
+    BetaLinkExistsValidator,
+    TranslationStatusExistsValidator
 )
+
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
 from .models import TranslationStatisticsChapter, TranslationBetaLink
 
@@ -322,3 +324,23 @@ class DeleteBetaLink(BetaLinkExistsValidator, Command):
 
     def validate(self):
         self.betalink = self.validate_betalink_exists(self.betalink_id)
+
+
+class ChangeTranslationStatus(TranslationExistsValidator, TranslationStatusExistsValidator, Command):
+    """
+    :raises TranslationStatusExistsValidator: raises if status with specified key does not exist.
+    """
+
+    def __init__(self, status, translation_item_id):
+        self.status_key = status
+        self.status_index = 0
+        self.translation_item_id = translation_item_id
+
+    def execute_validated(self):
+        status = 2 ** self.status_index
+        self.translation_item.status=status
+        self.translation_item.save()
+
+    def validate(self):
+        self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
+        self.status_index = self.validate_translation_status_exists(self.status_key)
