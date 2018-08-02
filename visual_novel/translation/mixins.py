@@ -5,8 +5,10 @@ from .models import TranslationItem, TranslationStatisticsChapter, TranslationBe
 
 from .errors import (
     TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl,
-    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist
+    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist, TranslationStatusDoesNotExist, TranslationCannotBeEditedDueToStatus
 )
+
+from .utils import get_status_tuple_for_translation_item
 
 
 class TranslationExistsValidator(object):
@@ -90,3 +92,18 @@ class BetaLinkExistsValidator(object):
             return TranslationBetaLink.objects.get(id=id)
         except TranslationBetaLink.DoesNotExist:
             raise BetaLinkDoesNotExist()
+
+
+class TranslationStatusExistsValidator(object):
+    def validate_translation_status_exists(self, status):
+        try:
+            return list(TranslationItem.status).index(status)
+        except ValueError:
+            raise TranslationStatusDoesNotExist()
+
+
+class TranslationCanBeEditedValidator(object):
+    def validate_translation_can_be_edited(self, translation_item):
+        status_tuple = get_status_tuple_for_translation_item(translation_item)
+        if not status_tuple[6]:
+            raise TranslationCannotBeEditedDueToStatus()

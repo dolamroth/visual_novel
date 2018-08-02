@@ -45,4 +45,5 @@ class ProfileAdmin(admin.ModelAdmin):
         BitField: {'widget': BitFieldCheckboxSelectMultiple},
     }
 
+
 admin.site.register(Profile, ProfileAdmin)

@@ -9,8 +9,9 @@ from django.utils.decorators import decorator_from_middleware
 from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
+from .choices import TRANSLATION_ITEMS_STATUSES
 from .models import TranslationItem, TranslationStatisticsChapter, TranslationSubscription, TranslationBetaLink
-from .utils import statistics_name, select_like_statistics_name
+from .utils import statistics_name, select_like_statistics_name, get_status_tuple_for_translation_item
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -66,6 +67,31 @@ def edit_statistics(request, vn_alias):
         ).values('id', 'title', 'url', 'comment', 'approved', 'rejected')
     ]
 
+    context['statuses'] = list()
+    for translation_status in TRANSLATION_ITEMS_STATUSES:
+        if translation_status[3]:
+            context['statuses'].append({
+                'key': translation_status[0],
+                'name': translation_status[1],
+                'style': translation_status[2],
+                'mailing_inform': translation_status[4],
+                'description': translation_status[5]
+            })
+
+    try:
+        status = [d for d in translation_item.status if d[1]][0][0]
+        status_tuple = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == status][0]
+        status_key = status_tuple[0]
+        status_name = status_tuple[1]
+        status_bootstrap_tr_style = status_tuple[2]
+    except KeyError:
+        status_key = 'unknown'
+        status_name = 'Неизвестно'
+        status_bootstrap_tr_style = 'warning'
+    context['status_key'] = status_key
+    context['status_name'] = status_name
+    context['status_style'] = status_bootstrap_tr_style
+
     context['pictures_statistics'] = statistics.pictures_statistics
     context['technical_statistics'] = statistics.technical_statistics
     context['comment'] = statistics.comment
@@ -98,7 +124,14 @@ def all_translations(request):
 
         last_update = arrow.get((statistics.last_update).replace(tzinfo=pytz.utc)).to(user_timezone).datetime
 
-        total = statistics.total_rows if statistics.total_rows>0 else 1
+        total = statistics.total_rows if statistics.total_rows > 0 else 1
+
+        try:
+            status_tuple = get_status_tuple_for_translation_item(translation)
+            status_name = status_tuple[1]
+            status_bootstrap_tr_style = status_tuple[2]
+        except KeyError:
+            continue
 
         context['novels'].append({
             'title': visual_novel.title,
@@ -110,7 +143,9 @@ def all_translations(request):
             'alias': visual_novel.alias,
             'translated_perc': "{0:.2f}%".format(statistics.translated / total * 100.0),
             'edited_first_pass_perc': "{0:.2f}%".format(statistics.edited_first_pass / total * 100.0),
-            'edited_second_pass_perc': "{0:.2f}%".format(statistics.edited_second_pass / total * 100.0)
+            'edited_second_pass_perc': "{0:.2f}%".format(statistics.edited_second_pass / total * 100.0),
+            'status_name': status_name,
+            'status_style': status_bootstrap_tr_style
         })
 
     return render(request, 'translation/all.html', context)
@@ -132,6 +167,16 @@ def translation_item_view(request, vn_alias):
 
     context['title'] = visual_novel.title
     context['alias'] = visual_novel.alias
+
+    try:
+        status_tuple = get_status_tuple_for_translation_item(translation)
+        status_name = status_tuple[1]
+        status_bootstrap_tr_style = status_tuple[2]
+    except KeyError:
+        status_name = 'Неизвестно'
+        status_bootstrap_tr_style = 'warning'
+    context['status_name'] = status_name
+    context['status_style'] = status_bootstrap_tr_style
 
     translator = translation.translator
     context['translator'] = None

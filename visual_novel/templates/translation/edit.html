@@ -34,6 +34,16 @@
         </p>
     </div>
 
+    <div id="change-translation-status-popup" class="white-popup-block mfp-hide"
+         data_translation_item="{{ translation_item }}" data_alias="{{ alias }}" data_status="{{ status_key }}" data_status_name="{{ status_name }}" data_status_style="{{ status_style }}">
+        <h3>Вы действительно хотите сменить статус?</h3>
+        <p id="change-status-popup-additional-text"></p>
+        <p>
+            <a class="change-status-btn btn btn-xs btn-danger" href="#">Подтвердить смену статуса</a>
+            <a class="popup-modal-dismiss btn btn-xs btn-default" href="#">Отмена</a>
+        </p>
+    </div>
+
     <table class="table table-hover table-sm">
         <thead>
             <tr>
@@ -140,7 +150,7 @@
         <label for="pictures_statistics">Изображения</label>
         <div class="input-group">
             <textarea id="pictures_statistics" class="form-control">{{ pictures_statistics }}</textarea>
-            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-pictures-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-pictures-description" data_text="{{ pictures_statistics }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
         </div>
     </div>
 
@@ -148,7 +158,7 @@
         <label for="technical_statistics">Тех. часть</label>
         <div class="input-group">
             <textarea id="technical_statistics" class="form-control">{{ technical_statistics }}</textarea>
-            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-tech-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-tech-description" data_text="{{ technical_statistics }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
         </div>
     </div>
 
@@ -156,7 +166,28 @@
         <label for="comment">Комментарий</label>
         <div class="input-group">
             <textarea id="comment" class="form-control">{{ comment }}</textarea>
-            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-comment-description"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+            <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-comment-description" data_text="{{ comment }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="translation-statuses">Статус перевода</label>
+        <div class="input-group">
+            <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="translation-statuses">
+                <span class="text-{{ status_style }}" style="font-weight: 900" id="current-translation-status" data-status="{{ status_key }}">{{ status_name }}</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu col-xs-12">
+                {% for status in statuses %}
+                <li>
+                    <a href="#change-translation-status-popup" data-key="{{ status.key }}" data-description="{{ status.description }}" data-mailing-inform="{{ mailing_inform }}" class="select-translation-status-popup">
+                        <span class="text-{{ status.style }}" style="font-weight: 900">{{ status.name }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
         </div>
     </div>
 

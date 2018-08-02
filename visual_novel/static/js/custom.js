@@ -415,6 +415,7 @@ $(function () {
         var data = {};
         data['translation_item_id'] = parseInt(block.attr('data_translation_item'));
         data['translation_chapter_id'] = parseInt(block.attr('data_id'));
+        var tci = data['translation_chapter_id'];
         block.closeAlertRows();
         $.ajax({
             url: '/api/translation/'+block.attr('data_alias')+'/delete-chapter',
@@ -424,6 +425,19 @@ $(function () {
         }).always(function(data){
             if (data['delete_results']){
                 location.reload();
+            } else {
+                $.magnificPopup.close();
+                var alert_example = $('.alert-row-example');
+                var translation_row = $('tr[data_id='+tci+']');
+                translation_row.before( alert_example.clone(true, true) );
+                var alert_row = translation_row.prev();
+                alert_row.spawnAlert(data, window.translation_errors_codes);
+                alert_row.find('div')
+                    .fadeIn();
+                alert_row
+                    .removeClass('alert-row-example')
+                    .addClass('alert-row')
+                    .removeClass('editing-row-hidden');
             }
         });
         return false;
@@ -433,6 +447,7 @@ $(function () {
         var edit_link = $( e.currentTarget );
         var link_id = edit_link.attr('id');
         var type = '';
+        var old_text = edit_link.attr('data_text');
         switch(link_id){
             case 'save-pictures-description':
                 type = 'pictures';
@@ -461,6 +476,19 @@ $(function () {
         }).always(function(data){
             if (data['description']){
                 edit_link.prev('textarea').val( data['description'] );
+            } else {
+                var alert_example = $('.alert-row-example');
+                var translation_row = $('tr[data_alias='+block.attr('data_alias')+']').last().next().next();
+                translation_row.after( alert_example.clone(true, true) );
+                var alert_row = translation_row.next();
+                alert_row.spawnAlert(data, window.translation_errors_codes);
+                alert_row.find('div')
+                    .fadeIn();
+                alert_row
+                    .removeClass('alert-row-example')
+                    .addClass('alert-row')
+                    .removeClass('editing-row-hidden');
+                $('#'+link_id).prev('textarea').val( old_text );
             }
         });
 
@@ -678,6 +706,60 @@ $(function () {
             type: 'json'
         }).always(function(data){
             location.reload();
+        });
+        return false;
+    });
+
+    $('.select-translation-status-popup').on('click', function(e){
+        var status_link = $( e.currentTarget );
+        var popup_window = $('#change-translation-status-popup');
+        var current_status = $('#current-translation-status').attr('data-status');
+        var new_status = status_link.attr('data-key');
+
+        var text = $("p#change-status-popup-additional-text");
+        text.css('display', 'none');
+        text.text('');
+
+        if (current_status === new_status){
+            $('#translation-statuses').dropdown('toggle');
+            $(e).preventDefault();
+            return false;
+        }
+        popup_window.attr('data_status', new_status);
+
+        var status_span = status_link.find('span');
+        popup_window.attr('data_status_name', status_span.text() );
+        popup_window.attr('data_status_style', status_span.attr('class') );
+
+        text.text( status_link.attr('data-description') );
+        text.css('display', 'block');
+    });
+
+    $('.select-translation-status-popup').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        modal: true
+    });
+
+    $('.change-status-btn').on('click', function(e){
+        var popup_window = $('#change-translation-status-popup');
+        var data = {
+            'status': popup_window.attr('data_status'),
+            'translation_item_id': popup_window.attr('data_translation_item')
+        };
+        $.ajax({
+            url: '/api/translation/'+popup_window.attr('data_alias')+'/change-status',
+            method: 'GET',
+            data: data,
+            type: 'json'
+        }).always(function(data){
+            $.magnificPopup.close();
+            var current_status = $('#current-translation-status');
+            if(data['status'] && data['status'] !== 200){
+                // TODO: write exceptions case
+            } else {
+                location.reload();
+            }
         });
         return false;
     });

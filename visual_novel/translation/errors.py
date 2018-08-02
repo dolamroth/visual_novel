@@ -34,7 +34,7 @@ class CannotBeSiblingOfBaseTreeNode(TranslationError):
 
 
 class InvalidBetaLinkUrl(TranslationError):
-    message = 'Не валидный URL.'
+    message = 'Невалидный URL.'
 
 
 class BetaLinkUrlAlreadyExists(TranslationError):
@@ -43,3 +43,11 @@ class BetaLinkUrlAlreadyExists(TranslationError):
 
 class BetaLinkDoesNotExist(TranslationError):
     message = 'Указанная ссылка не существует.'
+
+
+class TranslationStatusDoesNotExist(TranslationError):
+    message = 'Такого статуса перевода не существует.'
+
+
+class TranslationCannotBeEditedDueToStatus(TranslationError):
+    message = 'Статус перевода не позволяет редактирование, добавление или удаление.'

@@ -4,11 +4,14 @@ from django.db.models import Sum, Max
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey
 
 from cinfo.models import Translator
 from core.models import PublishModel, Profile
 from vn_core.models import VisualNovel
+
+TRANSLATION_ITEM_ACTIVE_BITCODE = 1
 
 
 class TranslationStatistics(models.Model):
@@ -116,6 +119,12 @@ class TranslationItem(PublishModel):
                                         verbose_name="Подписчики", through='TranslationSubscription')
     translator = models.ForeignKey(Translator, verbose_name='Переводчик', on_delete=models.PROTECT,
                                    null=True, blank=True)
+    status = BitField(verbose_name='Битовый код статуса',
+                        flags=(('active', 'Активный'), ('frozen', 'Замороженный'), ('onhold', 'Давно не обновлялся'),
+                            ('finished', 'Завершен'), ('readytogo', 'Готовится к выпуску'), ('intest', 'Тестирование'),
+                            ('dropped', 'Заброшен')
+                        ),
+                        default=TRANSLATION_ITEM_ACTIVE_BITCODE)
 
     class Meta:
         db_table = 'translation_items'
@@ -179,7 +188,8 @@ class TranslationItemSendToVKManager(models.Manager):
                                      total_rows=base_node.total_rows,
                                      translated=base_node.translated,
                                      edited_first_pass=base_node.edited_first_pass,
-                                     edited_second_pass=base_node.edited_second_pass)
+                                     edited_second_pass=base_node.edited_second_pass,
+                                     status=translation_item.status.mask)
         return transl_item_vk
 
 
@@ -199,6 +209,7 @@ class TranslationItemSendToVK(models.Model):
     translated = models.IntegerField(default=0, verbose_name='Переведено')
     edited_first_pass = models.IntegerField(default=0, verbose_name='Первый проход редактуры')
     edited_second_pass = models.IntegerField(default=0, verbose_name='Второй проход редактуры')
+    status = models.IntegerField(default=1, verbose_name='Статус перевода')
 
     objects = TranslationItemSendToVKManager()
 
