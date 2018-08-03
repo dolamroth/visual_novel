@@ -23,7 +23,7 @@ from .mixins import (
 )
 
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
-from .models import TranslationStatisticsChapter, TranslationBetaLink, TranslationStatistics
+from .models import TranslationStatisticsChapter, TranslationBetaLink
 
 
 class EditTranslationPartChapter(
@@ -353,14 +353,7 @@ class ChangeTranslationStatus(TranslationExistsValidator, TranslationStatusExist
         self.translation_item_id = translation_item_id
 
     def execute_validated(self):
-        status = 2 ** self.status_index
-        self.translation_item.status = status
-        self.translation_item.save()
-
-        # Update "last_update" for statistics
-        statistics = TranslationStatistics.objects.get(id=self.translation_item.statistics.id)
-        statistics.last_update = arrow.utcnow().to(settings.TIME_ZONE).datetime
-        statistics.save()
+        self.translation_item.update_to_status(self.status_index)
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)

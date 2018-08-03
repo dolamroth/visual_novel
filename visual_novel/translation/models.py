@@ -1,4 +1,7 @@
+import arrow
+
 from django.apps import apps
+from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Max
 from django.contrib.auth.models import User
@@ -10,6 +13,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 from cinfo.models import Translator
 from core.models import PublishModel, Profile
 from vn_core.models import VisualNovel
+
+from .choices import TRANSLATION_ITEMS_STATUSES
 
 TRANSLATION_ITEM_ACTIVE_BITCODE = 1
 
@@ -156,6 +161,16 @@ class TranslationItem(PublishModel):
         TranslationStatisticsChapter.objects.filter(tree_id=tree_id).delete()
         TranslationStatistics.objects.get(pk=self.statistics.pk).delete()
         super(TranslationItem, self).delete()
+
+    def update_to_status(self, status_index):
+        self.status = 2 ** status_index
+        super(TranslationItem, self).save()
+
+        if TRANSLATION_ITEMS_STATUSES[status_index][4]:
+            # Update "last_update" for statistics
+            statistics = TranslationStatistics.objects.get(id=self.statistics.id)
+            statistics.last_update = arrow.utcnow().to(settings.TIME_ZONE).datetime
+            statistics.save()
 
 
 class TranslationSubscription(models.Model):
