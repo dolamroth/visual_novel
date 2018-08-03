@@ -102,7 +102,7 @@ def edit_statistics(request, vn_alias):
     return render(request, 'translation/edit.html', context)
 
 
-def all_translations(request):
+def all_translations(request, **kwargs):
     all_translations = TranslationItem.objects.filter(
         is_published=True,
         visual_novel__is_published=True
@@ -110,6 +110,30 @@ def all_translations(request):
 
     context = dict()
     context['novels'] = list()
+    context['additional_breadcumb'] = '&nbsp;&#47; Список ведущихся переводов'
+    translation_breadcumb_with_link = '&nbsp;&#47; <a href="/translation/all">Список ведущихся переводов</a>&nbsp;&#47; Статус:&nbsp;'
+
+    if 'status_key' in kwargs.keys():
+        all_status_keys = list(TranslationItem.status)
+        k = 1
+        for key in all_status_keys:
+            if key == kwargs['status_key']:
+                break
+            k *= 2
+        all_translations = all_translations.filter(status=k)
+        context['additional_breadcumb'] = translation_breadcumb_with_link \
+            + [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == kwargs['status_key']][0][1]
+
+    context['statuses'] = list()
+    for translation_status in TRANSLATION_ITEMS_STATUSES:
+        if translation_status[3]:
+            context['statuses'].append({
+                'key': translation_status[0],
+                'name': translation_status[1],
+                'style': translation_status[2],
+                'mailing_inform': translation_status[4],
+                'description': translation_status[5]
+            })
 
     for translation in all_translations:
         visual_novel = translation.visual_novel

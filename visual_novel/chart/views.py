@@ -18,8 +18,8 @@ def chart_index_page(
         translator_alias=None
     ):
     context = dict()
-    context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;Чарт'
-    chart_breadcumb_with_link = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>&nbsp;&#47;&nbsp;'
+    context['additional_breadcumb'] = '&nbsp;&#47; Чарт'
+    chart_breadcumb_with_link = '&nbsp;&#47; <a href="/chart/">Чарт</a>&nbsp;&#47; '
 
     rows = list()
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
