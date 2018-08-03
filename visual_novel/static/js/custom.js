@@ -101,6 +101,20 @@ jQuery.fn.extend({
         }
         return this;
     },
+    spawnAlertBottom: function(data){
+        var alert_example = $('.alert-row-example');
+        var block = $('#delete-betalink-popup');
+        var translation_row = $('tr[data_alias='+block.attr('data_alias')+']').last().next().next();
+        translation_row.after( alert_example.clone(true, true) );
+        var alert_row = translation_row.next();
+        alert_row.spawnAlert(data, window.translation_errors_codes);
+        alert_row.find('div')
+            .fadeIn();
+        alert_row
+            .removeClass('alert-row-example')
+            .addClass('alert-row')
+            .removeClass('editing-row-hidden');
+    },
     collapseBetaLinkEdit: function(){
         var betalink_expanded_row = this;
         var example_row = $(".betallink-collapsed-edit-row-example");
@@ -477,17 +491,7 @@ $(function () {
             if (data['description']){
                 edit_link.prev('textarea').val( data['description'] );
             } else {
-                var alert_example = $('.alert-row-example');
-                var translation_row = $('tr[data_alias='+block.attr('data_alias')+']').last().next().next();
-                translation_row.after( alert_example.clone(true, true) );
-                var alert_row = translation_row.next();
-                alert_row.spawnAlert(data, window.translation_errors_codes);
-                alert_row.find('div')
-                    .fadeIn();
-                alert_row
-                    .removeClass('alert-row-example')
-                    .addClass('alert-row')
-                    .removeClass('editing-row-hidden');
+                edit_link.spawnAlertBottom(data);
                 $('#'+link_id).prev('textarea').val( old_text );
             }
         });
@@ -503,6 +507,7 @@ $(function () {
             method: 'GET',
             type: 'json'
         }).always(function(data){
+            /* TODO: Rewrite without reload */
             location.reload();
         });
 
@@ -682,6 +687,7 @@ $(function () {
             type: 'json'
         }).always(function(data){
             if (data['delete_results']){
+                /* TODO: Manually remove betalink from page, without reload */
                 location.reload();
             }
         });
@@ -705,6 +711,7 @@ $(function () {
             data: data,
             type: 'json'
         }).always(function(data){
+            /* TODO: manually change button and data on page, without reload */
             location.reload();
         });
         return false;
@@ -756,7 +763,7 @@ $(function () {
             $.magnificPopup.close();
             var current_status = $('#current-translation-status');
             if(data['status'] && data['status'] !== 200){
-                // TODO: write exceptions case
+                current_status.spawnAlertBottom(data);
             } else {
                 current_status.removeClass();
                 current_status.text( popup_window.attr('data_status_name') );
