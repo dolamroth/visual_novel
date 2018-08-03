@@ -49,5 +49,9 @@ class TranslationStatusDoesNotExist(TranslationError):
     message = 'Такого статуса перевода не существует.'
 
 
+class TranslationStatusCannotBeChangedToItself(TranslationError):
+    message = 'Нельзя сменить статус на тот же самый.'
+
+
 class TranslationCannotBeEditedDueToStatus(TranslationError):
     message = 'Статус перевода не позволяет редактирование, добавление или удаление.'

@@ -122,7 +122,8 @@ def all_translations(request):
             if not hasattr(request.user, 'profile') \
             else request.user.profile.timezone
 
-        last_update = arrow.get((statistics.last_update).replace(tzinfo=pytz.utc)).to(user_timezone).datetime
+        last_update = arrow.get((translation.statistics.last_update)
+                                .replace(tzinfo=pytz.utc)).to(user_timezone).datetime
 
         total = statistics.total_rows if statistics.total_rows > 0 else 1
 
