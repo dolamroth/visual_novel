@@ -758,7 +758,10 @@ $(function () {
             if(data['status'] && data['status'] !== 200){
                 // TODO: write exceptions case
             } else {
-                location.reload();
+                current_status.removeClass();
+                current_status.text( popup_window.attr('data_status_name') );
+                current_status.addClass( popup_window.attr('data_status_style') );
+                current_status.attr('data-status', popup_window.attr('data_status'));
             }
         });
         return false;
