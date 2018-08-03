@@ -256,7 +256,7 @@ SERVER_EMAIL = get_secret(section='EMAIL_SETTINGS', setting='SERVER_EMAIL')
 
 # VK settings
 VK_APP_ID = get_secret(section='VK', setting='APP_ID')
-VK_APP_REDIRECT_URI = get_secret(section='VK', setting='APP_REDIRECT_URI')
+VK_APP_REDIRECT_URI = VN_HTTP_DOMAIN + get_secret(section='VK', setting='APP_REDIRECT_URI')
 VK_APP_SECRET_KEY = get_secret(section='VK', setting='APP_SECRET_KEY')
 
 VK_API_KEY = get_secret(section='VK', setting='API_KEY')
