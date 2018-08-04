@@ -236,3 +236,19 @@ class TranslationItemSendToVK(models.Model):
     def __str__(self):
         return 'Перевод {} отправленный в ВК для группы {}'.format(
             self.translation_item.visual_novel.title, self.vk_group_id)
+
+
+class TranslationBetaLinkSendToVK(models.Model):
+    link = models.ForeignKey(TranslationBetaLink, verbose_name='Ссылка на патч', on_delete=models.CASCADE)
+    vk_group_id = models.CharField(verbose_name='ID группы ВК', max_length=255, default='')
+    post_date = models.DateField(verbose_name='Дата', auto_now_add=True)
+
+    class Meta:
+        db_table = 'translation_betalink_send_to_vk'
+        verbose_name = 'Бетассылка, отправленная в группу ВК'
+        verbose_name_plural = 'Бетассылки, отправленные в группы ВК'
+
+    def __str__(self):
+        return 'Ссылка {} отправленная в ВК для группы {}'.format(
+            self.link.url, self.vk_group_id
+        )

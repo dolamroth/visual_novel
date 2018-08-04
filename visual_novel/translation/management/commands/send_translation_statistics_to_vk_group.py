@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.urls import reverse
@@ -6,7 +8,8 @@ from notifications.vk import VK
 
 from ...choices import TRANSLATION_ITEMS_STATUSES
 from ...models import (
-    TranslationItemSendToVK, TranslationItem, TranslationStatisticsChapter, TRANSLATION_ITEM_ACTIVE_BITCODE
+    TranslationItemSendToVK, TranslationItem, TranslationStatisticsChapter, TranslationBetaLinkSendToVK,
+    TranslationBetaLink, TRANSLATION_ITEM_ACTIVE_BITCODE
 )
 
 
@@ -33,7 +36,7 @@ class Command(BaseCommand):
         )
 
         post_flag = False
-        post_text = 'Прогресс перевода визуальных новелл:\n\n'
+        post_text = 'Прогресс перевода визуальных новелл:\n'
         vk = VK()
 
         for translation_item in all_translations:
@@ -53,7 +56,7 @@ class Command(BaseCommand):
 
             visual_novel = translation_item.visual_novel
 
-            post_text_by_translation = '{} – {}\n'.format(
+            post_text_by_translation = '\n{} – {}\n'.format(
                 visual_novel.title,
                 'https://vndb.org/v' + str(visual_novel.vndb_id)
             )
@@ -75,7 +78,7 @@ class Command(BaseCommand):
 
             if translation_item.status.mask != status:
                 bitfield_key = [d for d in translation_item.status.items() if d[1]][0][0]
-                status_expanded = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == bitfield_key]
+                status_expanded = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == bitfield_key][0]
                 if status_expanded[4]:
                     post_text_by_translation += 'Статус перевода: {}\n'.format(status_expanded[1])
                     notify_translation = True
@@ -114,6 +117,36 @@ class Command(BaseCommand):
                 post_text_by_translation += 'Комментарий: {}\n'.format(translation_statistics.comment)
                 notify_translation = True
 
+            # Links on beta patches
+            sent_betalinks = TranslationBetaLinkSendToVK.objects.filter(
+                link__translation_item=translation_item,
+                vk_group_id=vk_group_id
+            )
+            sent_betalinks_ids = sent_betalinks.values_list('id', flat=True)
+            last_date = None
+            if len(sent_betalinks) > 0:
+                last_date = sent_betalinks.order_by('-post_date')[0].post_date
+            betalinks = TranslationBetaLink.objects.filter(
+                translation_item=translation_item,
+                approved=True,
+                rejected=False
+            ).exclude(id__in=sent_betalinks_ids)
+            if last_date:
+                betalinks = betalinks.filter(last_update__gte=last_date)
+            if len(betalinks):
+                notify_translation = True
+                for betalink in betalinks:
+                    post_text_by_translation += '{} -- {}\n'.format(
+                        betalink.title,
+                        betalink.url
+                    )
+                    TranslationBetaLinkSendToVK.objects.create(
+                        link=betalink,
+                        vk_group_id=vk_group_id,
+                        post_date=datetime.date.today()
+                    )
+
+            # Translators
             translator = translation_item.translator
 
             if translator:
@@ -129,7 +162,7 @@ class Command(BaseCommand):
                 TranslationItemSendToVK.objects.create_from_translation_item(translation_item, vk_group_id)
 
         if post_flag:
-            post_text += 'Статистика предоставлена сайтом {}\nВсе переводы: {}'.format(
+            post_text += '\nСтатистика предоставлена сайтом {}\nВсе переводы: {}'.format(
                 settings.VN_HTTP_DOMAIN,
                 settings.VN_HTTP_DOMAIN + reverse('translations_all')
             )
