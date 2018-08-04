@@ -18,7 +18,7 @@ class VK(object):
     def __init__(self,api_key=settings.VK_API_KEY):
         self.api_key = api_key
         self.api_url = 'https://api.vk.com/method/'
-        self.METHOD = 'GET'
+        self.METHOD = 'POST'
 
     def __execute_query(self, method, params_q):
         params = dict(params_q)
