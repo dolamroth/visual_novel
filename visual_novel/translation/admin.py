@@ -2,7 +2,7 @@ from bitfield import BitField
 
 from django.contrib import admin
 
-from .models import TranslationItem, TranslationBetaLink, TranslationItemSendToVK
+from .models import TranslationItem, TranslationBetaLink, TranslationItemSendToVK, TranslationBetaLinkSendToVK
 from .widgets import StatusBitFieldWidget
 
 
@@ -67,3 +67,4 @@ class TranslationItemAdmin(admin.ModelAdmin):
 admin.site.register(TranslationItem, TranslationItemAdmin)
 admin.site.register(TranslationBetaLink)
 admin.site.register(TranslationItemSendToVK)
+admin.site.register(TranslationBetaLinkSendToVK)
