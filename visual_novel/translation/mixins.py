@@ -5,7 +5,8 @@ from .models import TranslationItem, TranslationStatisticsChapter, TranslationBe
 
 from .errors import (
     TranslationNotFound, InvalidValueOnRowsQuantity, ParentDoesNotExist, InvalidMoveParent, InvalidBetaLinkUrl,
-    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist, TranslationStatusDoesNotExist, TranslationCannotBeEditedDueToStatus
+    BetaLinkUrlAlreadyExists, BetaLinkDoesNotExist, TranslationStatusDoesNotExist, TranslationCannotBeEditedDueToStatus,
+    TranslationStatusCannotBeChangedToItself
 )
 
 from .utils import get_status_tuple_for_translation_item
@@ -107,3 +108,9 @@ class TranslationCanBeEditedValidator(object):
         status_tuple = get_status_tuple_for_translation_item(translation_item)
         if not status_tuple[6]:
             raise TranslationCannotBeEditedDueToStatus()
+
+
+class StatusIsNotTheSameValidator(object):
+    def validate_status_is_not_the_same(self, translation_item, status_index):
+        if translation_item.status.mask == 2 ** status_index:
+            raise TranslationStatusCannotBeChangedToItself()

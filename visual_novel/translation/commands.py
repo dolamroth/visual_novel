@@ -18,7 +18,8 @@ from .mixins import (
     BetaLinkUrlUniqueValidator,
     BetaLinkExistsValidator,
     TranslationStatusExistsValidator,
-    TranslationCanBeEditedValidator
+    TranslationCanBeEditedValidator,
+    StatusIsNotTheSameValidator
 )
 
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
@@ -36,6 +37,8 @@ class EditTranslationPartChapter(
     :raises InvalidMoveToChildElement: Raises if attempted an invalid move of chapter in chapters' tree.
     :raises InvalidMoveParent: Raises if attempted to move chapter as a child of non-section chapter.
     :raises CannotBeSiblingOfBaseTreeNode: Raises if attempted to move chapter left or right of base node.
+    :raises TranslationCannotBeEditedDueToStatus: Raises if translation status does not allow editing,
+    adding or deleting.
     """
     def __init__(self, data):
         self.translation_item_id = data['translation_item_id']
@@ -143,6 +146,8 @@ class AddTranslationPartChapter(
     :raises InvalidValueOnRowsQuantity: Raises if numbers of rows are inconsistent with each other.
     :raises InvalidMoveParent: Raises if attempted to move chapter as a child of non-section chapter.
     :raises CannotBeSiblingOfBaseTreeNode: Raises if attempted to move chapter left or right of base node.
+    :raises TranslationCannotBeEditedDueToStatus: Raises if translation status does not allow editing,
+    adding or deleting.
     """
     def __init__(self, data):
         self.translation_item_id = data['translation_item_id']
@@ -224,6 +229,8 @@ class DeleteTranslationChapter(
     """
     :raises TranslationNotFound: Raises if either translation item or translation chapter
     with respective translation item not found.
+    :raises TranslationCannotBeEditedDueToStatus: Raises if translation status does not allow editing,
+    adding or deleting.
     """
     def __init__(self, data):
         self.translation_item_id = data['translation_item_id']
@@ -332,9 +339,12 @@ class DeleteBetaLink(BetaLinkExistsValidator, Command):
         self.betalink = self.validate_betalink_exists(self.betalink_id)
 
 
-class ChangeTranslationStatus(TranslationExistsValidator, TranslationStatusExistsValidator, Command):
+class ChangeTranslationStatus(TranslationExistsValidator, TranslationStatusExistsValidator,
+                              StatusIsNotTheSameValidator, Command):
     """
+    :raises TranslationNotFound: Raises if translation item not found.
     :raises TranslationStatusExistsValidator: raises if status with specified key does not exist.
+    :raises TranslationStatusCannotBeChangedToItself: Raises if user tries to change translation status to itself.
     """
 
     def __init__(self, status, translation_item_id):
@@ -343,10 +353,9 @@ class ChangeTranslationStatus(TranslationExistsValidator, TranslationStatusExist
         self.translation_item_id = translation_item_id
 
     def execute_validated(self):
-        status = 2 ** self.status_index
-        self.translation_item.status=status
-        self.translation_item.save()
+        self.translation_item.update_to_status(self.status_index)
 
     def validate(self):
         self.translation_item = self.validate_translation_exists(translation_item_id=self.translation_item_id)
         self.status_index = self.validate_translation_status_exists(self.status_key)
+        self.validate_status_is_not_the_same(self.translation_item, self.status_index)
