@@ -188,26 +188,6 @@ class TranslationSubscription(models.Model):
             self.profile.user.username, self.translation.visual_novel.title)
 
 
-class TranslationItemSendToVKManager(models.Manager):
-
-    def create_from_translation_item(self, translation_item, vk_group_id):
-        ts = translation_item.statistics
-        translation_chapter_model = apps.get_model('translation', 'TranslationStatisticsChapter')
-        base_node = translation_chapter_model.objects.get(tree_id=ts.tree_id, lft=1, parent=None)
-        transl_item_vk = self.create(translation_item=translation_item,
-                                     vk_group_id=vk_group_id,
-                                     pictures_statistics=ts.pictures_statistics,
-                                     technical_statistics=ts.technical_statistics,
-                                     comment=ts.comment,
-                                     last_update=ts.last_update,
-                                     total_rows=base_node.total_rows,
-                                     translated=base_node.translated,
-                                     edited_first_pass=base_node.edited_first_pass,
-                                     edited_second_pass=base_node.edited_second_pass,
-                                     status=translation_item.status.mask)
-        return transl_item_vk
-
-
 class TranslationItemSendToVK(models.Model):
     translation_item = models.ForeignKey(TranslationItem, verbose_name='Перевод', on_delete=models.CASCADE)
     vk_group_id = models.CharField(verbose_name='ID группы ВК', max_length=255, default='')
@@ -226,8 +206,6 @@ class TranslationItemSendToVK(models.Model):
     edited_second_pass = models.IntegerField(default=0, verbose_name='Второй проход редактуры')
     status = models.IntegerField(default=1, verbose_name='Статус перевода')
 
-    objects = TranslationItemSendToVKManager()
-
     class Meta:
         db_table = 'translation_item_send_to_vk'
         verbose_name = 'Перевод отпраленный в группу ВК'
@@ -236,6 +214,24 @@ class TranslationItemSendToVK(models.Model):
     def __str__(self):
         return 'Перевод {} отправленный в ВК для группы {}'.format(
             self.translation_item.visual_novel.title, self.vk_group_id)
+
+    @classmethod
+    def create_from_translation_item(cls, translation_item, vk_group_id):
+        ts = translation_item.statistics
+        base_node = TranslationStatisticsChapter.objects.get(tree_id=ts.tree_id, lft=1, parent=None)
+        return cls(
+            translation_item=translation_item,
+            vk_group_id=vk_group_id,
+            pictures_statistics=ts.pictures_statistics,
+            technical_statistics=ts.technical_statistics,
+            comment=ts.comment,
+            last_update=ts.last_update,
+            total_rows=base_node.total_rows,
+            translated=base_node.translated,
+            edited_first_pass=base_node.edited_first_pass,
+            edited_second_pass=base_node.edited_second_pass,
+            status=translation_item.status.mask
+        )
 
 
 class TranslationBetaLinkSendToVK(models.Model):

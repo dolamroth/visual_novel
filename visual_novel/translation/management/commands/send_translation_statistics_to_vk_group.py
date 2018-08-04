@@ -21,6 +21,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+
+        translation_betalinks_sent = list()
+        translation_items_sent = list()
+
         try:
             assert options['group_id'] is not None
             # VK group ID always starts with minus sign
@@ -140,10 +144,12 @@ class Command(BaseCommand):
                         betalink.title,
                         betalink.url
                     )
-                    TranslationBetaLinkSendToVK.objects.create(
-                        link=betalink,
-                        vk_group_id=vk_group_id,
-                        post_date=datetime.date.today()
+                    translation_betalinks_sent.append(
+                        TranslationBetaLinkSendToVK(
+                            link=betalink,
+                            vk_group_id=vk_group_id,
+                            post_date=datetime.date.today()
+                        )
                     )
 
             # Translators
@@ -159,7 +165,9 @@ class Command(BaseCommand):
             if notify_translation:
                 post_text += post_text_by_translation
                 # Save sent statistics
-                TranslationItemSendToVK.objects.create_from_translation_item(translation_item, vk_group_id)
+                translation_items_sent.append(
+                    TranslationItemSendToVK.create_from_translation_item(translation_item, vk_group_id)
+                )
 
         if post_flag:
             post_text += '\nСтатистика предоставлена сайтом {}\nВсе переводы: {}'.format(
@@ -167,3 +175,7 @@ class Command(BaseCommand):
                 settings.VN_HTTP_DOMAIN + reverse('translations_all')
             )
             vk.post_to_wall(msg=post_text, group_id=vk_group_id)
+
+            # If no errors, save records of sent statistics
+            TranslationItemSendToVK.objects.bulk_create(translation_items_sent)
+            TranslationBetaLinkSendToVK.objects.bulk_create(translation_betalinks_sent)
