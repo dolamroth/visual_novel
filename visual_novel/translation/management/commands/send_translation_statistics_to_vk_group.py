@@ -133,7 +133,8 @@ class Command(BaseCommand):
             betalinks = TranslationBetaLink.objects.filter(
                 translation_item=translation_item,
                 approved=True,
-                rejected=False
+                rejected=False,
+                is_published=True
             ).exclude(id__in=sent_betalinks_ids)
             if last_date:
                 betalinks = betalinks.filter(last_update__gte=last_date)
