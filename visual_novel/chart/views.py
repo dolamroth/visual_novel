@@ -94,8 +94,17 @@ def chart_index_page(
         try:
             translator = Translator.objects.get(alias=translator_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
-            if translator.description:
-                context['additional_description'] = translator.description
+            if translator.description or translator.url:
+                context['additional_description'] = ''
+                translator_description = list()
+                if translator.description:
+                    translator_description.append(translator.description)
+                if translator.url:
+                    translator_description.append('<a href="{}">Ссылка на сайт переводчика.</a>'.format(
+                        translator.url
+                    ))
+                context['additional_description'] = '<br /><br />'.join(translator_description)
+
         except Translator.DoesNotExist:
             pass
 
@@ -304,7 +313,8 @@ def chart_page(request, vn_alias):
             'link': reverse('chart_index_with_translator', kwargs={'translator_alias': translator.translator.alias}),
             'has_description': not not translator.translator.description,
             'alias': translator.translator.alias,
-            'language': translator.language.title
+            'language': translator.language.title,
+            'url': translator.translator.url or None
         })
         keywords.append(translator.translator.title)
     vn_context['has_translators'] = (len(vn_context['translators']) > 0)

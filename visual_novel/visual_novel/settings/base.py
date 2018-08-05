@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     'bitfield',
+    'constance',
+    'constance.backends.database',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -168,6 +170,13 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'TRANSLATION_PROGRESS_POST_IN_VK_IMAGE':
+        ('', 'изображение, которое прикрепляется к посту ВК о прогрессе перевода', str),
+}
 
 LOGGING = {
     'version': 1.0,

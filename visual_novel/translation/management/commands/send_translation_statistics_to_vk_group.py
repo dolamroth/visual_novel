@@ -4,6 +4,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.urls import reverse
 
+from constance import config
+
 from notifications.vk import VK
 
 from ...choices import TRANSLATION_ITEMS_STATUSES
@@ -35,9 +37,11 @@ class Command(BaseCommand):
 
         vk_group_id = options['group_id']
 
+        # Order visual novels by popularity (descending), due to peculiarities of posting to VK
+        # (long posts become partially hidden)
         all_translations = TranslationItem.objects.filter(
             visual_novel__is_published=True
-        )
+        ).order_by('-visual_novel__popularity')
 
         post_flag = False
         post_text = 'Прогресс перевода визуальных новелл:\n'
@@ -68,7 +72,7 @@ class Command(BaseCommand):
 
             if TranslationItemSendToVK.objects.filter(
                     translation_item=translation_item, vk_group_id=vk_group_id
-            ):
+            ).count():
                 last_statistics = TranslationItemSendToVK.objects\
                     .filter(translation_item=translation_item, vk_group_id=vk_group_id).order_by('-post_date').first()
                 total = last_statistics.total_rows
@@ -88,7 +92,7 @@ class Command(BaseCommand):
                     notify_translation = True
 
             if base_root.total_rows != total:
-                post_text_by_translation += 'Всего: {}\n'.format(base_root.total_rows)
+                post_text_by_translation += 'Всего: {} строк\n'.format(base_root.total_rows)
                 notify_translation = True
 
             if base_root.translated != translated:
@@ -175,7 +179,12 @@ class Command(BaseCommand):
                 settings.VN_HTTP_DOMAIN,
                 settings.VN_HTTP_DOMAIN + reverse('translations_all')
             )
-            vk.post_to_wall(msg=post_text, group_id=vk_group_id)
+            # Add image, if posting to wall
+            attachments = None
+            # if vk_id starts with minus sign, it indicates that is is group (and not user)
+            if vk_group_id[0] == '-' and config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE:
+                attachments = config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE
+            vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments)
 
             # If no errors, save records of sent statistics
             TranslationItemSendToVK.objects.bulk_create(translation_items_sent)
