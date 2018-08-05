@@ -90,7 +90,7 @@ class Command(BaseCommand):
                     notify_translation = True
 
             if base_root.total_rows != total:
-                post_text_by_translation += 'Всего: {}\n'.format(base_root.total_rows)
+                post_text_by_translation += 'Всего: {} строк\n'.format(base_root.total_rows)
                 notify_translation = True
 
             if base_root.translated != translated:
