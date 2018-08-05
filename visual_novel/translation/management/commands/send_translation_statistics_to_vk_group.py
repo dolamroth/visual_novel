@@ -35,9 +35,11 @@ class Command(BaseCommand):
 
         vk_group_id = options['group_id']
 
+        # Order visual novels by popularity (descending), due to peculiarities of posting to VK
+        # (long posts become partially hidden)
         all_translations = TranslationItem.objects.filter(
             visual_novel__is_published=True
-        )
+        ).order_by('-visual_novel__popularity')
 
         post_flag = False
         post_text = 'Прогресс перевода визуальных новелл:\n'
@@ -68,7 +70,7 @@ class Command(BaseCommand):
 
             if TranslationItemSendToVK.objects.filter(
                     translation_item=translation_item, vk_group_id=vk_group_id
-            ):
+            ).count():
                 last_statistics = TranslationItemSendToVK.objects\
                     .filter(translation_item=translation_item, vk_group_id=vk_group_id).order_by('-post_date').first()
                 total = last_statistics.total_rows
