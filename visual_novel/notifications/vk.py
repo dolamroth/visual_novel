@@ -61,7 +61,7 @@ class VK(object):
         vk_logger.info('Message id {}'.format(r['response']))
         return r['response']
 
-    def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID):
+    def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID, attachments=None):
         self.__assert(msg, str)
         self.__assert(group_id, str)
         context = {
@@ -70,6 +70,9 @@ class VK(object):
             'friends_only': 0,
             'from_group': 1
         }
+        if attachments is not None:
+            self.__assert(attachments, str)
+            context['attachments'] = attachments
         r = self.__query('wall.post', context)
         vk_logger.info('Wall Post id {}'.format(r['response']))
         return r['response']

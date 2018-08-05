@@ -4,6 +4,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.urls import reverse
 
+from constance import config
+
 from notifications.vk import VK
 
 from ...choices import TRANSLATION_ITEMS_STATUSES
@@ -177,7 +179,12 @@ class Command(BaseCommand):
                 settings.VN_HTTP_DOMAIN,
                 settings.VN_HTTP_DOMAIN + reverse('translations_all')
             )
-            vk.post_to_wall(msg=post_text, group_id=vk_group_id)
+            # Add image, if posting to wall
+            attachments = None
+            # if vk_id starts with minus sign, it indicates that is is group (and not user)
+            if vk_group_id[0] == '-' and config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE:
+                attachments = config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE
+            vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments)
 
             # If no errors, save records of sent statistics
             TranslationItemSendToVK.objects.bulk_create(translation_items_sent)
