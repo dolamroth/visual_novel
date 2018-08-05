@@ -125,7 +125,16 @@
                     <span class="sh-desc">Переводы:</span>
                     {% for translator in translators %}
                         {% if translator.has_description %}
-                            <a href="{{ translator.link }}" class="tooltip" data-tooltip-content="#{{ translator.alias }}">{{ translator.title|safe }}</a> ({{ translator.language|safe }})<span class="tooltip_templates"><span id="{{ translator.alias }}">{{ translator.description|safe }}</span></span>{% include "includes/comma.html" %}
+                            <a href="{{ translator.link }}" class="tooltip" data-tooltip-content="#translator-{{ translator.alias }}">{{ translator.title|safe }}</a>
+                            ({{ translator.language|safe }})
+                            <span class="tooltip_templates">
+                                <span id="translator-{{ translator.alias }}">
+                                    {{ translator.description|safe }}
+                                    {% if translator.url %}
+                                    <br /><br /><a href="{{ translator.url }}">Ссылка на сайт переводчика.</a>
+                                    {% endif %}
+                                </span>
+                            </span>{% include "includes/comma.html" %}
                         {% else %}
                             <a href="{{ translator.link }}">{{ translator.title|safe }}</a> ({{ translator.language|safe }}){% include "includes/comma.html" %}
                         {% endif %}
