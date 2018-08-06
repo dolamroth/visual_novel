@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
 from notifications.service import send_email
+from .validators import validate_vk_profile
 
 
 class CustomAuthentificationForm(AuthenticationForm):
@@ -57,10 +58,18 @@ class CustomSignUpForm(UserCreationForm):
         strip=False,
     )
 
+    vk_account = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control", "required": False, "placeholder": "https://vk.com/id1"}),
+        strip=False,
+        max_length=254,
+        validators=[validate_vk_profile],
+        required=False
+    )
+
     class Meta:
         model = User
         field_classes = {'username': UsernameField}
-        fields = ('username', 'timezone', 'email', 'password1', 'password2',)
+        fields = ('username', 'timezone', 'email', 'password1', 'password2', 'vk_account')
 
 
 class CustomPasswordResetForm(PasswordResetForm):

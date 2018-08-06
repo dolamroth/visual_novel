@@ -19,6 +19,7 @@ from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
 from .models import Profile
+from .mixins import VkProfileValidator
 import requests
 
 
@@ -50,10 +51,11 @@ def signup(request):
             user.save()
             user.refresh_from_db()  # load the profile instance created by the signal
             zone_offset = form.cleaned_data.get('timezone')
+            user.profile.vk_link = form.data.get('vk_account', '')
             if type(zone_offset) == int:
                 user.profile.timezone = offset_to_timezone(zone_offset)
-            user.save()
 
+            user.save()
             current_site = get_current_site(request)
             subject = 'Активация аккаунта ' + current_site.domain
             message = render_to_string('pages/account_activation_email.html', {
