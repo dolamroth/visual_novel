@@ -1,13 +1,15 @@
 from django.utils.decorators import decorator_from_middleware
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError as restValidationError
+from rest_framework.renderers import JSONRenderer
 
 from core.middlewares import IsAuthenticatedMiddleware
 from ..middlewares import HasPermissionToEditVNMiddleware
 from ..utils import select_like_statistics_name, get_status_tuple_for_translation_item
 
+from ..choices import TRANSLATION_ITEMS_STATUSES
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
     DeleteTranslationChapter, ManageBetaLink, DeleteBetaLink, ChangeTranslationStatus
@@ -18,9 +20,8 @@ from ..errors import (
     BetaLinkDoesNotExist, TranslationStatusDoesNotExist, TranslationCannotBeEditedDueToStatus
 )
 from .serializers import (
-    TranslationChapterSerializer, TranslationChapterPartSerializer,
-    AddTranslationChapterPartSerializer, AddTranslationChapterSerializer,
-    StatisticsDescription, StatisticsComment, BetaLinkSerializer
+    TranslationChapterSerializer, TranslationChapterPartSerializer, AddTranslationChapterSerializer, StatisticsComment,
+    AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer
 )
 from ..models import (
     TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
@@ -390,3 +391,44 @@ def change_status(request, vn_alias):
     return Response(data={
         'message': 'Операция проведена успешно.'
     }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@renderer_classes((JSONRenderer,))
+def translation_list(request, **kwargs):
+    all_translations = TranslationItem.objects.filter(
+        is_published=True,
+        visual_novel__is_published=True
+    ).order_by('visual_novel__title')
+
+    context = dict()
+
+    # Filter translation items by selected status
+    context['status_name'] = None
+    if 'status_key' in kwargs.keys():
+        all_status_keys = list(TranslationItem.status)
+        k = 1
+        for key in all_status_keys:
+            if key == kwargs['status_key']:
+                break
+            k *= 2
+        all_translations = all_translations.filter(status=k)
+        context['status_name'] = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == kwargs['status_key']][0][1]
+
+    # List of all statuses
+    context['statuses'] = list()
+    for translation_status in TRANSLATION_ITEMS_STATUSES:
+        if translation_status[3]:
+            context['statuses'].append({
+                'key': translation_status[0],
+                'name': translation_status[1],
+                'style': translation_status[2],
+                'mailing_inform': translation_status[4],
+                'description': translation_status[5]
+            })
+
+    serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
+
+    context['novels'] = serializer.data
+
+    return Response(context)
