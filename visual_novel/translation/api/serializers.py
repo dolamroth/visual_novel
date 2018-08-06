@@ -10,8 +10,8 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework.relations import PKOnlyObject
 
-from ..models import TranslationItem, TranslationStatisticsChapter
-from ..utils import get_status_tuple_for_translation_item
+from ..models import TranslationItem, TranslationStatisticsChapter, TranslationBetaLink, TranslationSubscription
+from ..utils import get_status_tuple_for_translation_item, statistics_name
 
 
 class AddTranslationChapterPartSerializer(serializers.Serializer):
@@ -80,13 +80,7 @@ class TranslationListShortSerializer(serializers.Serializer):
         self.total = None
         self.status_tuple = None
 
-    def to_representation(self, instance):
-        ret = OrderedDict()
-        fields = self._readable_fields
-
-        ##########################################################
-        ########## Custom local variables to serializer ##########
-        ##########################################################
+    def initialize_self_fields(self, instance):
         self.visual_novel = instance.visual_novel
         self.translation_statistics = instance.statistics
         self.statistics = TranslationStatisticsChapter.objects.get(
@@ -95,9 +89,13 @@ class TranslationListShortSerializer(serializers.Serializer):
         )
         self.total = (self.statistics).total_rows if (self.statistics).total_rows > 0 else 1
         self.status_tuple = get_status_tuple_for_translation_item(instance)
-        ##########################################################
-        ########## Custom local variables to serializer ##########
-        ##########################################################
+
+    def to_representation(self, instance):
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        # Addition, initializing additional attributes in order to reuse in SerializerMethodField
+        self.initialize_self_fields(instance)
 
         for field in fields:
             try:
@@ -173,3 +171,99 @@ class TranslationListShortSerializer(serializers.Serializer):
 
     def get_status_style(self, obj):
         return (self.status_tuple).style
+
+
+class TranslationBetaLinkSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    url = serializers.CharField()
+    comment = serializers.CharField()
+    approved = serializers.BooleanField()
+    rejected = serializers.BooleanField()
+
+    class Meta:
+        model = TranslationBetaLink
+        fields = (
+            'id', 'title', 'url', 'comment', 'approved', 'rejected'
+        )
+
+
+class TranslationStatisticsChapterSerializer(serializers.Serializer):
+    def __init__(self, instance=None, data=empty, **kwargs):
+        super(TranslationStatisticsChapterSerializer, self).__init__(instance=instance, data=data, **kwargs)
+        self.statistics_chapter_name_base_level = 1
+
+    name = serializers.CharField(source='title')
+    total_rows = serializers.IntegerField()
+    translated = serializers.IntegerField()
+    edited_first_pass = serializers.IntegerField()
+    edited_second_pass = serializers.IntegerField()
+    is_chapter = serializers.BooleanField()
+    level = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TranslationStatisticsChapter
+        fields = (
+            'name', 'total_rows', 'translated', 'edited_first_pass', 'edited_second_pass', 'is_chapter', 'level'
+        )
+
+    def get_level(self, obj):
+        return obj.get_level() - self.statistics_chapter_name_base_level
+
+
+class TranslationListSerializer(TranslationListShortSerializer):
+    def __init__(self, instance=None, data=empty, **kwargs):
+        super(TranslationListSerializer, self).__init__(instance=instance, data=data, **kwargs)
+        self.translator = None
+        self.has_download_links = False
+        self.translation = instance
+
+    def initialize_self_fields(self, instance):
+        super(TranslationListSerializer, self).initialize_self_fields(instance)
+        self.translator = instance.translator
+
+    class Meta:
+        model = TranslationItem
+        fields = (
+            'title', 'alias', 'total_rows', 'translated', 'edited_first_pass', 'edited_second_pass', 'translated_perc',
+            'edited_first_pass_perc', 'edited_second_pass_perc', 'status_name', 'status_style', 'last_update',
+            'download_links', 'has_download_links', 'items'
+        )
+
+    download_links = serializers.SerializerMethodField()
+    has_download_links = serializers.SerializerMethodField()
+    translator = serializers.SerializerMethodField()
+    translator_link = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
+    items = serializers.SerializerMethodField()
+
+    def get_download_links(self, obj):
+        betalinks = TranslationBetaLink.objects.filter(
+            is_published=True,
+            translation_item=self.translation,
+            approved=True,
+            rejected=False
+        )
+        self.has_download_links = not not betalinks.count()
+        return TranslationBetaLinkSerializer(betalinks, many=True).data
+
+    def get_has_download_links(self, obj):
+        return self.has_download_links
+
+    def get_translator(self, obj):
+        return None if not self.translator else (self.translator).title
+
+    def get_translator_link(self, obj):
+        return None if not self.translator or not (self.translator).url else (self.translator).url
+
+    def get_is_subscribed(self, obj):
+        user = self.context['user']
+        return user.is_authenticated  \
+            and TranslationSubscription.objects.filter(profile=user.profile, translation=self.translation).exists()
+
+    def get_items(self, obj):
+        all_items = TranslationStatisticsChapter.objects.filter(
+            tree_id=self.translation_statistics.tree_id,
+            lft__gt=1
+        ).order_by('lft')
+        return TranslationStatisticsChapterSerializer(all_items, many=True).data

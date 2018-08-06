@@ -21,7 +21,8 @@ from ..errors import (
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer, AddTranslationChapterSerializer, StatisticsComment,
-    AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer
+    AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer,
+    TranslationListSerializer
 )
 from ..models import (
     TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
@@ -413,22 +414,37 @@ def translation_list(request, **kwargs):
                 break
             k *= 2
         all_translations = all_translations.filter(status=k)
-        context['status_name'] = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == kwargs['status_key']][0][1]
+        context['status_name'] = [d for d in TRANSLATION_ITEMS_STATUSES if d.alias == kwargs['status_key']][0].name
 
     # List of all statuses
     context['statuses'] = list()
     for translation_status in TRANSLATION_ITEMS_STATUSES:
-        if translation_status[3]:
+        if translation_status.can_change_to_self:
             context['statuses'].append({
-                'key': translation_status[0],
-                'name': translation_status[1],
-                'style': translation_status[2],
-                'mailing_inform': translation_status[4],
-                'description': translation_status[5]
+                'key': translation_status.alias,
+                'name': translation_status.name,
+                'style': translation_status.style,
+                'mailing_inform': translation_status.mail,
+                'description': translation_status.description
             })
 
     serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
-
     context['novels'] = serializer.data
-
     return Response(context)
+
+
+@api_view(['GET', 'POST', ])
+@renderer_classes((JSONRenderer,))
+def translation_get(request, vn_alias):
+    try:
+        translation = TranslationItem.objects.get(
+            is_published=True,
+            visual_novel__is_published=True,
+            visual_novel__alias=vn_alias
+        )
+    except TranslationItem.DoesNotExist:
+        return Response(data={'message': 'Визуальная новелла не найдена.'}, status=404)
+
+    serializer = TranslationListSerializer(translation, context={'user': request.user})
+
+    return Response(serializer.data)
