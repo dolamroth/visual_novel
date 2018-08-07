@@ -37,7 +37,9 @@ def sign_via_vk(request):
     try:
         user = Profile.objects.get(vk_link__icontains=vk_id).user
     except Profile.DoesNotExist:
-        return redirect('main')
+        form = CustomSignUpForm()
+        form.fields['vk_account'].initial = vk_id
+        return render(request, 'pages/signup.html', {"form": form})
     login(request, user)
     return redirect('main')
 
@@ -54,7 +56,6 @@ def signup(request):
             user.profile.vk_link = form.data.get('vk_account', '')
             if type(zone_offset) == int:
                 user.profile.timezone = offset_to_timezone(zone_offset)
-
             user.save()
             current_site = get_current_site(request)
             subject = 'Активация аккаунта ' + current_site.domain
