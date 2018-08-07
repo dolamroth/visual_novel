@@ -264,11 +264,7 @@ a.tooltip{
     position: relative;
 }
 
-.hidden-news{
-    display: none;
-}
-
-.translation-list-hidden{
+.hidden-news, .translation-list-hidden, #translation-statuses-li-example{
     display: none;
 }
 

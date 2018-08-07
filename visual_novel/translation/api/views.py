@@ -1,3 +1,7 @@
+import json
+
+from constance import config
+
 from django.utils.decorators import decorator_from_middleware
 
 from rest_framework.decorators import api_view, renderer_classes
@@ -396,40 +400,48 @@ def change_status(request, vn_alias):
 
 @api_view(['GET', 'POST', ])
 @renderer_classes((JSONRenderer,))
-def translation_list(request, **kwargs):
+def translation_list(request):
+
+    selected_statuses = json.loads(request.GET.get('statuses', '[]'))
+
+    all_status_keys = list(TranslationItem.status)
+    all_status_int_keys = list()
+    k = 1
+    for status in all_status_keys:
+        selected_status = [d for d in selected_statuses if d['key']==status]
+        if len(selected_status) == 0:
+            continue
+        selected_status = selected_status[0]
+        if selected_status['checked']:
+            all_status_int_keys.append(k)
+        k *= 2
+
     all_translations = TranslationItem.objects.filter(
         is_published=True,
-        visual_novel__is_published=True
+        visual_novel__is_published=True,
+        status__in=all_status_int_keys
     ).order_by('visual_novel__title')
 
-    context = dict()
+    serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
 
-    # Filter translation items by selected status
-    context['status_name'] = None
-    if 'status_key' in kwargs.keys():
-        all_status_keys = list(TranslationItem.status)
-        k = 1
-        for key in all_status_keys:
-            if key == kwargs['status_key']:
-                break
-            k *= 2
-        all_translations = all_translations.filter(status=k)
-        context['status_name'] = [d for d in TRANSLATION_ITEMS_STATUSES if d.alias == kwargs['status_key']][0].name
+    return Response({'translations': serializer.data})
+
+
+@api_view(['GET', 'POST', ])
+@renderer_classes((JSONRenderer,))
+def translation_list_data_selects(request):
+    context = dict()
 
     # List of all statuses
     context['statuses'] = list()
+    default_statuses = config.DEFAULT_TRANSLATION_STATUSES_TO_SHOW.split(',')
     for translation_status in TRANSLATION_ITEMS_STATUSES:
-        if translation_status.can_change_to_self:
-            context['statuses'].append({
-                'key': translation_status.alias,
-                'name': translation_status.name,
-                'style': translation_status.style,
-                'mailing_inform': translation_status.mail,
-                'description': translation_status.description
-            })
-
-    serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
-    context['translations'] = serializer.data
+        context['statuses'].append({
+            'key': translation_status.alias,
+            'name': translation_status.name,
+            'style': translation_status.style,
+            'default': translation_status.alias in default_statuses
+        })
 
     return Response(context)
 

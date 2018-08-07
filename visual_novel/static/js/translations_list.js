@@ -2,6 +2,64 @@ window.translations_interval = null;
 window.statuses_list = null;
 
 
+// Get data for dropdown selects
+var GetListOfData = function(){
+    $.ajax({
+        url: '/api/translation/all/selects',
+        method: 'GET',
+        data: {},
+        type: 'json'
+    }).always(function(data){
+        window.statuses_list = data['statuses'];
+
+        var li_tag_example = $("#translation-statuses-li-example");
+        for (i=0; i<(window.statuses_list).length; i++){
+            var val = (window.statuses_list)[i];
+            (window.statuses_list)[i]['checked'] = val['default'];
+            var li_tag = li_tag_example
+                .clone(true, true)
+                .trigger('create')
+                .removeAttr('id');
+            li_tag.find('a').attr('data_id', val['key']);
+            li_tag.find('span.li-text').html( val['name'] );
+            li_tag.find('span.li-text').addClass( 'text-' + val['style'] );
+            li_tag.find('input').prop('checked', val['checked']);
+            $('#statuses-ul').append( li_tag );
+        }
+
+        bindEventsToDropdownsElements();
+
+        window.translations_interval = setTimeout(function(){ UploadTranslation(); }, 0);
+    });
+};
+
+
+// Function binds event listeners for elements of dropdown
+var bindEventsToDropdownsElements = function(){
+    $( '.dropdown-menu input' ).on( 'click', function(e){
+        return false;
+    });
+
+    $( '.dropdown-menu#statuses-ul a' ).on( 'click', function( event ) {
+        var $target = $( event.currentTarget ),
+            val = $target.attr( 'data_id' ),
+            $inp = $target.find( 'input' );
+
+        clearInterval(window.orders_interval);
+
+        for (i=0; i<(window.statuses_list).length; i++){
+            if( (window.statuses_list)[i]['key'] === val ){
+                (window.statuses_list)[i]['checked'] = !($inp.prop( 'checked'));
+                $inp.prop('checked', !($inp.prop( 'checked')) );
+            }
+        }
+
+        window.orders_interval = setTimeout(function(){ UploadTranslation(); }, 0);
+        return false;
+    });
+};
+
+
 var reloadTranslationsOnPage = function(translations){
     var table = $('#all-translations-list');
     var example_row = $("#translation-row-example");
@@ -64,5 +122,5 @@ var UploadTranslation = function(){
 
 
 $(function () {
-    window.translations_interval = setTimeout(function(){ UploadTranslation(); }, 0);
+    window.translations_interval = setTimeout(function(){ GetListOfData(); }, 0);
 });

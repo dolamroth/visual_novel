@@ -4,6 +4,7 @@ from . import views as translation_api_views
 
 urlpatterns = [
     path(r'all', translation_api_views.translation_list, name='get_translation_list'),
+    path(r'all/selects', translation_api_views.translation_list_data_selects, name='get_translation_list_selects'),
     path(r'<str:vn_alias>/get', translation_api_views.translation_get, name='get_translation'),
     path(r'<str:vn_alias>/edit', translation_api_views.edit_chapter, name='chapter_edit'),
     path(r'<str:vn_alias>/add', translation_api_views.add_chapter, name='chapter_add'),

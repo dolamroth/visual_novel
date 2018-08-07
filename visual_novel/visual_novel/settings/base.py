@@ -176,6 +176,8 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'TRANSLATION_PROGRESS_POST_IN_VK_IMAGE':
         ('', 'изображение, которое прикрепляется к посту ВК о прогрессе перевода', str),
+    'DEFAULT_TRANSLATION_STATUSES_TO_SHOW':
+        ('active,onhold,readytogo,intest', 'список статусов перевода, которые показывать по умолчанию на странице списка переводов', str),
 }
 
 LOGGING = {
