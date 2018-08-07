@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 from rest_framework import serializers
 from rest_framework.fields import empty
@@ -115,7 +116,8 @@ class TranslationListShortSerializer(serializers.Serializer):
         model = TranslationItem
         fields = (
             'title', 'alias', 'total_rows', 'translated', 'edited_first_pass', 'edited_second_pass', 'translated_perc',
-            'edited_first_pass_perc', 'edited_second_pass_perc', 'status_name', 'status_style', 'last_update'
+            'edited_first_pass_perc', 'edited_second_pass_perc', 'status_name', 'status_style', 'last_update',
+            'page_on_site'
         )
 
     title = serializers.SerializerMethodField()
@@ -130,6 +132,7 @@ class TranslationListShortSerializer(serializers.Serializer):
     status_name = serializers.SerializerMethodField()
     status_style = serializers.SerializerMethodField()
     last_update = serializers.SerializerMethodField()
+    page_on_site = serializers.SerializerMethodField()
 
     def get_title(self, obj):
         return (self.visual_novel).title
@@ -171,6 +174,9 @@ class TranslationListShortSerializer(serializers.Serializer):
 
     def get_status_style(self, obj):
         return (self.status_tuple).style
+
+    def get_page_on_site(self, obj):
+        return reverse('translation_item', kwargs={'vn_alias': (self.visual_novel).alias})
 
 
 class TranslationBetaLinkSerializer(serializers.Serializer):

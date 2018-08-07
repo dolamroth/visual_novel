@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block metatags %}
     <meta name="keywords" content="визуальная новелла, визуальный роман, переводы, русский">
     <meta name="description" content="Активные переводы визуальных новелл на русский язык." />
@@ -18,54 +20,51 @@
 
     <div class="row" style="margin-bottom: 10px;">
         <div class="col-lg-12">
-            <div class="btn-group btn-group-sm btn-group-chart-main-page">
+            <div class="btn-group btn-group-sm btn-group-chart-main-page" id="statuses-ul">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                 Статус
                 <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    {% for status in statuses %}
-                        <li><a href="/translation/status/{{ status.key }}">{{ status.name }}</a></li>
-                    {% endfor %}
+                    <li><a href="#" class="status-link"></a></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <table class="table table-hover">
+    <table class="table table-hover" id="all-translations-list">
         <tbody>
-            {% if novels %}
-            {% for novel in novels %}
-                <tr class="{{ novel.status_style }}">
-                    <td>
-                        <strong>
-                            <a href="/translation/{{ novel.alias }}">{{ novel.title|safe }}</a>
-                        </strong>
-                        <em>(последнее обновление: {{ novel.last_update }})</em>
-                        <strong>
-                            <span class="text-{{ novel.status_style }} pull-right">{{ novel.status_name }}</span>
-                        </strong>
-                        <br /><br />
-                        <span class="monospaced">
-                            Всего строк&nbsp;: <span id="translation_total_rows">{{ novel.total_rows|safe }}</span><br />
-                            Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="translation_translation">{{ novel.translated|safe }}
-                            ({{ novel.translated_perc }})</span><br />
-                            Редактура&nbsp;1&nbsp;: <span id="translation_edited_first_pass">{{ novel.edited_first_pass|safe }}
-                            ({{ novel.edited_first_pass_perc }})</span><br />
-                            Редактура&nbsp;2&nbsp;: <span id="translation_edited_second_pass">{{ novel.edited_second_pass|safe }}
-                            ({{ novel.edited_second_pass_perc }})</span>
-                        </span>
-                    </td>
-                </tr>
-            {% endfor %}
-            {% else %}
-                <tr>
-                    <td>
-                        Нет переводов, удовлетворяющих условиям поиска.
-                    </td>
-                </tr>
-            {% endif %}
+            <tr class="translation-list-hidden" id="translation-row-example">
+                <td>
+                    <strong>
+                        <a href="#" class="link-to-translation">
+                            <span class="translation-title"></span>
+                        </a>
+                    </strong>
+                    <em>(последнее обновление: <span class="translation-last-update"></span>)</em>
+                    <strong>
+                        <span class="pull-right translation-status"></span>
+                    </strong>
+                    <br /><br />
+                    <span class="monospaced">
+                        Всего строк&nbsp;: <span class="translation_total_rows"></span><br />
+                        Перевод&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="translation_translation"></span>
+                        (<span class="translation_translation_perc"></span>)<br />
+                        Редактура&nbsp;1&nbsp;: <span class="translation_edited_first_pass"></span>
+                        (<span class="translation_edited_first_pass_perc"></span>)<br />
+                        Редактура&nbsp;2&nbsp;: <span class="translation_edited_second_pass"></span>
+                        (<span class="translation_edited_second_pass_perc"></span>)
+                    </span>
+                </td>
+            </tr>
+            <tr class="translation-list-hidden" id="no-translation-found-example">
+                <td>
+                    Нет переводов, удовлетворяющих условиям поиска.
+                </td>
+            </tr>
         </tbody>
     </table>
+
+    <script src="{% static 'js/translations_list.js' %}"></script>
 
 {% endblock %}

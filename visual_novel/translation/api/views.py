@@ -429,7 +429,8 @@ def translation_list(request, **kwargs):
             })
 
     serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
-    context['novels'] = serializer.data
+    context['translations'] = serializer.data
+
     return Response(context)
 
 
