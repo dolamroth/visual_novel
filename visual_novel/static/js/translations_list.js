@@ -1,5 +1,6 @@
 window.translations_interval = null;
 window.statuses_list = null;
+window.translators_list = null;
 
 
 // Get data for dropdown selects
@@ -11,8 +12,9 @@ var GetListOfData = function(){
         type: 'json'
     }).always(function(data){
         window.statuses_list = data['statuses'];
+        window.translators_list = data['translators'];
 
-        if (typeof window.statuses_list === undefined){
+        if ((typeof window.statuses_list === undefined) || (typeof window.translators_list === undefined)){
             return false;
         }
 
@@ -29,6 +31,20 @@ var GetListOfData = function(){
             li_tag.find('span.li-text').addClass( 'text-' + val['style'] );
             li_tag.find('input').prop('checked', val['checked']);
             $('#statuses-ul').append( li_tag );
+        }
+
+        var li_tag_example = $("#translator-li-example");
+        for (i=0; i<(window.translators_list).length; i++){
+            var val = (window.translators_list)[i];
+            (window.translators_list)[i]['checked'] = true;
+            var li_tag = li_tag_example
+                .clone(true, true)
+                .trigger('create')
+                .removeAttr('id');
+            li_tag.find('a').attr('data_id', val['id']);
+            li_tag.find('span.li-text').html( val['name'] );
+            li_tag.find('input').prop('checked', val['checked']);
+            $('#translators-ul').append( li_tag );
         }
 
         bindEventsToDropdownsElements();
@@ -49,7 +65,7 @@ var bindEventsToDropdownsElements = function(){
             val = $target.attr( 'data_id' ),
             $inp = $target.find( 'input' );
 
-        clearInterval(window.orders_interval);
+        clearInterval(window.translations_interval);
 
         for (i=0; i<(window.statuses_list).length; i++){
             if( (window.statuses_list)[i]['key'] === val ){
@@ -58,7 +74,25 @@ var bindEventsToDropdownsElements = function(){
             }
         }
 
-        window.orders_interval = setTimeout(function(){ UploadTranslation(); }, 0);
+        window.translations_interval = setTimeout(function(){ UploadTranslation(); }, 0);
+        return false;
+    });
+
+    $( '.dropdown-menu#translators-ul a' ).on( 'click', function( event ) {
+        var $target = $( event.currentTarget ),
+            val = $target.attr( 'data_id' ),
+            $inp = $target.find( 'input' );
+
+        clearInterval(window.translations_interval);
+
+        for (i=0; i<(window.translators_list).length; i++){
+            if( (parseInt(window.translators_list[i]['id']) === parseInt(val) )){
+                (window.translators_list)[i]['checked'] = !($inp.prop( 'checked'));
+                $inp.prop('checked', !($inp.prop( 'checked')) );
+            }
+        }
+
+        window.translations_interval = setTimeout(function(){ UploadTranslation(); }, 0);
         return false;
     });
 };
@@ -114,7 +148,8 @@ var UploadTranslation = function(){
         url: '/api/translation/all',
         method: 'GET',
         data: {
-            'statuses': JSON.stringify(window.statuses_list)
+            'statuses': JSON.stringify(window.statuses_list),
+            'translators': JSON.stringify(window.translators_list)
         },
         type: 'json'
     }).always(function(data){

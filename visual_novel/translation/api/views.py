@@ -2,6 +2,7 @@ import json
 
 from constance import config
 
+from django.db.models import Q
 from django.utils.decorators import decorator_from_middleware
 
 from rest_framework.decorators import api_view, renderer_classes
@@ -401,7 +402,11 @@ def change_status(request, vn_alias):
 @renderer_classes((JSONRenderer,))
 def translation_list(request):
 
-    selected_statuses = json.loads(request.GET.get('statuses', '[]'))
+    try:
+        selected_statuses = json.loads(request.GET.get('statuses', '[]'))
+        selected_translators = json.loads(request.GET.get('translators', '[]'))
+    except json.decoder.JSONDecodeError:
+        return Response({})
 
     all_status_keys = list(TranslationItem.status)
     all_status_int_keys = list()
@@ -415,11 +420,21 @@ def translation_list(request):
             all_status_int_keys.append(k)
         k *= 2
 
+    selected_translators_ids = [d['id'] for d in selected_translators if d['checked']]
+
     all_translations = TranslationItem.objects.filter(
         is_published=True,
         visual_novel__is_published=True,
         status__in=all_status_int_keys
-    ).order_by('visual_novel__title')
+    )
+
+    if 0 in selected_translators_ids:
+        all_translations = all_translations\
+            .filter(Q(translator__in=selected_translators_ids)| Q(translator__isnull=True))
+    else:
+        all_translations = all_translations.filter(translator__in=selected_translators_ids)
+
+    all_translations = all_translations.order_by('visual_novel__title')
 
     serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
 
@@ -440,6 +455,18 @@ def translation_list_data_selects(request):
             'name': translation_status.name,
             'style': translation_status.style,
             'default': translation_status.alias in default_statuses
+        })
+
+    # List of all translators
+    context['translators'] = list()
+    all_translators = list(
+        TranslationItem.objects.filter(is_published=True)
+            .values_list('translator', 'translator__title').distinct().order_by('translator__title')
+    )
+    for translator in all_translators:
+        context['translators'].append({
+            'id': translator[0] or 0,
+            'name': translator[1] or 'Не указано'
         })
 
     return Response(context)
