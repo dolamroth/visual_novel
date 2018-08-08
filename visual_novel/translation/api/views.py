@@ -1,13 +1,20 @@
+import json
+
+from constance import config
+
+from django.db.models import Q
 from django.utils.decorators import decorator_from_middleware
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError as restValidationError
+from rest_framework.renderers import JSONRenderer
 
 from core.middlewares import IsAuthenticatedMiddleware
 from ..middlewares import HasPermissionToEditVNMiddleware
 from ..utils import select_like_statistics_name, get_status_tuple_for_translation_item
 
+from ..choices import TRANSLATION_ITEMS_STATUSES
 from ..commands import (
     EditTranslationChapter, EditTranslationPartChapter, AddTranslationPartChapter, AddTranslationChapter,
     DeleteTranslationChapter, ManageBetaLink, DeleteBetaLink, ChangeTranslationStatus
@@ -18,9 +25,8 @@ from ..errors import (
     BetaLinkDoesNotExist, TranslationStatusDoesNotExist, TranslationCannotBeEditedDueToStatus
 )
 from .serializers import (
-    TranslationChapterSerializer, TranslationChapterPartSerializer,
-    AddTranslationChapterPartSerializer, AddTranslationChapterSerializer,
-    StatisticsDescription, StatisticsComment, BetaLinkSerializer
+    TranslationChapterSerializer, TranslationChapterPartSerializer, AddTranslationChapterSerializer, StatisticsComment,
+    AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer
 )
 from ..models import (
     TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
@@ -390,3 +396,77 @@ def change_status(request, vn_alias):
     return Response(data={
         'message': 'Операция проведена успешно.'
     }, status=200)
+
+
+@api_view(['GET', 'POST', ])
+@renderer_classes((JSONRenderer,))
+def translation_list(request):
+
+    try:
+        selected_statuses = json.loads(request.GET.get('statuses', '[]'))
+        selected_translators = json.loads(request.GET.get('translators', '[]'))
+    except json.decoder.JSONDecodeError:
+        return Response({})
+
+    all_status_keys = list(TranslationItem.status)
+    all_status_int_keys = list()
+    k = 1
+    for status in all_status_keys:
+        selected_status = [d for d in selected_statuses if d['key']==status]
+        if len(selected_status) == 0:
+            continue
+        selected_status = selected_status[0]
+        if selected_status['checked']:
+            all_status_int_keys.append(k)
+        k *= 2
+
+    selected_translators_ids = [d['id'] for d in selected_translators if d['checked']]
+
+    all_translations = TranslationItem.objects.filter(
+        is_published=True,
+        visual_novel__is_published=True,
+        status__in=all_status_int_keys
+    )
+
+    if 0 in selected_translators_ids:
+        all_translations = all_translations\
+            .filter(Q(translator__in=selected_translators_ids)| Q(translator__isnull=True))
+    else:
+        all_translations = all_translations.filter(translator__in=selected_translators_ids)
+
+    all_translations = all_translations.order_by('visual_novel__title')
+
+    serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
+
+    return Response({'translations': serializer.data})
+
+
+@api_view(['GET', 'POST', ])
+@renderer_classes((JSONRenderer,))
+def translation_list_data_selects(request):
+    context = dict()
+
+    # List of all statuses
+    context['statuses'] = list()
+    default_statuses = config.DEFAULT_TRANSLATION_STATUSES_TO_SHOW.split(',')
+    for translation_status in TRANSLATION_ITEMS_STATUSES:
+        context['statuses'].append({
+            'key': translation_status.alias,
+            'name': translation_status.name,
+            'style': translation_status.style,
+            'default': translation_status.alias in default_statuses
+        })
+
+    # List of all translators
+    context['translators'] = list()
+    all_translators = list(
+        TranslationItem.objects.filter(is_published=True)
+            .values_list('translator', 'translator__title').distinct().order_by('translator__title')
+    )
+    for translator in all_translators:
+        context['translators'].append({
+            'id': translator[0] or 0,
+            'name': translator[1] or 'Не указано'
+        })
+
+    return Response(context)
