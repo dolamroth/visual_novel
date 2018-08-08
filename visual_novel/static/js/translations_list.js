@@ -12,6 +12,10 @@ var GetListOfData = function(){
     }).always(function(data){
         window.statuses_list = data['statuses'];
 
+        if (typeof window.statuses_list === undefined){
+            return false;
+        }
+
         var li_tag_example = $("#translation-statuses-li-example");
         for (i=0; i<(window.statuses_list).length; i++){
             var val = (window.statuses_list)[i];

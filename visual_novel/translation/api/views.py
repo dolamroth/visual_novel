@@ -25,8 +25,7 @@ from ..errors import (
 )
 from .serializers import (
     TranslationChapterSerializer, TranslationChapterPartSerializer, AddTranslationChapterSerializer, StatisticsComment,
-    AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer,
-    TranslationListSerializer
+    AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer
 )
 from ..models import (
     TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
@@ -444,20 +443,3 @@ def translation_list_data_selects(request):
         })
 
     return Response(context)
-
-
-@api_view(['GET', 'POST', ])
-@renderer_classes((JSONRenderer,))
-def translation_get(request, vn_alias):
-    try:
-        translation = TranslationItem.objects.get(
-            is_published=True,
-            visual_novel__is_published=True,
-            visual_novel__alias=vn_alias
-        )
-    except TranslationItem.DoesNotExist:
-        return Response(data={'message': 'Визуальная новелла не найдена.'}, status=404)
-
-    serializer = TranslationListSerializer(translation, context={'user': request.user})
-
-    return Response(serializer.data)
