@@ -52,7 +52,7 @@ class ChangeUserSubsctiptionOptions(WeekdayValidator, IsSubscribedValidator, Tim
 
 class ChangeUserVkLinkOption(VkProfileValidator, Command):
     """
-    TODO :raises WrongIsSubscribed: Raises if "vk_link" parameter has incorrect value.
+    TODO :raises WrongIsSubscribed: Raises if user with login equal to specified "vk_link" does not exist.
     """
 
     def __init__(self, data, user):
@@ -63,7 +63,6 @@ class ChangeUserVkLinkOption(VkProfileValidator, Command):
         profile = Profile.objects.get(user=self.user)
         profile.vk_link = self.vk_link
         profile.save()
-        # TODO: refresh subscriptions in Celery Task
 
     def validate(self):
         self.vk_link = self.check_vk_profile(self.vk_link)

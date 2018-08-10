@@ -6,7 +6,7 @@ from .errors import WrongWeekdayBitmap, WrongIsSubscribed, WrongTime, WrongVkPro
 
 class VkProfileValidator(object):
     def check_vk_profile(self, vk_link):
-        # when user want delete link
+        # Empty string corresponds to deleting a link
         if vk_link.__len__() == 0:
             return vk_link
         vk = VK()
