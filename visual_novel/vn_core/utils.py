@@ -1,9 +1,16 @@
-import socket
 import json
+import socket
+import logging
+import urllib3
 
+from django import apps
 from django.conf import settings
 
 __version__ = '0.1'
+
+vn_logger = logging.getLogger('vn_logger')
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class VndbStats(object):
@@ -78,3 +85,37 @@ class VndbStats(object):
         vote_count = round(vn_obj['items'][0]['votecount'])
         return rating, popularity, vote_count
 
+
+class YandexMetrica(object):
+    def __init__(self):
+        self.token = settings.YANDEX_METRIKA_TOKEN
+        self.client_id = settings.YANDEX_METRIKA_CLIENT_ID
+        self.api_url = settings.YANDEX_METRIKA_URL
+        self.method = 'GET'
+        self.list_of_top_pages = None
+
+    def __execute_query(self, query, params_q):
+        params = dict(params_q)
+        params['ids'] = self.client_id
+        params['oauth_token'] = self.token
+        url = self.api_url + query
+
+        http = urllib3.PoolManager()
+        r = http.request(self.method, url, fields=params)
+        try:
+            return json.loads(r.data)
+        except json.decoder.JSONDecodeError:
+            vn_logger.error('YANDEX METRIKA API returned {}'.format(r.data))
+
+    def get_top_pages_for_period(self, date_from, date_to, max_result):
+        query_url = 'stat/v1/data'
+        params = dict()
+        # TODO: Validation for correct "date_" and "max_result" format
+        params['date1'] = date_from
+        params['date2'] = date_to
+        params['limit'] = max_result
+        params['metrics'] = 'ym:pv:pageviews'
+        params['dimensions'] = 'ym:pv:URLPathFull,ym:pv:title'
+        params['sort'] = '-ym:pv:pageviews'
+        self.list_of_top_pages = self.__execute_query(query=query_url, params_q=params)
+        return self.list_of_top_pages
