@@ -113,15 +113,15 @@ class Command(BaseCommand):
                 )
                 notify_translation = True
 
-            if translation_statistics.pictures_statistics != pictures_statistics:
+            if translation_statistics.pictures_statistics != pictures_statistics and pictures_statistics != '':
                 post_text_by_translation += 'Изображения: {}\n'.format(translation_statistics.pictures_statistics)
                 notify_translation = True
 
-            if translation_statistics.technical_statistics != technical_statistics:
+            if translation_statistics.technical_statistics != technical_statistics and technical_statistics != '':
                 post_text_by_translation += 'Тех. часть: {}\n'.format(translation_statistics.technical_statistics)
                 notify_translation = True
 
-            if translation_statistics.comment != comment:
+            if translation_statistics.comment != comment and comment != '':
                 post_text_by_translation += 'Комментарий: {}\n'.format(translation_statistics.comment)
                 notify_translation = True
 
