@@ -700,10 +700,12 @@ $(function () {
         $.each( $(".weekday-checkbox:checked"), function(idx, val){ weekdays += parseInt(val.value) }  );
         var is_subscribed = $('#distribution-check').prop('checked');
         var time = $('#distribution-time').val();
+        var vk_link = $('#vk-link').val();
         var data = {
             'weekmap': weekdays,
             'is_subscribed': is_subscribed,
-            'time': time
+            'time': time,
+            'vk_link': vk_link
         };
         $.ajax({
             url: '/api/core/'+submit_link.attr('username')+'/subscriptions_edit',

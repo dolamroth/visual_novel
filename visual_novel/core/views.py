@@ -18,6 +18,30 @@ from .forms import CustomSignUpForm
 from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
+from .models import Profile
+from .mixins import VkProfileValidator
+import requests
+
+
+def sign_via_vk(request):
+    access_link = "https://oauth.vk.com/access_token?client_id={}&client_secret={}&code={}&redirect_uri={}".format(
+        settings.VK_APP_ID,
+        settings.VK_APP_SECRET_KEY,
+        request.GET.get('code', None),
+        settings.VK_APP_REDIRECT_URI
+    )
+    res = requests.get(access_link)
+    vk_id = res.json().get('user_id', None)
+    if vk_id is None:
+        return redirect('main')
+    try:
+        user = Profile.objects.get(vk_link__icontains=vk_id).user
+    except Profile.DoesNotExist:
+        form = CustomSignUpForm()
+        form.fields['vk_account'].initial = vk_id
+        return render(request, 'pages/signup.html', {"form": form})
+    login(request, user)
+    return redirect('main')
 
 
 def signup(request):
@@ -29,10 +53,10 @@ def signup(request):
             user.save()
             user.refresh_from_db()  # load the profile instance created by the signal
             zone_offset = form.cleaned_data.get('timezone')
+            user.profile.vk_link = form.data.get('vk_account', '')
             if type(zone_offset) == int:
                 user.profile.timezone = offset_to_timezone(zone_offset)
             user.save()
-
             current_site = get_current_site(request)
             subject = 'Активация аккаунта ' + current_site.domain
             message = render_to_string('pages/account_activation_email.html', {
@@ -118,6 +142,7 @@ def profile_page(request, username):
     context['weekdays'] = weekdays
     context['distribution_time'] = profile.send_time.isoformat()[:5]
     context['distribution'] = profile.send_distributions
+    context['vk_link'] = profile.vk_link
 
     return render(request, 'pages/profile.html', context)
 

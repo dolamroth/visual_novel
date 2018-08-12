@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from .mixins import WeekdayValidator, IsSubscribedValidator, TimeValidator
+from .mixins import WeekdayValidator, IsSubscribedValidator, TimeValidator, VkProfileValidator
 from .models import Profile
 
 
@@ -48,3 +48,21 @@ class ChangeUserSubsctiptionOptions(WeekdayValidator, IsSubscribedValidator, Tim
         self.weekmap = self.validate_weekday_is_correct(self.weekmap)
         self.is_subscribed = self.validate_is_subscribed_field(self.is_subscribed)
         self.time = self.validate_time_field(self.time)
+
+
+class ChangeUserVkLinkOption(VkProfileValidator, Command):
+    """
+    TODO :raises WrongIsSubscribed: Raises if user with login equal to specified "vk_link" does not exist.
+    """
+
+    def __init__(self, data, user):
+        self.vk_link = data['vk_link']
+        self.user = user
+
+    def execute_validated(self):
+        profile = Profile.objects.get(user=self.user)
+        profile.vk_link = self.vk_link
+        profile.save()
+
+    def validate(self):
+        self.vk_link = self.check_vk_profile(self.vk_link)

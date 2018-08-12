@@ -40,7 +40,7 @@ class VK(object):
     def _get_user_id(self, user_alias=''):
         try:
             return (self.__query('users.get', {'user_ids': user_alias}))['response'][0]['id']
-        except IndexError:
+        except (IndexError, KeyError):
             raise self.VkGetUserError()
 
     def __assert(self, param, type):
