@@ -1,3 +1,4 @@
+import datetime
 import json
 import socket
 import logging
@@ -93,6 +94,15 @@ class YandexMetrica(object):
         self.api_url = settings.YANDEX_METRIKA_URL
         self.method = 'GET'
         self.list_of_top_pages = None
+        self.list_of_top_pages_dict = None
+
+        self.date_to = datetime.date.today()
+        self.date_from = self.date_to - datetime.timedelta(days=30)
+        self.date_to = self.date_to.strftime("%Y-%m-%d")
+        self.date_from = self.date_from.strftime("%Y-%m-%d")
+
+        # TODO: change this parameter as (N + number of entries of base datatypes) in the database
+        self.max_results = 2000
 
     def __execute_query(self, query, params_q):
         params = dict(params_q)
@@ -117,5 +127,46 @@ class YandexMetrica(object):
         params['metrics'] = 'ym:pv:pageviews'
         params['dimensions'] = 'ym:pv:URLPathFull,ym:pv:title'
         params['sort'] = '-ym:pv:pageviews'
-        self.list_of_top_pages = self.__execute_query(query=query_url, params_q=params)
+        self.list_of_top_pages_dict = self.__execute_query(query=query_url, params_q=params)
+        return self.list_of_top_pages_dict
+
+    class YandexMetrikaError(Exception):
+        message = None
+
+        def __init__(self, message):
+            self.message=message
+
+        def __str__(self):
+            return self.message
+
+    def __assert(self, param, type):
+        try:
+            assert type(param), str
+        except AssertionError:
+            raise self.YandexMetrikaError('Параметр неверного типа')
+
+    def __check_page_url_for_non_empty(self, url):
+        self.__assert(url, str)
+        return not(url == '') and not(url[0] == '?')
+
+    def __shorten_url(self, url):
+        if url.find('?') > -1:
+            return url[:url.find('?')]
+        return url
+
+    def get_unique_pages(self):
+        if self.list_of_top_pages_dict is None:
+            self.get_top_pages_for_period(self.date_from, self.date_to, self.max_results)
+        self.list_of_top_pages = [
+            self.__shorten_url(d['dimensions'][0]['name']) for d in (self.list_of_top_pages_dict)['data']
+            if self.__check_page_url_for_non_empty(d['dimensions'][0]['name'])
+        ]
+        self.list_of_top_pages = list(set(self.list_of_top_pages))
         return self.list_of_top_pages
+
+    def get_tags_by_popularity(self):
+        if self.list_of_top_pages is None:
+            self.get_unique_pages()
+        return [
+            d[d.find('/chart/tag/')+11:] for d in self.list_of_top_pages if d.find('/chart/tag/') > -1
+        ]
