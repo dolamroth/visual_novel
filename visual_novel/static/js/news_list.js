@@ -24,14 +24,14 @@ var UpdatePagination = function(pagination){
         var page_link = $( e.currentTarget );
         var page_n = parseInt(page_link.attr('data-link'));
         clearInterval(window.news_interval);
-        window.orders_page = page_n;
+        window.news_page = page_n;
         window.news_interval = setTimeout(function(){ UploadNews(true); }, 0);
         return false;
     });
     $("li.disabled").find('a').on('click', function(){
         return false;
     });
-    window.pagination_current_page = window.orders_page;
+    window.pagination_current_page = window.news_page;
     window.pagination_total_pages = window.total_pages;
 };
 
