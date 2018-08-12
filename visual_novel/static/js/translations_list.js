@@ -126,6 +126,7 @@ var reloadTranslationsOnPage = function(translations){
         row.find('span.translation_edited_first_pass_perc').html( val['edited_first_pass_perc'] );
         row.find('span.translation_edited_second_pass').html( val['edited_second_pass'] );
         row.find('span.translation_edited_second_pass_perc').html( val['edited_second_pass_perc'] );
+        row.addClass( val['status_style'] );
 
         table.prepend(row);
     }
