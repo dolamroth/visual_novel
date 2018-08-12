@@ -178,6 +178,8 @@ CONSTANCE_CONFIG = {
         ('', 'изображение, которое прикрепляется к посту ВК о прогрессе перевода', str),
     'DEFAULT_TRANSLATION_STATUSES_TO_SHOW':
         ('active,onhold,readytogo,intest', 'список статусов перевода, которые показывать по умолчанию на странице списка переводов', str),
+    'NEWS_PER_PAGE':
+        (5, 'количество новостей на страницу', int)
 }
 
 LOGGING = {

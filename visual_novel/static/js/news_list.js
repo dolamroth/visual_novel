@@ -1,4 +1,3 @@
-window.news_per_page = 5;
 window.news_page = 1;
 window.total_pages = 1;
 window.pagination_current_page = 0;
@@ -62,14 +61,12 @@ var UploadNews = function(){
         url: '/api/news/all',
         method: 'GET',
         data: {
-            'per_page': window.news_per_page,
             'start_page': window.news_page
         },
         type: 'json'
     }).always(function(data){
         if (data['total_news']){
             reloadNewsOnPage(data['news']);
-            window.news_per_page = data['news_per_page'];
             window.news_page = data['current_page'];
             window.total_pages = data['total_pages'];
             if ((window.pagination_current_page !== window.news_page) || (window.pagination_total_pages !== window.total_pages)){

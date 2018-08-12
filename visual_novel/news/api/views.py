@@ -1,20 +1,20 @@
 import math
 
+from constance import config
+
 from django.http import JsonResponse
 
 from ..models import News
 from ..serializers import NewsSerializer
 
-DEFAULT_NEWS_PER_PAGE = 5
 DEFAULT_NEWS_START_PAGE = 1
 
 
 def get_news_list(request):
-    news_per_page = request.GET.get('per_page', DEFAULT_NEWS_PER_PAGE)
+    news_per_page = config.NEWS_PER_PAGE
     news_start_page = request.GET.get('start_page', DEFAULT_NEWS_START_PAGE)
 
     try:
-        news_per_page = int(news_per_page)
         news_start_page = int(news_start_page)
     except ValueError:
         return JsonResponse({})
@@ -49,7 +49,6 @@ def get_news_list(request):
     context['current_page'] = news_start_page
     context['total_pages'] = total_pages
     context['total_news'] = all_news_count
-    context['news_per_page'] = news_per_page
 
     news_serialized = NewsSerializer(all_news, many=True)
     context['news'] = news_serialized.data
