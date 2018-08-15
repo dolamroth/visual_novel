@@ -158,11 +158,28 @@ class YandexMetrica(object):
     def get_unique_pages(self):
         if self.list_of_top_pages_dict is None:
             self.get_top_pages_for_period(self.date_from, self.date_to, self.max_results)
-        self.list_of_top_pages = [
-            self.__shorten_url(d['dimensions'][0]['name']) for d in (self.list_of_top_pages_dict)['data']
-            if self.__check_page_url_for_non_empty(d['dimensions'][0]['name'])
-        ]
-        self.list_of_top_pages = list(set(self.list_of_top_pages))
+
+        # Sum by visits and reorder
+        list_of_top_pages_with_rank = list()
+        list_of_urls = list()
+        l = 0
+        for link in (self.list_of_top_pages_dict)['data']:
+            short_url = self.__shorten_url(link['dimensions'][0]['name'])
+            try:
+                index = list_of_urls.index(short_url)
+            except ValueError:
+                list_of_urls.append(short_url)
+                list_of_top_pages_with_rank.append({
+                    'url': short_url,
+                    'metrics': 0
+                })
+                index = l
+                l += 1
+            list_of_top_pages_with_rank[index]['metrics'] += link['metrics'][0]
+
+        self.list_of_top_pages = sorted(list_of_top_pages_with_rank, key=lambda k: k['metrics'], reverse=True)
+        self.list_of_top_pages = [d['url'] for d in self.list_of_top_pages]
+
         return self.list_of_top_pages
 
     def get_tags_by_popularity(self):
