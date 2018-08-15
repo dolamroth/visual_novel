@@ -4,7 +4,7 @@ import socket
 import logging
 import urllib3
 
-from django import apps
+from django.apps import apps
 from django.conf import settings
 
 __version__ = '0.1'
@@ -209,3 +209,19 @@ class YandexMetrica(object):
         return [
             d[d.find('/chart/staff/') + 13:] for d in self.list_of_top_pages if d.find('/chart/staff/') > -1
         ]
+
+    def get_novels_by_popularity(self):
+        if self.list_of_top_pages is None:
+            self.get_unique_pages()
+
+        return_list = list()
+        VisualNovel = apps.get_model('vn_core', 'VisualNovel')
+
+        for url in self.list_of_top_pages:
+            if url.find('/chart/') > -1:
+                alias = url[url.find('/chart/') + 7:]
+                if alias.find('/') == -1:
+                    if alias != '' and VisualNovel.objects.filter(alias=alias).exists():
+                        return_list.append(alias)
+
+        return return_list
