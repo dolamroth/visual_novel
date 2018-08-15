@@ -101,8 +101,9 @@ class YandexMetrica(object):
         self.date_to = self.date_to.strftime("%Y-%m-%d")
         self.date_from = self.date_from.strftime("%Y-%m-%d")
 
-        # TODO: change this parameter as (N + number of entries of base datatypes) in the database
-        self.max_results = 2000
+        # This parameter is deliberately taken big enough, so that all queries would fall into selected group.
+        # Yandex Metrika API allows for such hack, returning all queries, even if they are fewer.
+        self.max_results = 5000
 
     def __execute_query(self, query, params_q):
         params = dict(params_q)
