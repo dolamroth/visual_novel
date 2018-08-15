@@ -170,3 +170,24 @@ class YandexMetrica(object):
         return [
             d[d.find('/chart/tag/')+11:] for d in self.list_of_top_pages if d.find('/chart/tag/') > -1
         ]
+
+    def get_genres_by_popularity(self):
+        if self.list_of_top_pages is None:
+            self.get_unique_pages()
+        return [
+            d[d.find('/chart/genre/') + 13:] for d in self.list_of_top_pages if d.find('/chart/genre/') > -1
+        ]
+
+    def get_studios_by_popularity(self):
+        if self.list_of_top_pages is None:
+            self.get_unique_pages()
+        return [
+            d[d.find('/chart/studio/') + 14:] for d in self.list_of_top_pages if d.find('/chart/studio/') > -1
+        ]
+
+    def get_staff_by_popularity(self):
+        if self.list_of_top_pages is None:
+            self.get_unique_pages()
+        return [
+            d[d.find('/chart/staff/') + 13:] for d in self.list_of_top_pages if d.find('/chart/staff/') > -1
+        ]
