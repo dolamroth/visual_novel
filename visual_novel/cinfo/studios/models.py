@@ -8,6 +8,7 @@ class Studio(PublishModel):
     title = models.CharField(verbose_name='название', max_length=256)
     description = models.TextField(verbose_name='описание', max_length=5000, blank=True, default='')
     alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30)
+    rank_by_visits = models.IntegerField(verbose_name='место по визитам', null=True, blank=True)
 
     class Meta:
         db_table = 'studios'
