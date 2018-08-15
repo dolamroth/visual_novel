@@ -54,6 +54,7 @@ class VisualNovel(PublishFileModel):
     def additional_action_on_save(self, list_of_changed_fields, created):
         vndb_id = self.vndb_id
         if created and (type(vndb_id) == int):
+            vndb = None
             try:
                 vndb = VndbStats()
                 vndb.login()
@@ -77,6 +78,7 @@ class VisualNovelStats(models.Model):
     rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
     popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
     vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
+    rank_by_visits = models.IntegerField(verbose_name='место по визитам', null=True, blank=True)
 
     class Meta:
         db_table = 'vnstats'

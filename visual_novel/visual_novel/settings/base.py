@@ -278,4 +278,8 @@ VK_API_KEY = get_secret(section='VK', setting='API_KEY')
 VK_GROUP_ID = get_secret(section='VK', setting='GROUP_ID')
 VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
 
+YANDEX_METRIKA_TOKEN = get_secret(section='YANDEX_METRICA_API', setting='TOKEN')
+YANDEX_METRIKA_CLIENT_ID = get_secret(section='YANDEX_METRICA_API', setting='CLIENT_ID')
+YANDEX_METRIKA_URL = 'https://api-metrika.yandex.ru/'
+
 DEFAULT_MAILING_SEND_TIME = datetime.time(10, 30)
