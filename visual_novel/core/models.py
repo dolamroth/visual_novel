@@ -143,14 +143,14 @@ class Profile(models.Model):
         if self.pk is None:
             if self.vk_link:
                 try:
-                    self.vk_id = VK()._get_user_id(self.vk_link)
+                    self.vk_id = VK()._get_user_id(self.vk_link[self.vk_link.rfind('/')+1:])
                 except VK.VkGetUserError:
                     self.vk_id = None
         try:
             profile = Profile.objects.get(pk=self.pk)
             if profile.vk_link != self.vk_link:
                 try:
-                    self.vk_id = VK()._get_user_id(self.vk_link)
+                    self.vk_id = VK()._get_user_id(self.vk_link[self.vk_link.rfind('/')+1:])
                 except VK.VkGetUserError:
                     self.vk_id = None
         except Profile.DoesNotExist:
