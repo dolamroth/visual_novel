@@ -35,7 +35,7 @@ def sign_via_vk(request):
     if vk_id is None:
         return redirect('main')
     try:
-        user = Profile.objects.get(vk_link__icontains=vk_id).user
+        user = Profile.objects.get(vk_id=vk_id).user
     except Profile.DoesNotExist:
         form = CustomSignUpForm()
         form.fields['vk_account'].initial = vk_id

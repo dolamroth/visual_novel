@@ -9,6 +9,7 @@ from django.dispatch import receiver
 import django.db.models.options as options
 
 from timezone_field import TimeZoneField
+from notifications.vk import VK
 
 ALL_WEEKDAYS_BITMAP = 127
 
@@ -120,6 +121,7 @@ class Profile(models.Model):
                                ('thursday', 'Четверг'), ('friday', 'Пятница'), ('saturday', 'Суббота'),
                                ('sunday', 'Воскресенье')), default=ALL_WEEKDAYS_BITMAP)
     vk_link = models.CharField(verbose_name='Ссылка на страницу ВК', max_length=255, blank=True, default='')
+    vk_id = models.IntegerField(verbose_name='VK ID страницы', blank=True, null=True)
 
     class Meta:
         db_table = 'user_profile'
@@ -136,6 +138,24 @@ class Profile(models.Model):
     def is_superuser(self):
         return self.user.is_superuser
     is_superuser.short_description = 'Суперпользователь'
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            if self.vk_link:
+                try:
+                    self.vk_id = VK()._get_user_id(self.vk_link)
+                except VK.VkGetUserError:
+                    self.vk_id = None
+        try:
+            profile = Profile.objects.get(pk=self.pk)
+            if profile.vk_link != self.vk_link:
+                try:
+                    self.vk_id = VK()._get_user_id(self.vk_link)
+                except VK.VkGetUserError:
+                    self.vk_id = None
+        except Profile.DoesNotExist:
+            pass
+        super(Profile, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender=User)
