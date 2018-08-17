@@ -140,6 +140,12 @@ class Profile(models.Model):
     is_superuser.short_description = 'Суперпользователь'
 
     def save(self, *args, **kwargs):
+        if self.pk is None:
+            if self.vk_link:
+                try:
+                    self.vk_id = VK()._get_user_id(self.vk_link)
+                except VK.VkGetUserError:
+                    self.vk_id = None
         try:
             profile = Profile.objects.get(pk=self.pk)
             if profile.vk_link != self.vk_link:
