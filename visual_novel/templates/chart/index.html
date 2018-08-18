@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block metatags %}
     <meta name="keywords" content="чарт, визуальная новелла, визуальный роман, накиге, уцуге, эроге, романтика,
     хоррор, денпа, adv, nvl, моэге, нукиге, сториге, чуниге, кяраге, звуковая новелла, clannad, angel beats, хигураши,
@@ -33,7 +35,7 @@
             {% for visual_novel in row %}
                 <div class="col-md-3 col-sm-6 hero-feature vn-block">
                     <div class="thumbnail vn-thumbnail">
-                        <a href="{{ visual_novel.chart_link }}"><img src="{{ visual_novel.poster_url }}" alt="{{ visual_novel.title|safe }}" class="poster-img"></a>
+                        <a href="{{ visual_novel.chart_link }}"><img src="{{ base_poster_url }}" alt="{{ visual_novel.title|safe }}" class="poster-img" data_url="{{ visual_novel.poster_url }}"></a>
                         <div class="caption">
                             <h4 class="vn-header-title" title="{{ visual_novel.title|safe }}">{{ visual_novel.title|safe }}</h4>
                             <div class="vn-desc vn-desc-unwrap"><a href="#" class="vn-desc-enlarge">Развернуть описание</a></div>
@@ -80,4 +82,6 @@
             <h4>По вашему запросу ничего не найдено.</h4>
         </div>
     {% endif %}
+
+    <script src="{% static 'js/chart_main_page.js' %}"></script>
 {% endblock %}

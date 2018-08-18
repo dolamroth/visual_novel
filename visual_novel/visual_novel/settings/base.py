@@ -183,7 +183,9 @@ CONSTANCE_CONFIG = {
     'DEFAULT_TRANSLATION_STATUSES_TO_SHOW':
         ('active,onhold,readytogo,intest', 'список статусов перевода, которые показывать по умолчанию на странице списка переводов', str),
     'NEWS_PER_PAGE':
-        (5, 'количество новостей на страницу', int)
+        (5, 'количество новостей на страницу', int),
+    'CHART_POSTER_NOT_LOADED_IMAGE':
+        ('', 'Изображение, которое показывать при загрузке чарта до загрузки постеров ВН', str)
 }
 
 LOGGING = {

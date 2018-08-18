@@ -1,5 +1,7 @@
 import os
 
+from constance import config
+
 from django.shortcuts import render
 from django.conf import settings
 from django.http import Http404
@@ -141,6 +143,7 @@ def chart_index_page(
     context['title_icon'] = ''
     context['popularity'] = '-visual_novel__popularity'
     context['popularity_icon'] = ''
+    context['base_poster_url'] = config.CHART_POSTER_NOT_LOADED_IMAGE or settings.POSTER_STOPPER_URL
     # In case of sort selected, sort and provide respective links and icons
     if sort_by and sort_by in all_sortings:
         all_chart_items = all_chart_items.order_by(sort_by)
