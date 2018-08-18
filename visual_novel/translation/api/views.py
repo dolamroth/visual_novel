@@ -3,7 +3,7 @@ import json
 from constance import config
 
 from django.conf import settings
-from django.core.cache import cache
+from django.core.cache import caches
 from django.db.models import Q
 from django.utils.decorators import decorator_from_middleware
 
@@ -33,6 +33,8 @@ from .serializers import (
 from ..models import (
     TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
 )
+
+cache = caches['default']
 
 
 def get_data(request):
