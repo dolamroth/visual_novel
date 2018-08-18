@@ -2,6 +2,8 @@ import json
 
 from constance import config
 
+from django.conf import settings
+from django.core.cache import cache
 from django.db.models import Q
 from django.utils.decorators import decorator_from_middleware
 
@@ -75,10 +77,17 @@ def edit_chapter(request, vn_alias):
         }, status=422)
 
     try:
-        if is_chapter:
-            translation_chapter, movement = EditTranslationPartChapter(serializer.data).execute()
+        if settings.PRODUCTION_FLAG:
+            with cache.lock('translation_item_{}'.format(data['translation_item_id'])):
+                if is_chapter:
+                    translation_chapter, movement = EditTranslationPartChapter(serializer.data).execute()
+                else:
+                    translation_chapter, movement = EditTranslationChapter(serializer.data).execute()
         else:
-            translation_chapter, movement = EditTranslationChapter(serializer.data).execute()
+            if is_chapter:
+                translation_chapter, movement = EditTranslationPartChapter(serializer.data).execute()
+            else:
+                translation_chapter, movement = EditTranslationChapter(serializer.data).execute()
     except TranslationNotFound as exc:
         return Response(data={'message': exc.message}, status=404)
     except (
@@ -119,10 +128,17 @@ def add_chapter(request, vn_alias):
         }, status=422)
 
     try:
-        if is_chapter:
-            translation_chapter = AddTranslationPartChapter(serializer.data).execute()
+        if settings.PRODUCTION_FLAG:
+            with cache.lock('translation_item_{}'.format(data['translation_item_id'])):
+                if is_chapter:
+                    translation_chapter = AddTranslationPartChapter(serializer.data).execute()
+                else:
+                    translation_chapter = AddTranslationChapter(serializer.data).execute()
         else:
-            translation_chapter = AddTranslationChapter(serializer.data).execute()
+            if is_chapter:
+                translation_chapter = AddTranslationPartChapter(serializer.data).execute()
+            else:
+                translation_chapter = AddTranslationChapter(serializer.data).execute()
     except TranslationNotFound as exc:
         return Response(data={'message': exc.message}, status=404)
     except (
@@ -170,7 +186,11 @@ def delete_translation_chapter(request, vn_alias):
     data, is_chapter = get_data(request)
 
     try:
-        deleted_n = DeleteTranslationChapter(data).execute()
+        if settings.PRODUCTION_FLAG:
+            with cache.lock('translation_item_{}'.format(data['translation_item_id'])):
+                deleted_n = DeleteTranslationChapter(data).execute()
+        else:
+            deleted_n = DeleteTranslationChapter(data).execute()
     except TranslationNotFound as exc:
         return Response(data={'message': exc.message}, status=404)
     except TranslationCannotBeEditedDueToStatus as exc:

@@ -52,6 +52,8 @@ VN_PROTOCOL = get_secret('PROTOCOL')
 VN_HTTP_DOMAIN = VN_PROTOCOL + '://' + VN_DOMAIN
 ALLOWED_HOSTS = [VN_DOMAIN]
 
+PRODUCTION_FLAG = False
+
 # Application definition
 
 INSTALLED_APPS = [
