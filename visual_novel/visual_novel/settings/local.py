@@ -9,3 +9,10 @@ STATICFILES_DIRS = [
 ]
 
 ALLOWED_HOSTS += ['127.0.0.1']
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache_table_for_local_development"
+    }
+}
