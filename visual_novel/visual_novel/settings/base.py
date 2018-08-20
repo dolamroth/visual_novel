@@ -187,7 +187,9 @@ CONSTANCE_CONFIG = {
     'NEWS_PER_PAGE':
         (5, 'количество новостей на страницу', int),
     'CHART_POSTER_NOT_LOADED_IMAGE':
-        ('', 'Изображение, которое показывать при загрузке чарта до загрузки постеров ВН', str)
+        ('', 'Изображение, которое показывать при загрузке чарта до загрузки постеров ВН', str),
+    'REDIS_CACHE_TIME_LIFE':
+        (30*60, 'время жизни кешированных объектов в секундах', int),
 }
 
 LOGGING = {
@@ -313,3 +315,19 @@ YANDEX_METRIKA_CLIENT_ID = get_secret(section='YANDEX_METRICA_API', setting='CLI
 YANDEX_METRIKA_URL = 'https://api-metrika.yandex.ru/'
 
 DEFAULT_MAILING_SEND_TIME = datetime.time(10, 30)
+
+REDIS_HOST = get_secret(section='REDIS', setting='HOST')
+REDIS_PORT = get_secret(section='REDIS', setting='PORT')
+REDIS_CACHE_DB = get_secret(section='REDIS', setting='CACHE_DB')
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://{}:{}/{}".format(
+            REDIS_HOST, REDIS_PORT, REDIS_CACHE_DB
+        ),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
