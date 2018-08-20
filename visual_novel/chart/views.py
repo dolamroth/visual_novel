@@ -6,12 +6,16 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import Http404
 from django.urls import reverse
+from django.core.cache import caches
 
 from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
 from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
 from core.utils import printable_russian_date
 
 from .models import ChartItem, ChartItemTranslator
+
+
+cache = caches['default']
 
 
 def chart_index_page(
@@ -26,13 +30,31 @@ def chart_index_page(
     rows = list()
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
-    all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
+    all_chart_items = cache.get('all_chart_items')
+    if all_chart_items is None:
+        all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
+        cache.set('all_chart_items', all_chart_items, config.REDIS_CACHE_TIME_LIFE)
 
-    context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
-    context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
-    context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
-    context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
-    context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
+    context['all_genres'] = cache.get('all_genres')
+    if context.get('all_genres') is None:
+        context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
+        cache.set('all_genres', context['all_genres'], config.REDIS_CACHE_TIME_LIFE)
+    context['all_tags'] = cache.get('all_tags')
+    if context.get('all_tags') is None:
+        context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
+        cache.set('all_tags', context['all_tags'], config.REDIS_CACHE_TIME_LIFE)
+    context['all_durations'] = cache.get('all_durations')
+    if context.get('all_durations') is None:
+        context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
+        cache.set('all_durations', context['all_durations'], config.REDIS_CACHE_TIME_LIFE)
+    context['all_studios'] = cache.get('all_studios')
+    if context.get('all_studios') is None:
+        context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
+        cache.set('all_studios', context['all_studios'], config.REDIS_CACHE_TIME_LIFE)
+    context['all_staff'] = cache.get('all_staff')
+    if context.get('all_staff') is None:
+        context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
+        cache.set('all_staff', context['all_staff'], config.REDIS_CACHE_TIME_LIFE)
 
     context['additional_description'] = ''
 
