@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import json
-import datetime
 
 from kombu import Exchange, Queue
 
@@ -84,6 +83,7 @@ INSTALLED_APPS = [
     'offer_service.apps.OfferServiceConfig',
     'translation.apps.TranslationConfig',
     'news.apps.NewsConfig',
+    'notifications.apps.NotificationsConfig',
     'uploads.apps.UploadsConfig'
 ]
 
@@ -187,7 +187,9 @@ CONSTANCE_CONFIG = {
     'NEWS_PER_PAGE':
         (5, 'количество новостей на страницу', int),
     'CHART_POSTER_NOT_LOADED_IMAGE':
-        ('', 'Изображение, которое показывать при загрузке чарта до загрузки постеров ВН', str)
+        ('', 'Изображение, которое показывать при загрузке чарта до загрузки постеров ВН', str),
+    'DEFAULT_STATISTICS_MAILING_HOUR':
+        (16, 'час для рассылки статистики переводов', int)
 }
 
 LOGGING = {
@@ -311,5 +313,3 @@ VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
 YANDEX_METRIKA_TOKEN = get_secret(section='YANDEX_METRICA_API', setting='TOKEN')
 YANDEX_METRIKA_CLIENT_ID = get_secret(section='YANDEX_METRICA_API', setting='CLIENT_ID')
 YANDEX_METRIKA_URL = 'https://api-metrika.yandex.ru/'
-
-DEFAULT_MAILING_SEND_TIME = datetime.time(10, 30)

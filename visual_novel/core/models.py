@@ -1,12 +1,14 @@
 import os
 from bitfield import BitField
+from constance import config
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.signals import post_save
-from django.dispatch import receiver
 import django.db.models.options as options
+from django.dispatch import receiver
 
 from timezone_field import TimeZoneField
 from notifications.vk import VK
@@ -115,7 +117,8 @@ class Profile(models.Model):
     timezone = TimeZoneField(default=settings.DEFAULT_TIME_ZONE, verbose_name='Временная зона')
     email_confirmed = models.BooleanField(default=False, verbose_name='Email подтвержден')
     send_distributions = models.BooleanField(verbose_name='Отправлять рассылку', default=False)
-    send_time = models.TimeField(verbose_name='Время рассылки', default=settings.DEFAULT_MAILING_SEND_TIME)
+    send_hour = models.IntegerField(verbose_name='Час рассылки', default=16,
+                                    validators=[MaxValueValidator(23), MinValueValidator(0)])
     weekdays = BitField(verbose_name='Битовый код дней рассылки',
                         flags=(('monday', 'Понедельник'), ('tuesday', 'Вторник'), ('wednesday', 'Среда'),
                                ('thursday', 'Четверг'), ('friday', 'Пятница'), ('saturday', 'Суббота'),

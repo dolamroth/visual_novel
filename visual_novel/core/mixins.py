@@ -39,14 +39,10 @@ class IsSubscribedValidator(object):
 
 
 class TimeValidator(object):
-    def validate_time_field(self, time):
-        if not time:
-            return None
-        if len(time)==5 and type(time)==str:
-            try:
-                hours = int(time[:2])
-                minutes = int(time[3:])
-            except (TypeError, ValueError):
-                raise WrongTime()
-            return datetime.time(hours, minutes)
-        raise WrongTime()
+    def validate_hour_field(self, hour):
+        try:
+            hour = int(hour)
+        except ValueError:
+            raise WrongTime()
+        if not (0 <= hour <= 23):
+            raise WrongTime()

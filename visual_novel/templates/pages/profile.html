@@ -41,8 +41,8 @@
                 <label for="vk-link">Ссылка на профиль</label>
                 <input id="vk-link" type="text" name="vk_link" value="{{ vk_link }}" class="form-control" placeholder="https://vk.com/id1111111"><br />
                 <legend>Уведомления об обновлении статистики переводов</legend>
-                <label for="distribution-time">Время рассылки</label>
-                <input id="distribution-time" type="time" name="time" value="{{ distribution_time }}" class="form-control"><br />
+                <label for="distribution-hour">Час рассылки</label>
+                <input id="distribution-hour" type="number" name="hour" value="{{ distribution_hour }}" min="0" max="23" class="form-control"><br />
                 {% for day in weekdays %}
                     <input type="checkbox" name="{{ day.name }}" value="{{ day.value }}"{% if day.checked %} checked="checked"{% endif %} class="weekday-checkbox" />&nbsp;{{ day.label }}<br />
                 {% endfor %}
