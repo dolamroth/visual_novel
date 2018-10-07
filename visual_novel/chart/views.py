@@ -64,9 +64,15 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_genre)
         try:
             genre = Genre.objects.get(alias=genre_alias)
-            context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
+            context['additional_breadcumb'] = cache.get('additional_breadcumb')
+            if not context['additional_breadcumb']:
+                context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
+                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
             if genre.description:
-                context['additional_description'] = genre.description
+                context['additional_description'] = cache.get('additional_description')
+                if not context['additional_description']:
+                    context['additional_description'] = genre.description
+                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
         except Genre.DoesNotExist:
             pass
 
@@ -75,9 +81,15 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_tag)
         try:
             tag = Tag.objects.get(alias=tag_alias)
-            context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
+            context['additional_breadcumb'] = cache.get('additional_breadcumb')
+            if not context['additional_breadcumb']:
+                context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
+                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
             if tag.description:
-                context['additional_description'] = tag.description
+                context['additional_description'] = cache.get('additional_description')
+                if not context['additional_description']:
+                    context['additional_description'] = tag.description
+                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
         except Tag.DoesNotExist:
             pass
 
@@ -86,9 +98,15 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_studio)
         try:
             studio = Studio.objects.get(alias=studio_alias)
-            context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
+            context['additional_breadcumb'] = cache.get('additional_breadcumb')
+            if not context['additional_breadcumb']:
+                context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
+                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
             if studio.description:
-                context['additional_description'] = studio.description
+                context['additional_description'] = cache.get('additional_description')
+                if not context['additional_description']:
+                    context['additional_description'] = studio.description
+                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
         except Studio.DoesNotExist:
             pass
 
@@ -97,9 +115,15 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_staff)
         try:
             staff = Staff.objects.get(alias=staff_alias)
-            context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
+            context['additional_breadcumb'] = cache.get('additional_breadcumb')
+            if not context['additional_breadcumb']:
+                context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
+                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
             if staff.description:
-                context['additional_description'] = staff.description
+                context['additional_description'] = cache.get('additional_description')
+                if not context['additional_description']:
+                    context['additional_description'] = staff.description
+                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
         except Staff.DoesNotExist:
             pass
 
@@ -107,7 +131,10 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
             duration = Longevity.objects.get(alias=duration_alias)
-            context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
+            context['additional_breadcumb'] = cache.get('additional_breadcumb')
+            if not context['additional_breadcumb']:
+                context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
+                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
         except Longevity.DoesNotExist:
             pass
 
@@ -117,17 +144,23 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(id__in=translators_ids)
         try:
             translator = Translator.objects.get(alias=translator_alias)
-            context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
+            context['additional_breadcumb'] = cache.get('additional_breadcumb')
+            if not context['additional_breadcumb']:
+                context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
+                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
             if translator.description or translator.url:
-                context['additional_description'] = ''
-                translator_description = list()
-                if translator.description:
-                    translator_description.append(translator.description)
-                if translator.url:
-                    translator_description.append('<a href="{}">Ссылка на сайт переводчика.</a>'.format(
-                        translator.url
-                    ))
-                context['additional_description'] = '<br /><br />'.join(translator_description)
+                context['additional_description'] = cache.get('additional_description')
+                if not context['additional_description']:
+                    context['additional_description'] = ''
+                    translator_description = list()
+                    if translator.description:
+                        translator_description.append(translator.description)
+                    if translator.url:
+                        translator_description.append('<a href="{}">Ссылка на сайт переводчика.</a>'.format(
+                            translator.url
+                        ))
+                    context['additional_description'] = '<br /><br />'.join(translator_description)
+                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
 
         except Translator.DoesNotExist:
             pass
