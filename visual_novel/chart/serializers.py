@@ -72,28 +72,6 @@ class ChartItemStudioSerializer(serializers.Serializer):
 
 
 class ChartItemListSerializer(serializers.Serializer):
-    def __init__(self, instance=None, data=empty, **kwargs):
-        super(ChartItemListSerializer, self).__init__(instance=instance, data=data, **kwargs)
-        self.visual_novel = None
-
-    def to_representation(self, instance):
-        ret = OrderedDict()
-        fields = self._readable_fields
-
-        # Addition, initializing additional attributes in order to reuse in SerializerMethodField
-        self.visual_novel = instance.visual_novel
-
-        for field in fields:
-            try:
-                attribute = field.get_attribute(instance)
-            except SkipField:
-                continue
-
-            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
-            if check_for_none is None:
-                ret[field.field_name] = None
-            else:
-                ret[field.field_name] = field.to_representation(attribute)
 
     class Meta:
         model = ChartItem
@@ -112,37 +90,37 @@ class ChartItemListSerializer(serializers.Serializer):
     studios = serializers.SerializerMethodField()
 
     def get_title(self, obj):
-        return self.visual_novel.title
+        return obj.visual_novel.title
 
     def get_poster_url(self, obj):
-        return settings.POSTER_STOPPER_URL if not self.visual_novel.photo else self.visual_novel.photo.url
+        return settings.POSTER_STOPPER_URL if not obj.visual_novel.photo else obj.visual_novel.photo.url
 
     def get_description(self, obj):
-        return self.visual_novel.description
+        return obj.visual_novel.description
 
     def get_alias(self, obj):
-        return self.visual_novel.alias
+        return obj.visual_novel.alias
 
     def get_vndb_id(self, obj):
-        return self.visual_novel.vndb_id
+        return obj.visual_novel.vndb_id
 
     def get_chart_link(self, obj):
-        return os.path.join('/chart/', self.visual_novel.alias)
+        return os.path.join('/chart/', obj.visual_novel.alias)
 
     def get_vndb_mark(self, obj):
-        self.visual_novel.get_rate()
+        obj.visual_novel.get_rate()
 
     def get_vndb_popularity(self, obj):
-        return self.visual_novel.get_popularity()
+        return obj.visual_novel.get_popularity()
 
     def get_genres(self, obj):
         return ChartItemGenreSerializer(
-            self.visual_novel.vngenre_set.all().order_by('-weight'),
+            obj.visual_novel.vngenre_set.all().order_by('-weight'),
             many=True
         ).data
 
     def get_studios(self, obj):
         return ChartItemStudioSerializer(
-            self.visual_novel.vnstudio_set.all().order_by('-weight'),
+            obj.visual_novel.vnstudio_set.all().order_by('-weight'),
             many=True
         ).data
