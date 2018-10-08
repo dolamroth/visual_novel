@@ -13,6 +13,7 @@ from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
 from core.utils import printable_russian_date
 
 from .models import ChartItem, ChartItemTranslator
+from .serializers import ChartItemListSerializer
 
 
 cache = caches['default']
@@ -26,37 +27,20 @@ def chart_index_page(
     context = dict()
     context['additional_breadcumb'] = '&nbsp;&#47; Чарт'
     chart_breadcumb_with_link = '&nbsp;&#47; <a href="/chart/">Чарт</a>&nbsp;&#47; '
+    context['additional_description'] = ''
+    cache_key = 'chart_items'
 
     rows = list()
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
-    all_chart_items = cache.get('all_chart_items')
-    if all_chart_items is None:
-        all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
-        cache.set('all_chart_items', all_chart_items, config.REDIS_CACHE_TIME_LIFE)
+    # Lazy computed, so no caching here
+    all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
 
-    context['all_genres'] = cache.get('all_genres')
-    if context.get('all_genres') is None:
-        context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
-        cache.set('all_genres', context['all_genres'], config.REDIS_CACHE_TIME_LIFE)
-    context['all_tags'] = cache.get('all_tags')
-    if context.get('all_tags') is None:
-        context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
-        cache.set('all_tags', context['all_tags'], config.REDIS_CACHE_TIME_LIFE)
-    context['all_durations'] = cache.get('all_durations')
-    if context.get('all_durations') is None:
-        context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
-        cache.set('all_durations', context['all_durations'], config.REDIS_CACHE_TIME_LIFE)
-    context['all_studios'] = cache.get('all_studios')
-    if context.get('all_studios') is None:
-        context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
-        cache.set('all_studios', context['all_studios'], config.REDIS_CACHE_TIME_LIFE)
-    context['all_staff'] = cache.get('all_staff')
-    if context.get('all_staff') is None:
-        context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
-        cache.set('all_staff', context['all_staff'], config.REDIS_CACHE_TIME_LIFE)
-
-    context['additional_description'] = ''
+    context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
+    context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
+    context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
+    context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
+    context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
 
     # Optional endpoint parameters
     if genre_alias:
@@ -64,15 +48,10 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_genre)
         try:
             genre = Genre.objects.get(alias=genre_alias)
-            context['additional_breadcumb'] = cache.get('additional_breadcumb')
-            if not context['additional_breadcumb']:
-                context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
-                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
+            cache_key += '_genre_{}'.format(genre_alias)
             if genre.description:
-                context['additional_description'] = cache.get('additional_description')
-                if not context['additional_description']:
-                    context['additional_description'] = genre.description
-                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
+                context['additional_description'] = genre.description
         except Genre.DoesNotExist:
             pass
 
@@ -81,15 +60,10 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_tag)
         try:
             tag = Tag.objects.get(alias=tag_alias)
-            context['additional_breadcumb'] = cache.get('additional_breadcumb')
-            if not context['additional_breadcumb']:
-                context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
-                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
+            cache_key += '_tag_{}'.format(tag_alias)
             if tag.description:
-                context['additional_description'] = cache.get('additional_description')
-                if not context['additional_description']:
-                    context['additional_description'] = tag.description
-                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
+                context['additional_description'] = tag.description
         except Tag.DoesNotExist:
             pass
 
@@ -98,15 +72,10 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_studio)
         try:
             studio = Studio.objects.get(alias=studio_alias)
-            context['additional_breadcumb'] = cache.get('additional_breadcumb')
-            if not context['additional_breadcumb']:
-                context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
-                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
+            cache_key += '_studio_{}'.format(studio_alias)
             if studio.description:
-                context['additional_description'] = cache.get('additional_description')
-                if not context['additional_description']:
-                    context['additional_description'] = studio.description
-                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
+                context['additional_description'] = studio.description
         except Studio.DoesNotExist:
             pass
 
@@ -115,15 +84,10 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_staff)
         try:
             staff = Staff.objects.get(alias=staff_alias)
-            context['additional_breadcumb'] = cache.get('additional_breadcumb')
-            if not context['additional_breadcumb']:
-                context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
-                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
+            cache_key += '_staff_{}'.format(staff_alias)
             if staff.description:
-                context['additional_description'] = cache.get('additional_description')
-                if not context['additional_description']:
-                    context['additional_description'] = staff.description
-                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
+                context['additional_description'] = staff.description
         except Staff.DoesNotExist:
             pass
 
@@ -131,10 +95,8 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
             duration = Longevity.objects.get(alias=duration_alias)
-            context['additional_breadcumb'] = cache.get('additional_breadcumb')
-            if not context['additional_breadcumb']:
-                context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
-                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
+            cache_key += '_duration_{}'.format(duration_alias)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
             pass
 
@@ -144,23 +106,18 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(id__in=translators_ids)
         try:
             translator = Translator.objects.get(alias=translator_alias)
-            context['additional_breadcumb'] = cache.get('additional_breadcumb')
-            if not context['additional_breadcumb']:
-                context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
-                cache.set('additional_breadcumb', context['additional_breadcumb'], config.REDIS_CACHE_TIME_LIFE)
+            cache_key += '_translator_{}'.format(translator_alias)
+            context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
             if translator.description or translator.url:
-                context['additional_description'] = cache.get('additional_description')
-                if not context['additional_description']:
-                    context['additional_description'] = ''
-                    translator_description = list()
-                    if translator.description:
-                        translator_description.append(translator.description)
-                    if translator.url:
-                        translator_description.append('<a href="{}">Ссылка на сайт переводчика.</a>'.format(
-                            translator.url
-                        ))
-                    context['additional_description'] = '<br /><br />'.join(translator_description)
-                    cache.set('additional_description', context['additional_description'], config.REDIS_CACHE_TIME_LIFE)
+                context['additional_description'] = ''
+                translator_description = list()
+                if translator.description:
+                    translator_description.append(translator.description)
+                if translator.url:
+                    translator_description.append('<a href="{}">Ссылка на сайт переводчика.</a>'.format(
+                        translator.url
+                    ))
+                context['additional_description'] = '<br /><br />'.join(translator_description)
 
         except Translator.DoesNotExist:
             pass
@@ -206,50 +163,23 @@ def chart_index_page(
         context['date_of_translation_icon'] = '' # Removing icon for default sort in order to prevent multiple icons
         context[all_sortings_context_links[idx][0]] = all_sortings_context_links[idx][1]
         context[all_sortings_context_links[idx][0] + '_icon'] = all_sortings_context_links[idx][2]
+        cache_key += sort_by
     else:
         all_chart_items = all_chart_items.order_by(base_sort_by)
+        cache_key += base_sort_by
+
+    # Caching here
+    all_chart_items_data = cache.get(cache_key)
+    if all_chart_items_data is None:
+        all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
+        cache.set(cache_key, all_chart_items_data, config.REDIS_CACHE_TIME_LIFE)
 
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
     for chart_item in all_chart_items:
-        vn_context = dict()
-
-        visual_novel = chart_item.visual_novel
-
-        vn_context['title'] = visual_novel.title
-        vn_context['poster_url'] = settings.POSTER_STOPPER_URL if not visual_novel.photo else visual_novel.photo.url
-        vn_context['description'] = visual_novel.description
-        vn_context['alias'] = visual_novel.alias
-        vn_context['genres'] = list()
-        vn_context['vndb_id'] = visual_novel.vndb_id
-        vn_context['chart_link'] = os.path.join('/chart/', visual_novel.alias)
-        vn_context['vndb_mark'] = visual_novel.get_rate()
-        vn_context['vndb_popularity'] = visual_novel.get_popularity()
-
-        for genre in visual_novel.vngenre_set.all().order_by('-weight'):
-            vn_context['genres'].append({
-                'title': genre.genre.title,
-                'link': os.path.join('/chart/', 'genre', genre.genre.alias),
-                'description': genre.genre.description,
-                'has_description': not not genre.genre.description,
-                'alias': genre.genre.alias
-            })
-
-        vn_context['studios'] = list()
-        for studio in visual_novel.vnstudio_set.all().order_by('-weight'):
-            vn_context['studios'].append({
-                'title': studio.studio.title,
-                'link': os.path.join('/chart/', 'studio', studio.studio.alias),
-                'description': studio.studio.description,
-                'has_description': not not studio.studio.description,
-                'alias': studio.studio.alias
-            })
-
-        row.append(vn_context)
-
+        row.append(chart_item)
         k += 1
-
         if k % max_vn_by_row == 0:
             rows.append(row)
             row = list()
