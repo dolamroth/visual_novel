@@ -177,7 +177,7 @@ def chart_index_page(
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
-    for chart_item in all_chart_items:
+    for chart_item in all_chart_items_data:
         row.append(chart_item)
         k += 1
         if k % max_vn_by_row == 0:
