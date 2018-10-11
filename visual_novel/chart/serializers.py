@@ -130,7 +130,7 @@ class ChartItemListSerializer(serializers.Serializer):
         return os.path.join('/chart/', self.visual_novel.alias)
 
     def get_vndb_mark(self, obj):
-        self.visual_novel.get_rate()
+        return self.visual_novel.get_rate()
 
     def get_vndb_popularity(self, obj):
         return self.visual_novel.get_popularity()
