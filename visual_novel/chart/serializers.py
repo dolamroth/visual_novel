@@ -4,9 +4,13 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework.relations import PKOnlyObject
 
+from django.core.cache import caches
 from django.conf import settings
 
 from .models import ChartItem
+
+
+cache = caches['default']
 
 
 class ChartItemGenreSerializer(serializers.Serializer):
@@ -88,6 +92,29 @@ class ChartItemListSerializer(serializers.Serializer):
     vndb_mark = serializers.SerializerMethodField()
     vndb_popularity = serializers.SerializerMethodField()
     studios = serializers.SerializerMethodField()
+
+    def to_representation(self, instance):
+        ret = cache.get('chart_item_{}'.format(instance.visual_novel.alias))
+        if ret:
+            return ret
+
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
+            if check_for_none is None:
+                ret[field.field_name] = None
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        cache.set('chart_item_{}'.format(instance.visual_novel.alias), ret, settings.CHART_NUMBER_OF_VN_IN_ROW)
+        return ret
 
     def get_title(self, obj):
         return obj.visual_novel.title
