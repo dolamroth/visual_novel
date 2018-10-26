@@ -130,7 +130,7 @@ class Command(BaseCommand):
                 link__translation_item=translation_item,
                 vk_group_id=vk_group_id
             )
-            sent_betalinks_ids = sent_betalinks.values_list('id', flat=True)
+            sent_betalinks_ids = sent_betalinks.values_list('link__id', flat=True)
             last_date = None
             if len(sent_betalinks) > 0:
                 last_date = sent_betalinks.order_by('-post_date')[0].post_date
