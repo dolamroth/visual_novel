@@ -61,14 +61,15 @@ class VK(object):
         vk_logger.info('Message id {}'.format(r['response']))
         return r['response']
 
-    def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID, attachments=None):
+    def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID, attachments=None, close_comments=0):
         self.__assert(msg, str)
         self.__assert(group_id, str)
         context = {
             'owner_id': group_id,
             'message': msg,
             'friends_only': 0,
-            'from_group': 1
+            'from_group': 1,
+            'close_comments': close_comments
         }
         if attachments is not None:
             self.__assert(attachments, str)
