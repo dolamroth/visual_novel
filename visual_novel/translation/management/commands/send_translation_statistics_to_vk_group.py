@@ -130,7 +130,7 @@ class Command(BaseCommand):
                 link__translation_item=translation_item,
                 vk_group_id=vk_group_id
             )
-            sent_betalinks_ids = sent_betalinks.values_list('id', flat=True)
+            sent_betalinks_ids = sent_betalinks.values_list('link__id', flat=True)
             last_date = None
             if len(sent_betalinks) > 0:
                 last_date = sent_betalinks.order_by('-post_date')[0].post_date
@@ -184,7 +184,7 @@ class Command(BaseCommand):
             # if vk_id starts with minus sign, it indicates that is is group (and not user)
             if vk_group_id[0] == '-' and config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE:
                 attachments = config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE
-            vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments)
+            vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments, close_comments=1)
 
             # If no errors, save records of sent statistics
             TranslationItemSendToVK.objects.bulk_create(translation_items_sent)

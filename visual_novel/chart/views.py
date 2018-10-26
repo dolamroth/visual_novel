@@ -9,11 +9,15 @@ from django.urls import reverse
 
 from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
 from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
+
 from core.utils import printable_russian_date
+from core.cache import custom_cache
 
 from .models import ChartItem, ChartItemTranslator
+from .serializers import ChartItemListSerializer
 
 
+@custom_cache(config.REDIS_CACHE_TIME_LIFE, base_prefix=None, headers=[], get_params=['sort'])
 def chart_index_page(
         request,
         genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None,
@@ -22,10 +26,12 @@ def chart_index_page(
     context = dict()
     context['additional_breadcumb'] = '&nbsp;&#47; Чарт'
     chart_breadcumb_with_link = '&nbsp;&#47; <a href="/chart/">Чарт</a>&nbsp;&#47; '
+    context['additional_description'] = ''
 
     rows = list()
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
+    # Lazy computed, so no caching here
     all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
 
     context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
@@ -33,8 +39,6 @@ def chart_index_page(
     context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
     context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
     context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
-
-    context['additional_description'] = ''
 
     # Optional endpoint parameters
     if genre_alias:
@@ -154,47 +158,14 @@ def chart_index_page(
     else:
         all_chart_items = all_chart_items.order_by(base_sort_by)
 
+    all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
+
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
-    for chart_item in all_chart_items:
-        vn_context = dict()
-
-        visual_novel = chart_item.visual_novel
-
-        vn_context['title'] = visual_novel.title
-        vn_context['poster_url'] = settings.POSTER_STOPPER_URL if not visual_novel.photo else visual_novel.photo.url
-        vn_context['description'] = visual_novel.description
-        vn_context['alias'] = visual_novel.alias
-        vn_context['genres'] = list()
-        vn_context['vndb_id'] = visual_novel.vndb_id
-        vn_context['chart_link'] = os.path.join('/chart/', visual_novel.alias)
-        vn_context['vndb_mark'] = visual_novel.get_rate()
-        vn_context['vndb_popularity'] = visual_novel.get_popularity()
-
-        for genre in visual_novel.vngenre_set.all().order_by('-weight'):
-            vn_context['genres'].append({
-                'title': genre.genre.title,
-                'link': os.path.join('/chart/', 'genre', genre.genre.alias),
-                'description': genre.genre.description,
-                'has_description': not not genre.genre.description,
-                'alias': genre.genre.alias
-            })
-
-        vn_context['studios'] = list()
-        for studio in visual_novel.vnstudio_set.all().order_by('-weight'):
-            vn_context['studios'].append({
-                'title': studio.studio.title,
-                'link': os.path.join('/chart/', 'studio', studio.studio.alias),
-                'description': studio.studio.description,
-                'has_description': not not studio.studio.description,
-                'alias': studio.studio.alias
-            })
-
-        row.append(vn_context)
-
+    for chart_item in all_chart_items_data:
+        row.append(chart_item)
         k += 1
-
         if k % max_vn_by_row == 0:
             rows.append(row)
             row = list()

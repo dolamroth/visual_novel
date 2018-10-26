@@ -49,7 +49,7 @@ var reloadNewsOnPage = function(news){
             .addClass('news');
         row.find('div.title').html( '<a href="/news/' + val['alias'] + '">' + val['title'] + '</a>');
         row.find('div.short_description').html( val['short_description'] );
-        row.find('div.poster').html( '<img src="'+val['poster_url']+'" style="height: 350px; width: auto;">' );
+        row.find('div.poster').html( '<img src="'+val['poster_url']+'" style="height: 350px; width: auto; max-width: 730px;">' );
         row.find('div.author').html( 'Дата добавления: ' + val['created_at'] + '; автор: ' + val['author'] );
         table.prepend(row);
     }

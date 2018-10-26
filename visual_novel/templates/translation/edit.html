@@ -147,6 +147,27 @@
     </table>
 
     <div class="form-group">
+        <label for="translation-statuses">Статус перевода</label>
+        <div class="input-group">
+            <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="translation-statuses">
+                <span class="text-{{ status_style }}" style="font-weight: 900" id="current-translation-status" data-status="{{ status_key }}">{{ status_name }}</span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu col-xs-12">
+                {% for status in statuses %}
+                <li>
+                    <a href="#change-translation-status-popup" data-key="{{ status.key }}" data-description="{{ status.description }}" data-mailing-inform="{{ mailing_inform }}" class="select-translation-status-popup">
+                        <span class="text-{{ status.style }}" style="font-weight: 900">{{ status.name }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <label for="pictures_statistics">Изображения</label>
         <div class="input-group">
             <textarea id="pictures_statistics" class="form-control">{{ pictures_statistics }}</textarea>
@@ -167,27 +188,6 @@
         <div class="input-group">
             <textarea id="comment" class="form-control">{{ comment }}</textarea>
             <a class="input-group-addon btn btn-default edit-comment-send" href="#" id="save-comment-description" data_text="{{ comment }}"><span class="glyphicon glyphicon-floppy-disk"></span></a>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label for="translation-statuses">Статус перевода</label>
-        <div class="input-group">
-            <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="translation-statuses">
-                <span class="text-{{ status_style }}" style="font-weight: 900" id="current-translation-status" data-status="{{ status_key }}">{{ status_name }}</span>
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu col-xs-12">
-                {% for status in statuses %}
-                <li>
-                    <a href="#change-translation-status-popup" data-key="{{ status.key }}" data-description="{{ status.description }}" data-mailing-inform="{{ mailing_inform }}" class="select-translation-status-popup">
-                        <span class="text-{{ status.style }}" style="font-weight: 900">{{ status.name }}</span>
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-            </div>
         </div>
     </div>
 
