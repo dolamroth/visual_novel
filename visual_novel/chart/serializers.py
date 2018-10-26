@@ -1,4 +1,5 @@
 import os
+from constance import config
 
 from rest_framework import serializers
 from rest_framework.fields import empty
@@ -113,7 +114,7 @@ class ChartItemListSerializer(serializers.Serializer):
             else:
                 ret[field.field_name] = field.to_representation(attribute)
 
-        cache.set('chart_item_{}'.format(instance.visual_novel.alias), ret, settings.CHART_NUMBER_OF_VN_IN_ROW)
+        cache.set('chart_item_{}'.format(instance.visual_novel.alias), ret, config.REDIS_CACHE_TIME_LIFE)
         return ret
 
     def get_title(self, obj):
