@@ -140,7 +140,7 @@ def profile_page(request, username):
                          'label': weekdays_labels[i]})
         ctrl_value *= 2
     context['weekdays'] = weekdays
-    context['distribution_time'] = profile.send_time.isoformat()[:5]
+    context['distribution_hour'] = profile.send_hour
     context['distribution'] = profile.send_distributions
     context['vk_link'] = profile.vk_link
 

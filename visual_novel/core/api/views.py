@@ -15,7 +15,7 @@ def update_subscription_time(request, username):
     data = {
         'weekmap': request.GET.get('weekmap', '127'),
         'is_subscribed': request.GET.get('is_subscribed', 'false'),
-        'time': request.GET.get('time', ''),
+        'hour': request.GET.get('hour', ''),
         'vk_link': request.GET.get('vk_link', '')
     }
 

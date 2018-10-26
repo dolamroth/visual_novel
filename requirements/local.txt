@@ -1,1 +1,2 @@
 -r base.txt
+eventlet==0.24.1

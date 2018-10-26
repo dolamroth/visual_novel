@@ -7,6 +7,7 @@ from django.urls import reverse
 from constance import config
 
 from notifications.vk import VK
+from notifications.service import send_email
 
 from ...choices import TRANSLATION_ITEMS_STATUSES
 from ...models import (
@@ -30,7 +31,7 @@ class Command(BaseCommand):
         try:
             assert options['group_id'] is not None
             # VK group ID always starts with minus sign
-            assert options['group_id'][0], '-'
+            assert (options['group_id'][0] in '-0123456789') or ('@' in options['group_id'][0]), True
         except AssertionError:
             raise CommandError(
                 'Формат id группы ВК в неправильном формате, требуется указать --group_id=-%group_numeric_id%')
@@ -181,11 +182,19 @@ class Command(BaseCommand):
             )
             # Add image, if posting to wall
             attachments = None
-            # if vk_id starts with minus sign, it indicates that is is group (and not user)
-            if vk_group_id[0] == '-' and config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE:
-                attachments = config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE
-            vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments, close_comments=1)
+            if '@' in vk_group_id:
+                send_email('Статистика переводов ВН', post_text, vk_group_id)
+            else:
+                # if vk_id starts with minus sign, it indicates that is is group (and not user)
+                if vk_group_id[0] == '-' and config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE:
+                    attachments = config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE
+                if vk_group_id[0] == '-':
+                    vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments, close_comments=1)
+                else:
+                    vk.send_to_user(msg=post_text, user_id=vk_group_id)
 
             # If no errors, save records of sent statistics
             TranslationItemSendToVK.objects.bulk_create(translation_items_sent)
             TranslationBetaLinkSendToVK.objects.bulk_create(translation_betalinks_sent)
+
+        return post_text

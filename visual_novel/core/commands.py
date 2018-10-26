@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 
 from .mixins import WeekdayValidator, IsSubscribedValidator, TimeValidator, VkProfileValidator
 from .models import Profile
+from .tasks import update_profile_notification_preferences
 
 
 class Command(object):
@@ -32,22 +33,29 @@ class ChangeUserSubsctiptionOptions(WeekdayValidator, IsSubscribedValidator, Tim
     def __init__(self, data, user):
         self.weekmap = data['weekmap']
         self.is_subscribed = data['is_subscribed']
-        self.time = data['time']
+        self.hour = data['hour']
         self.user = user
 
     def execute_validated(self):
         profile = Profile.objects.get(user=self.user)
-        if self.time:
-            profile.send_time = self.time
+
+        profile_old_hour = profile.send_hour
+        profile_old_weekmap = int(profile.weekdays)
+
+        profile.send_hour = self.hour
         profile.send_distributions = self.is_subscribed
         profile.weekdays = self.weekmap
         profile.save()
-        # TODO: refresh subscriptions in Celery Task
+
+        if (profile_old_hour != self.hour) or (profile_old_weekmap != self.weekmap):
+            update_profile_notification_preferences.apply_async(
+                (profile.id, profile_old_weekmap, profile_old_hour,),
+            )
 
     def validate(self):
         self.weekmap = self.validate_weekday_is_correct(self.weekmap)
         self.is_subscribed = self.validate_is_subscribed_field(self.is_subscribed)
-        self.time = self.validate_time_field(self.time)
+        self.validate_hour_field(self.hour)
 
 
 class ChangeUserVkLinkOption(VkProfileValidator, Command):
