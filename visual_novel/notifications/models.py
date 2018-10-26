@@ -12,7 +12,7 @@ class MailingTask(models.Model):
                                                   editable=False, null=True)
     send_hour = models.IntegerField(verbose_name='Час рассылки',
                                     validators=[MaxValueValidator(23), MinValueValidator(0)])
-    send_weekday = models.IntegerField(verbose_name='Час рассылки',
+    send_weekday = models.IntegerField(verbose_name='День недели рассылки',
                                     validators=[MaxValueValidator(6), MinValueValidator(0)])
 
     class Meta:
