@@ -31,7 +31,7 @@ class Command(BaseCommand):
         try:
             assert options['group_id'] is not None
             # VK group ID always starts with minus sign
-            assert (options['group_id'][0] in '-0123456789') or ('@' in options['group_id'][0]), True
+            assert (options['group_id'][0] in '-0123456789') or ('@' in options['group_id']), True
         except AssertionError:
             raise CommandError(
                 'Формат id группы ВК в неправильном формате, требуется указать --group_id=-%group_numeric_id%')
