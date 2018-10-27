@@ -314,7 +314,7 @@ CELERY_BROKER_URL = "redis://{}:{}/{}".format(REDIS_HOST, REDIS_PORT, REDIS_CELE
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CELERY_ENABLE_UTC = True
-CELERY_TIMEZONE = 'UTC'
+CELERY_TIMEZONE = 'Europe/Moscow'
 
 CELERY_IGNORE_RESULT = False
 
