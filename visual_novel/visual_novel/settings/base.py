@@ -272,29 +272,6 @@ RECAPTCHA_PUBLIC_KEY = get_secret(section='CAPTCHA', setting='PUBLIC_KEY')
 FILE_UPLOAD_MAX_MEMORY_SIZE = 200000000
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-CELERY_BROKER_URL = get_secret(section='CELERY', setting='BROKER_URL')
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-CELERY_ENABLE_UTC = True
-CELERY_TIMEZONE = 'UTC'
-
-CELERY_IGNORE_RESULT = False
-
-CELERY_TASK_TIME_LIMIT = 120
-CELERY_TASK_SOFT_TIME_LIMIT = 60
-
-CELERY_TASK_QUEUES = {
-    'high': Queue('high', Exchange('high', type='direct'), routing_key='high'),
-    'normal': Queue('normal', Exchange('normal', type='direct'), routing_key='normal'),
-    'low': Queue('low', Exchange('low', type='direct'), routing_key='low'),
-}
-CELERY_TASK_DEFAULT_QUEUE = 'normal'
-CELERY_TASK_DEFAULT_EXCHANGE = 'normal'
-CELERY_TASK_DEFAULT_ROUTING_KEY = 'normal'
-CELERY_TASK_ROUTES = {}
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-
 # email settings
 EMAIL_HOST = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_HOST')
 EMAIL_PORT = get_secret(section='EMAIL_SETTINGS', setting='EMAIL_PORT')
@@ -319,6 +296,7 @@ YANDEX_METRIKA_URL = 'https://api-metrika.yandex.ru/'
 REDIS_HOST = get_secret(section='REDIS', setting='HOST')
 REDIS_PORT = get_secret(section='REDIS', setting='PORT')
 REDIS_CACHE_DB = get_secret(section='REDIS', setting='CACHE_DB')
+REDIS_CELERY_DB = get_secret(section='REDIS', setting='CELERY_DB')
 
 CACHES = {
     "default": {
@@ -331,3 +309,26 @@ CACHES = {
         }
     }
 }
+
+CELERY_BROKER_URL = "redis://{}:{}/{}".format(REDIS_HOST, REDIS_PORT, REDIS_CELERY_DB)
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = 'UTC'
+
+CELERY_IGNORE_RESULT = False
+
+CELERY_TASK_TIME_LIMIT = 120
+CELERY_TASK_SOFT_TIME_LIMIT = 60
+
+CELERY_TASK_QUEUES = {
+    'high': Queue('high', Exchange('high', type='direct'), routing_key='high'),
+    'normal': Queue('normal', Exchange('normal', type='direct'), routing_key='normal'),
+    'low': Queue('low', Exchange('low', type='direct'), routing_key='low'),
+}
+CELERY_TASK_DEFAULT_QUEUE = 'normal'
+CELERY_TASK_DEFAULT_EXCHANGE = 'normal'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'normal'
+CELERY_TASK_ROUTES = {}
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

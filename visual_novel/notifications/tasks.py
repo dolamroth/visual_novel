@@ -26,6 +26,6 @@ def send_statistics_task(self, mailing_task_id):
         if user.vk_id:
             text = management.call_command('send_translation_statistics_to_vk_group', group_id=str(user.vk_id))
             if text:
-                send_email('Статистика переводов ВН', text, str(user.email))
+                send_email('Статистика переводов ВН', text, str(user.user.email))
         else:
-            management.call_command('send_translation_statistics_to_vk_group', group_id=str(user.email))
+            management.call_command('send_translation_statistics_to_vk_group', group_id=str(user.user.email))
