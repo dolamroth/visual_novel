@@ -6,18 +6,19 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import Http404
 from django.urls import reverse
+from django.core.cache import caches
 
 from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
 from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
 
 from core.utils import printable_russian_date
-from core.cache import custom_cache
 
 from .models import ChartItem, ChartItemTranslator
 from .serializers import ChartItemListSerializer
 
+cache = caches['default']
 
-@custom_cache(config.REDIS_CACHE_TIME_LIFE, base_prefix=None, headers=[], get_params=['sort'])
+
 def chart_index_page(
         request,
         genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None,
@@ -33,6 +34,7 @@ def chart_index_page(
 
     # Lazy computed, so no caching here
     all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
+    cache_key = 'chart'
 
     context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
     context['all_tags'] = Tag.objects.filter(is_published=True).order_by('title').values()
@@ -47,6 +49,7 @@ def chart_index_page(
         try:
             genre = Genre.objects.get(alias=genre_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
+            cache_key += '_genre_{}'.format(genre_alias)
             if genre.description:
                 context['additional_description'] = genre.description
         except Genre.DoesNotExist:
@@ -58,6 +61,7 @@ def chart_index_page(
         try:
             tag = Tag.objects.get(alias=tag_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
+            cache_key += '_tag_{}'.format(tag_alias)
             if tag.description:
                 context['additional_description'] = tag.description
         except Tag.DoesNotExist:
@@ -69,6 +73,7 @@ def chart_index_page(
         try:
             studio = Studio.objects.get(alias=studio_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
+            cache_key += '_studio_{}'.format(studio_alias)
             if studio.description:
                 context['additional_description'] = studio.description
         except Studio.DoesNotExist:
@@ -80,6 +85,7 @@ def chart_index_page(
         try:
             staff = Staff.objects.get(alias=staff_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
+            cache_key += '_staff_{}'.format(staff_alias)
             if staff.description:
                 context['additional_description'] = staff.description
         except Staff.DoesNotExist:
@@ -89,6 +95,7 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
             duration = Longevity.objects.get(alias=duration_alias)
+            cache_key += '_duration_{}'.format(duration_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
             pass
@@ -99,6 +106,7 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(id__in=translators_ids)
         try:
             translator = Translator.objects.get(alias=translator_alias)
+            cache_key += '_translator_{}'.format(translator_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
             if translator.description or translator.url:
                 context['additional_description'] = ''
@@ -155,10 +163,15 @@ def chart_index_page(
         context['date_of_translation_icon'] = '' # Removing icon for default sort in order to prevent multiple icons
         context[all_sortings_context_links[idx][0]] = all_sortings_context_links[idx][1]
         context[all_sortings_context_links[idx][0] + '_icon'] = all_sortings_context_links[idx][2]
+        cache_key += '_sort_{}'.format(sort_by)
     else:
+        cache_key += '_sort_{}'.format(base_sort_by)
         all_chart_items = all_chart_items.order_by(base_sort_by)
 
-    all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
+    all_chart_items_data = cache.get(cache_key)
+    if all_chart_items_data is None:
+        all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
+        cache.get(cache_key, all_chart_items_data, config.REDIS_CACHE_TIME_LIFE)
 
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
