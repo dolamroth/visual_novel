@@ -8,7 +8,7 @@ from .utils import create_mailing_to_users_task
 
 class MailingTask(models.Model):
     mailing_task = models.OneToOneField(PeriodicTask, on_delete=models.PROTECT,
-                                                  verbose_name='Задача автоматичесой рассылки', blank=False,
+                                                  verbose_name='Задача автоматической рассылки', blank=False,
                                                   editable=False, null=True)
     send_hour = models.IntegerField(verbose_name='Час рассылки',
                                     validators=[MaxValueValidator(23), MinValueValidator(0)])
