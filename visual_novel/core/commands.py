@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 
 from .mixins import WeekdayValidator, IsSubscribedValidator, TimeValidator, VkProfileValidator
 from .models import Profile
-from .tasks import update_profile_notification_preferences
 
 
 class Command(object):
@@ -38,19 +37,10 @@ class ChangeUserSubsctiptionOptions(WeekdayValidator, IsSubscribedValidator, Tim
 
     def execute_validated(self):
         profile = Profile.objects.get(user=self.user)
-
-        profile_old_hour = profile.send_hour
-        profile_old_weekmap = int(profile.weekdays)
-
         profile.send_hour = self.hour
         profile.send_distributions = self.is_subscribed
         profile.weekdays = self.weekmap
         profile.save()
-
-        if (profile_old_hour != self.hour) or (profile_old_weekmap != self.weekmap):
-            update_profile_notification_preferences.apply_async(
-                (profile.id, profile_old_weekmap, profile_old_hour,),
-            )
 
     def validate(self):
         self.weekmap = self.validate_weekday_is_correct(self.weekmap)
