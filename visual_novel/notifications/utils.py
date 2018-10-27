@@ -21,7 +21,7 @@ def create_mailing_to_users_task(hour, day_of_week, mailing_task):
 
     crontab_schedule = _create_crontab_schedule(hour, day_of_week)
 
-    task = PeriodicTask.objects.create(
+    task, _ = PeriodicTask.objects.get_or_create(
         crontab=crontab_schedule,
         name='Рассылка статистики в {day_of_week} на {hour} часов'.format(
             day_of_week=WEEKDAYS_RU[day_of_week], hour=hour

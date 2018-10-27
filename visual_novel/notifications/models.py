@@ -30,6 +30,7 @@ class MailingTask(models.Model):
                 day_of_week=self.send_weekday,
                 mailing_task=self
             )
+            super(MailingTask, self).save()
 
     def delete(self, *args, **kwargs):
         mailing_task = self.mailing_task
