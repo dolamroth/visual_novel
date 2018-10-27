@@ -8,6 +8,8 @@ def delete_crontabs(apps, schema_editor):
     MailingTask.objects.all().delete()
     PeriodicTask = apps.get_model('django_celery_beat', 'PeriodicTask')
     PeriodicTask.objects.all().delete()
+    CrontabSchedule = apps.get_model('django_celery_beat', 'CrontabSchedule')
+    CrontabSchedule.objects.all().delete()
 
 
 class Migration(migrations.Migration):
