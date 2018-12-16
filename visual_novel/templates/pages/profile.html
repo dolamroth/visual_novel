@@ -16,7 +16,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-6" style="margin-bottom: 16px;">
+        <div class="col-lg-12" style="margin-bottom: 16px;">
             <h4>Мои подписки на статистику переводов</h4>
             {% if has_subscriptions %}
                 <p><ul>{% for translation in subscriptions %}
@@ -34,24 +34,6 @@
             {% else %}
                 <p>Нет модерируемых переводов.</p>
             {% endif %}
-        </div>
-        <div class="col-lg-6" style="margin-bottom: 16px;">
-            <fieldset>
-                <legend>Профиль ВК</legend>
-                <label for="vk-link">Ссылка на профиль</label>
-                <input id="vk-link" type="text" name="vk_link" value="{{ vk_link }}" class="form-control" placeholder="https://vk.com/id1111111"><br />
-                <legend>Уведомления об обновлении статистики переводов</legend>
-                <label for="distribution-hour">Час рассылки</label>
-                <input id="distribution-hour" type="number" name="hour" value="{{ distribution_hour }}" min="0" max="23" class="form-control"><br />
-                {% for day in weekdays %}
-                    <input type="checkbox" name="{{ day.name }}" value="{{ day.value }}"{% if day.checked %} checked="checked"{% endif %} class="weekday-checkbox" />&nbsp;{{ day.label }}<br />
-                {% endfor %}
-            </fieldset><br />
-
-            <input id="distribution-check" type="checkbox" name="distribution" {% if distribution %} checked="checked"{% endif %} />&nbsp;
-            <label for="distribution-check">Присылать уведомления об обновлении статистики переводов</label><br /><br />
-
-            <input type="button" username="{{ username }}" value="Применить" class="form-control update-user-subscription-settings" />
         </div>
     </div>
 {% endblock %}

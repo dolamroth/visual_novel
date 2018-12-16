@@ -21,7 +21,6 @@ import translation.urls
 from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap, TranslatorSitemap
 from chart.sitemap import ChartItemSitemap
 from translation.sitemap import TranslationItemSitemap
-from core.utils import create_vk_auth_link
 
 sitemaps = {
     'genres': GenreSitemap,
@@ -41,7 +40,6 @@ urlpatterns = [
     path('api/', include(api_urls)),
 
     # Authentification views
-    path('login/vk-auth', core_views.sign_via_vk),
     path('login/', auth_views.LoginView.as_view(
         template_name='pages/login.html',
         form_class=CustomAuthentificationForm,
@@ -74,9 +72,7 @@ urlpatterns = [
     ), name='password_reset_complete'),
 
     # Plain pages views
-    path('', TemplateView.as_view(template_name="pages/index.html", extra_context={
-        "vk_auth_link": create_vk_auth_link()
-    }), name='main'),
+    path('', TemplateView.as_view(template_name="pages/index.html"), name='main'),
     path('profile/<str:username>', core_views.profile_page, name='profile_page'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemaps'),
     path('robots.txt', TemplateView.as_view(template_name="includes/robots.txt"),
