@@ -123,16 +123,4 @@
     </table>
     {% endif %}
 
-    <div class="form-group">
-        {% if user.is_authenticated %}
-            {% if is_subscribed %}
-                <a class="btn btn-danger subscription-button" href="/api/translation/{{ alias }}/unsubscribe">Отписаться от рассылки</a>
-            {% else %}
-                <a class="btn btn-success subscription-button" href="/api/translation/{{ alias }}/subscribe">Подписаться на рассылку статистики</a>
-            {% endif %}
-        {% else %}
-            <a class="btn btn-success" href="/login/">Подписаться на рассылку статистики</a>
-        {% endif %}
-    </div>
-
 {% endblock %}
