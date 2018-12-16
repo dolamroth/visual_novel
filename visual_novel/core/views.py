@@ -19,7 +19,6 @@ from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
 from .models import Profile
-from .mixins import VkProfileValidator
 import requests
 
 

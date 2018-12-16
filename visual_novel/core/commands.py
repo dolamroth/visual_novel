@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from .mixins import WeekdayValidator, IsSubscribedValidator, TimeValidator, VkProfileValidator
+from .mixins import IsSubscribedValidator
 from .models import Profile
 
 
