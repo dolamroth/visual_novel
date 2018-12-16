@@ -694,31 +694,6 @@ $(function () {
         return false;
     });
 
-    $('.update-user-subscription-settings').on('click', function(e){
-        var submit_link = $( e.currentTarget );
-        var weekdays = 0;
-        $.each( $(".weekday-checkbox:checked"), function(idx, val){ weekdays += parseInt(val.value) }  );
-        var is_subscribed = $('#distribution-check').prop('checked');
-        var hour = $('#distribution-hour').val();
-        var vk_link = $('#vk-link').val();
-        var data = {
-            'weekmap': weekdays,
-            'is_subscribed': is_subscribed,
-            'hour': hour,
-            'vk_link': vk_link
-        };
-        $.ajax({
-            url: '/api/core/'+submit_link.attr('username')+'/subscriptions_edit',
-            method: 'GET',
-            data: data,
-            type: 'json'
-        }).always(function(data){
-            /* TODO: manually change button and data on page, without reload */
-            location.reload();
-        });
-        return false;
-    });
-
     $('.select-translation-status-popup').on('click', function(e){
         var status_link = $( e.currentTarget );
         var popup_window = $('#change-translation-status-popup');

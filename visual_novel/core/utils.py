@@ -63,10 +63,3 @@ def file_directory_path(field, instance, filename):
             continue
         break
     return os.path.join(directory_path, new_file_name)
-
-
-def create_vk_auth_link():
-    return "https://oauth.vk.com/authorize?client_id={}&redirect_uri={}&response_type=code".format(
-        settings.VK_APP_ID,
-        settings.VK_APP_REDIRECT_URI
-    )
