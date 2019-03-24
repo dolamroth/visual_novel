@@ -122,8 +122,8 @@ class Command(BaseCommand):
                 post_text_by_translation += 'Тех. часть: {}\n'.format(translation_statistics.technical_statistics)
                 notify_translation = True
 
-            if translation_statistics.comment != comment and comment != '':
-                post_text_by_translation += 'Комментарий: {}\n'.format(translation_statistics.comment)
+            if translation_statistics.comment != comment and comment.strip() != '':
+                post_text_by_translation += 'Комментарий: {}\n'.format(translation_statistics.comment.strip())
                 notify_translation = True
 
             # Links on beta patches
@@ -189,7 +189,7 @@ class Command(BaseCommand):
                 if vk_group_id[0] == '-' and config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE:
                     attachments = config.TRANSLATION_PROGRESS_POST_IN_VK_IMAGE
                 if vk_group_id[0] == '-':
-                    vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments, close_comments=1)
+                    vk.post_to_wall(msg=post_text, group_id=vk_group_id, attachments=attachments, close_comments=0)
                 else:
                     vk.send_to_user(msg=post_text, user_id=vk_group_id)
 
