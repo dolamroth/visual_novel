@@ -17,15 +17,6 @@
 
     <div class="row">
         <div class="col-lg-12" style="margin-bottom: 16px;">
-            <h4>Мои подписки на статистику переводов</h4>
-            {% if has_subscriptions %}
-                <p><ul>{% for translation in subscriptions %}
-                    <li><a href="/translation/{{ translation.alias }}">{{ translation.title }}</a></li>
-                {% endfor %}</ul></p>
-            {% else %}
-                <p>Список подписок пуст.</p>
-            {% endif %}
-
             <h4>Мои редактируемые переводы</h4>
             {% if has_moderated_translations %}
                 <p><ul>{% for translation in moderated_translations %}
