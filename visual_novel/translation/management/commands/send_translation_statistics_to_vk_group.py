@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from constance import config
 
-from core.utils import percent_change, ru_months_in
+from core.utils import percent_change, printable_russian_date
 from notifications.vk import VK
 from notifications.service import send_email
 
@@ -84,10 +84,8 @@ class Command(BaseCommand):
                 comment = last_statistics.comment
                 status = last_statistics.status
 
-                post_text_by_translation += 'Предыдущее изменение: {} {} {} года\n'.format(
-                    last_statistics.post_date.strftime("%d"),
-                    ru_months_in[last_statistics.post_date.month - 1],
-                    last_statistics.post_date.strftime("%Y")
+                post_text_by_translation += 'Предыдущее изменение: {}\n'.format(
+                    printable_russian_date(last_statistics.post_date)
                 )
 
             if translation_item.status.mask != status:
@@ -103,6 +101,10 @@ class Command(BaseCommand):
                     percent_change(base_root.translated - translated, base_root.total_rows)
                 )
                 notify_translation = True
+            else:
+                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                    base_root.translated, base_root.total_rows
+                )
 
             if base_root.edited_first_pass != edited_1:
                 post_text_by_translation += 'Редактура: {}/{} ({})\n'.format(
@@ -110,6 +112,10 @@ class Command(BaseCommand):
                     percent_change(base_root.edited_first_pass - edited_1, base_root.total_rows)
                 )
                 notify_translation = True
+            else:
+                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                    base_root.edited_first_pass, base_root.total_rows
+                )
 
             if base_root.edited_second_pass != edited_2:
                 post_text_by_translation += 'Вычитка: {}/{} ({})\n'.format(
@@ -117,6 +123,10 @@ class Command(BaseCommand):
                     percent_change(base_root.edited_second_pass - edited_2, base_root.total_rows)
                 )
                 notify_translation = True
+            else:
+                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                    base_root.edited_second_pass, base_root.total_rows
+                )
 
             if translation_statistics.pictures_statistics != pictures_statistics and pictures_statistics != '':
                 post_text_by_translation += 'Изображения: {}\n'.format(translation_statistics.pictures_statistics)
