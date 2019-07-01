@@ -71,4 +71,4 @@ def percent_change(changed, total):
     :param total:
     :return percent rate with 2 digits as precision:
     """
-    return "+{0:.2f}%".format(changed/total)
+    return "+{0:.2f}%".format(changed/total*100)
