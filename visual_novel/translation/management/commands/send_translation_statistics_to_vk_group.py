@@ -54,7 +54,6 @@ class Command(BaseCommand):
                                                                  tree_id=translation_statistics.tree_id)
 
             # Zero values, if no statistics on this VN has been yet sent to this VK group
-            total = 0
             translated = 0
             edited_1 = 0
             edited_2 = 0
@@ -76,7 +75,6 @@ class Command(BaseCommand):
             ).count():
                 last_statistics = TranslationItemSendToVK.objects\
                     .filter(translation_item=translation_item, vk_group_id=vk_group_id).order_by('-post_date').first()
-                total = last_statistics.total_rows
                 translated = last_statistics.translated
                 edited_1 = last_statistics.edited_first_pass
                 edited_2 = last_statistics.edited_second_pass
@@ -91,10 +89,6 @@ class Command(BaseCommand):
                 if status_expanded[4]:
                     post_text_by_translation += 'Статус перевода: {}\n'.format(status_expanded[1])
                     notify_translation = True
-
-            if base_root.total_rows != total:
-                post_text_by_translation += 'Всего: {} строк\n'.format(base_root.total_rows)
-                notify_translation = True
 
             if base_root.translated != translated:
                 post_text_by_translation += 'Перевод: {}/{}\n'.format(
