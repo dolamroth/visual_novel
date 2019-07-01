@@ -16,3 +16,5 @@ CACHES = {
         "LOCATION": "cache_table_for_local_development"
     }
 }
+
+WSGI_APPLICATION = None
