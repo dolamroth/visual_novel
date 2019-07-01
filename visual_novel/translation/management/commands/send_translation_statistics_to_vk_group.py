@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from constance import config
 
-from core.utils import percent_change
+from core.utils import percent_change, ru_months_in
 from notifications.vk import VK
 from notifications.service import send_email
 
@@ -84,8 +84,10 @@ class Command(BaseCommand):
                 comment = last_statistics.comment
                 status = last_statistics.status
 
-                post_text_by_translation += 'Предыдущее изменение: {} года\n'.format(
-                    last_statistics.post_date.strftime("%d %B %Y")
+                post_text_by_translation += 'Предыдущее изменение: {} {} {} года\n'.format(
+                    last_statistics.post_date.strftime("%d"),
+                    ru_months_in[last_statistics.post_date.month - 1],
+                    last_statistics.post_date.strftime("%Y")
                 )
 
             if translation_item.status.mask != status:
