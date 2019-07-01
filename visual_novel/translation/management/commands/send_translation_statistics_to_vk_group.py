@@ -101,6 +101,10 @@ class Command(BaseCommand):
                     percent_change(base_root.translated - translated, base_root.total_rows)
                 )
                 notify_translation = True
+            else:
+                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                    base_root.translated, base_root.total_rows
+                )
 
             if base_root.edited_first_pass != edited_1:
                 post_text_by_translation += 'Редактура: {}/{} ({})\n'.format(
@@ -108,6 +112,10 @@ class Command(BaseCommand):
                     percent_change(base_root.edited_first_pass - edited_1, base_root.total_rows)
                 )
                 notify_translation = True
+            else:
+                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                    base_root.edited_first_pass, base_root.total_rows
+                )
 
             if base_root.edited_second_pass != edited_2:
                 post_text_by_translation += 'Вычитка: {}/{} ({})\n'.format(
@@ -115,6 +123,10 @@ class Command(BaseCommand):
                     percent_change(base_root.edited_second_pass - edited_2, base_root.total_rows)
                 )
                 notify_translation = True
+            else:
+                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                    base_root.edited_second_pass, base_root.total_rows
+                )
 
             if translation_statistics.pictures_statistics != pictures_statistics and pictures_statistics != '':
                 post_text_by_translation += 'Изображения: {}\n'.format(translation_statistics.pictures_statistics)
