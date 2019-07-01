@@ -63,3 +63,12 @@ def file_directory_path(field, instance, filename):
             continue
         break
     return os.path.join(directory_path, new_file_name)
+
+
+def percent_change(changed, total):
+    """
+    :param changed:
+    :param total:
+    :return percent rate with 2 digits as precision:
+    """
+    return "+{0:.2f}%".format(changed/total)
