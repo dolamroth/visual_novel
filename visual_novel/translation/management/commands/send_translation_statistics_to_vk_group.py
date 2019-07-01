@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from constance import config
 
+from core.utils import percent_change
 from notifications.vk import VK
 from notifications.service import send_email
 
@@ -83,6 +84,10 @@ class Command(BaseCommand):
                 comment = last_statistics.comment
                 status = last_statistics.status
 
+                post_text_by_translation += 'Предыдущее изменение: {} года\n'.format(
+                    last_statistics.post_date.strftime("%d %B %Y")
+                )
+
             if translation_item.status.mask != status:
                 bitfield_key = [d for d in translation_item.status.items() if d[1]][0][0]
                 status_expanded = [d for d in TRANSLATION_ITEMS_STATUSES if d[0] == bitfield_key][0]
@@ -91,20 +96,23 @@ class Command(BaseCommand):
                     notify_translation = True
 
             if base_root.translated != translated:
-                post_text_by_translation += 'Перевод: {}/{}\n'.format(
-                    base_root.translated, base_root.total_rows
+                post_text_by_translation += 'Перевод: {}/{} ({})\n'.format(
+                    base_root.translated, base_root.total_rows,
+                    percent_change(base_root.translated - translated, base_root.total_rows)
                 )
                 notify_translation = True
 
             if base_root.edited_first_pass != edited_1:
-                post_text_by_translation += 'Редактура: {}/{}\n'.format(
-                    base_root.edited_first_pass, base_root.total_rows
+                post_text_by_translation += 'Редактура: {}/{} ({})\n'.format(
+                    base_root.edited_first_pass, base_root.total_rows,
+                    percent_change(base_root.edited_first_pass - edited_1, base_root.total_rows)
                 )
                 notify_translation = True
 
             if base_root.edited_second_pass != edited_2:
-                post_text_by_translation += 'Вычитка: {}/{}\n'.format(
-                    base_root.edited_second_pass, base_root.total_rows
+                post_text_by_translation += 'Вычитка: {}/{} ({})\n'.format(
+                    base_root.edited_second_pass, base_root.total_rows,
+                    percent_change(base_root.edited_second_pass - edited_2, base_root.total_rows)
                 )
                 notify_translation = True
 
