@@ -108,11 +108,17 @@ class YandexMetrica(object):
     def __execute_query(self, query, params_q):
         params = dict(params_q)
         params['ids'] = self.client_id
-        params['oauth_token'] = self.token
         url = self.api_url + query
 
         http = urllib3.PoolManager()
-        r = http.request(self.method, url, fields=params)
+        r = http.request(
+            self.method,
+            url,
+            fields=params,
+            headers={
+                "Authorization": f"OAuth {self.token}"
+            }
+        )
         try:
             return json.loads(r.data)
         except json.decoder.JSONDecodeError:
