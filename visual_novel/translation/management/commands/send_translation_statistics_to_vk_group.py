@@ -113,7 +113,7 @@ class Command(BaseCommand):
                 )
                 notify_translation = True
             else:
-                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                post_text_by_translation += 'Редактура: {}/{} (+0.00%)\n'.format(
                     base_root.edited_first_pass, base_root.total_rows
                 )
 
@@ -124,7 +124,7 @@ class Command(BaseCommand):
                 )
                 notify_translation = True
             else:
-                post_text_by_translation += 'Перевод: {}/{} (+0.00%)\n'.format(
+                post_text_by_translation += 'Вычитка: {}/{} (+0.00%)\n'.format(
                     base_root.edited_second_pass, base_root.total_rows
                 )
 
