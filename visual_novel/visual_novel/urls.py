@@ -7,6 +7,7 @@ from django.urls import path, include
 
 from django.contrib.auth import views as auth_views
 from core import views as core_views
+from .views import yandex_view
 
 from core.forms import (
     CustomAuthentificationForm, CustomPasswordResetForm, CustomSetPasswordForm
@@ -88,4 +89,6 @@ urlpatterns = [
     path('translation/', include(translation.urls)),
     path('chart/', include(chart.urls)),
     path('news/', include(news.urls)),
+
+    path('yandex/', yandex_view, name='yandex_maps'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
