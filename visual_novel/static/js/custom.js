@@ -646,14 +646,8 @@ $(function () {
                     .addClass('alert-row')
                     .removeClass('editing-row-hidden');
             } else {
-                var return_data = data['data'];
-                edit_row.attr('betalink_title', return_data['title']);
-                edit_row.attr('betalink_url', return_data['url']);
-                edit_row.attr('betalink_comment', return_data['comment']);
-                edit_row.attr('betalink_approved', return_data['approved']);
-                edit_row.attr('betalink_rejected', return_data['rejected']);
-                edit_row.attr('data_translation_item', return_data['translation_item_id']);
-                edit_row = edit_row.collapseBetaLinkEdit().closeAlertRows();
+                /* TODO: Manually add betalink to page, without reload */
+                location.reload();
             }
         });
         return false;
