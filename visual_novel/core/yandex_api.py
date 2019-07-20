@@ -20,7 +20,6 @@ def addr_query_yandex(query):
         fields={
             "format": "json",
             "geocode": query,
-            "key": settings.YANDEX_API_KEY
         },
         headers={
             "Accept": "application/json",
