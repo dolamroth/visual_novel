@@ -3,7 +3,7 @@ from constance import config
 from collections import OrderedDict
 
 from rest_framework import serializers
-from rest_framework.fields import empty
+from rest_framework.fields import empty, SkipField
 from rest_framework.relations import PKOnlyObject
 
 from django.core.cache import caches
