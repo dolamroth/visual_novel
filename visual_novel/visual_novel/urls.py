@@ -18,18 +18,20 @@ import news.urls
 import offer_service.urls
 import translation.urls
 
+from core.sitemap import StaticViewsSitemap
 from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap, TranslatorSitemap
 from chart.sitemap import ChartItemSitemap
 from translation.sitemap import TranslationItemSitemap
 
 sitemaps = {
+    'static': StaticViewsSitemap,
     'genres': GenreSitemap,
     'tags': TagSitemap,
     'studios': StudioSitemap,
     'staff': StaffSitemap,
     'chart': ChartItemSitemap,
     'translations': TranslationItemSitemap,
-    'translators': TranslatorSitemap
+    'translators': TranslatorSitemap,
 }
 
 urlpatterns = [
@@ -79,7 +81,7 @@ urlpatterns = [
          {'http_domain': settings.VN_HTTP_DOMAIN}, name='robots'),
     path('favicon.ico', core_views.favicon, name='favicon'),
     path('google<str:google_key>.html', core_views.google_site_verification, name='google-site-verification'),
-    path('about', TemplateView.as_view(template_name="pages/about.html")),
+    path('about', TemplateView.as_view(template_name="pages/about.html"), name='about'),
 
     # Apps views
     path('offers/', include(offer_service.urls)),

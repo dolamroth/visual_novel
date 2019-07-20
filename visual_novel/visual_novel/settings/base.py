@@ -288,6 +288,7 @@ VK_APP_SECRET_KEY = get_secret(section='VK', setting='APP_SECRET_KEY')
 VK_API_KEY = get_secret(section='VK', setting='API_KEY')
 VK_GROUP_ID = get_secret(section='VK', setting='GROUP_ID')
 VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
+VK_API_KEY_MESSAGES = get_secret(section='VK', setting='API_KEY_MESSAGES')
 
 YANDEX_METRIKA_TOKEN = get_secret(section='YANDEX_METRICA_API', setting='TOKEN')
 YANDEX_METRIKA_CLIENT_ID = get_secret(section='YANDEX_METRICA_API', setting='CLIENT_ID')

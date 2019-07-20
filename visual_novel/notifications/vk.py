@@ -15,14 +15,15 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class VK(object):
-    def __init__(self,api_key=settings.VK_API_KEY):
+    def __init__(self,api_key=settings.VK_API_KEY, api_key_messages=settings.VK_API_KEY_MESSAGES):
         self.api_key = api_key
         self.api_url = 'https://api.vk.com/method/'
         self.METHOD = 'POST'
+        self.api_key_messages = api_key_messages
 
     def __execute_query(self, method, params_q):
         params = dict(params_q)
-        params['access_token'] = self.api_key
+        params['access_token'] = self.api_key_messages if method.find('message') else self.api_key
         params['v'] = VK_API_VERSION
         url = self.api_url + method
 
