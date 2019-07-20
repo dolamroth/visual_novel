@@ -23,7 +23,7 @@ class VK(object):
 
     def __execute_query(self, method, params_q):
         params = dict(params_q)
-        params['access_token'] = self.api_key_messages if method.find('message') else self.api_key
+        params['access_token'] = self.api_key_messages if method.find('message')>-1 else self.api_key
         params['v'] = VK_API_VERSION
         url = self.api_url + method
 

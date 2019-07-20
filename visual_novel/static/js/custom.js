@@ -598,20 +598,8 @@ $(function () {
                     .addClass('alert-row')
                     .removeClass('editing-row-hidden');
             } else {
-                var return_data = data['data'];
-                var example_row = $(".edit-betalink-example");
-                add_row.before( example_row.clone(true, true) );
-                var new_added_row = add_row.prev();
-                new_added_row.trigger('create');
-                new_added_row.attr('betalink_title', return_data['title']);
-                new_added_row.attr('betalink_url', return_data['url']);
-                new_added_row.attr('betalink_comment', return_data['comment']);
-                new_added_row.attr('betalink_approved', return_data['approved']);
-                new_added_row.attr('betalink_rejected', return_data['rejected']);
-                new_added_row.attr('data_translation_item', return_data['translation_item_id']);
-                new_added_row.attr('betalink_id', return_data['betalink_id']);
-                new_added_row = new_added_row.collapseBetaLinkEdit().closeAlertRows();
-                add_row.collapseBetaLinkAdd();
+                /* TODO: Manually add betalink to page, without reload */
+                location.reload();
             }
         });
 
