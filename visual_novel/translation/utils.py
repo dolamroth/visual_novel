@@ -6,10 +6,7 @@ def statistics_name(translation_item, base_level=0, script=True):
     add = ''
     if translation_item.is_chapter:
         add = 'font-weight: 700;'
-    name = '<span style="margin-left:{}em; {}">{}</span>'.format(
-        translation_item.get_level() - base_level,
-        add,
-        name)
+    name = f'<span style="margin-left:{translation_item.get_level() - base_level}em; {add}">{name}</span>'
     return name
 
 

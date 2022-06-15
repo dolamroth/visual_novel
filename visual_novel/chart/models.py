@@ -1,7 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
-from cinfo.models import Translator, TranslationLanguage
+from cinfo.translation_languages.models import TranslationLanguage
+from cinfo.translators.models import Translator
 from core.models import PublishModel
 from vn_core.models import VisualNovel, VNScreenshot
 
@@ -52,4 +53,4 @@ class ChartItemTranslator(models.Model):
         verbose_name_plural = 'Переводы новелл'
 
     def __str__(self):
-        return 'Перевод {} командой {}'.format(self.item.visual_novel.title, self.translator.title)
+        return f'Перевод {self.item.visual_novel.title} командой {self.translator.title}'

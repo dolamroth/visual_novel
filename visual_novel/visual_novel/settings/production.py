@@ -13,9 +13,7 @@ REDIS_DB = get_secret(section='REDIS', setting='DB')
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://{}:{}/{}".format(
-            REDIS_HOST, REDIS_PORT, REDIS_DB
-        ),
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }

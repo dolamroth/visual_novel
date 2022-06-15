@@ -12,7 +12,7 @@ from .errors import (
 from .utils import get_status_tuple_for_translation_item
 
 
-class TranslationExistsValidator(object):
+class TranslationExistsValidator:
     def validate_translation_exists(self, translation_item_id):
         try:
             return TranslationItem.objects.get(
@@ -24,7 +24,7 @@ class TranslationExistsValidator(object):
             raise TranslationNotFound()
 
 
-class TranslationChapterExistsValidator(object):
+class TranslationChapterExistsValidator:
     def validate_chapter_exists(self, chapter_id, translation_item):
         try:
             chapter = TranslationStatisticsChapter.objects.get(
@@ -36,7 +36,7 @@ class TranslationChapterExistsValidator(object):
             raise TranslationNotFound()
 
 
-class InputNumberValidator(object):
+class InputNumberValidator:
     def validate_numbers_input(self, total, translated, edited_first, edited_second, is_chapter):
 
         # Quantities of rows for chapters are recalculated outside the command
@@ -55,7 +55,7 @@ class InputNumberValidator(object):
         return
 
 
-class ParentExistsValidator(object):
+class ParentExistsValidator:
     def validate_parent_section_exists(self, translation_item, parent_id, move_to):
         parent_id = None if not parent_id else parent_id
         try:
@@ -70,7 +70,7 @@ class ParentExistsValidator(object):
         return parent
 
 
-class BetaLinkUrlValidator(object):
+class BetaLinkUrlValidator:
     def validate_betalink_url(self, url):
         try:
             URLValidator()(url)
@@ -78,7 +78,7 @@ class BetaLinkUrlValidator(object):
             raise InvalidBetaLinkUrl()
 
 
-class BetaLinkUrlUniqueValidator(object):
+class BetaLinkUrlUniqueValidator:
     def validate_betalink_url_unique(self, id, url):
         if TranslationBetaLink.objects.filter(
             url=url,
@@ -87,7 +87,7 @@ class BetaLinkUrlUniqueValidator(object):
             raise BetaLinkUrlAlreadyExists()
 
 
-class BetaLinkExistsValidator(object):
+class BetaLinkExistsValidator:
     def validate_betalink_exists(self, id):
         try:
             return TranslationBetaLink.objects.get(id=id)
@@ -95,7 +95,7 @@ class BetaLinkExistsValidator(object):
             raise BetaLinkDoesNotExist()
 
 
-class TranslationStatusExistsValidator(object):
+class TranslationStatusExistsValidator:
     def validate_translation_status_exists(self, status):
         try:
             return list(TranslationItem.status).index(status)
@@ -103,14 +103,14 @@ class TranslationStatusExistsValidator(object):
             raise TranslationStatusDoesNotExist()
 
 
-class TranslationCanBeEditedValidator(object):
+class TranslationCanBeEditedValidator:
     def validate_translation_can_be_edited(self, translation_item):
         status_tuple = get_status_tuple_for_translation_item(translation_item)
         if not status_tuple[6]:
             raise TranslationCannotBeEditedDueToStatus()
 
 
-class StatusIsNotTheSameValidator(object):
+class StatusIsNotTheSameValidator:
     def validate_status_is_not_the_same(self, translation_item, status_index):
         if translation_item.status.mask == 2 ** status_index:
             raise TranslationStatusCannotBeChangedToItself()

@@ -1,6 +1,5 @@
 import arrow
 
-from django.apps import apps
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Max
@@ -10,11 +9,10 @@ from django.urls import reverse
 from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey
 
-from cinfo.models import Translator
+from .choices import TRANSLATION_ITEMS_STATUSES
+from cinfo.translators.models import Translator
 from core.models import PublishModel, Profile
 from vn_core.models import VisualNovel
-
-from .choices import TRANSLATION_ITEMS_STATUSES
 
 TRANSLATION_ITEM_ACTIVE_BITCODE = 1
 
@@ -35,7 +33,7 @@ class TranslationStatistics(models.Model):
         db_table = 'statistics_item'
 
     def __str__(self):
-        return 'Статистика перевода {}'.format(self.tree_id)
+        return f'Статистика перевода {self.tree_id}'
 
 
 class TranslationStatisticsChapter(MPTTModel):
@@ -137,7 +135,7 @@ class TranslationItem(PublishModel):
         verbose_name_plural = 'Переводы'
 
     def __str__(self):
-        return 'Перевод {}'.format(self.visual_novel.title)
+        return f'Перевод {self.visual_novel.title}'
 
     def get_absolute_url(self):
         return reverse('translation_item', kwargs={'vn_alias': self.visual_novel.alias})

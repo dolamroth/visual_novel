@@ -1,6 +1,5 @@
 import os
 from bitfield import BitField
-from constance import config
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -11,7 +10,6 @@ import django.db.models.options as options
 from django.dispatch import receiver
 
 from timezone_field import TimeZoneField
-from notifications.vk import VK
 
 ALL_WEEKDAYS_BITMAP = 127
 

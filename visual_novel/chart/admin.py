@@ -8,6 +8,7 @@ class ChartItemTranslatorInline(admin.TabularInline):
     model = ChartItemTranslator
     extra = 3
 
+
 class ScreenshotInline(admin.TabularInline):
     def image_tag(self, obj):
         return format_html('<img src="%s" width="150" height="auto" />' % obj.image.url if obj.image else '')

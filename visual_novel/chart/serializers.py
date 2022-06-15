@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from constance import config
 from collections import OrderedDict
 
@@ -33,7 +33,7 @@ class ChartItemGenreSerializer(serializers.Serializer):
         return obj.genre.title
 
     def get_link(self, obj):
-        return os.path.join('/chart/', 'genre', obj.genre.alias)
+        return Path('/chart/', 'genre', obj.genre.alias)
 
     def get_description(self, obj):
         self.description = obj.genre.description
@@ -64,7 +64,7 @@ class ChartItemStudioSerializer(serializers.Serializer):
         return obj.studio.title
 
     def get_link(self, obj):
-        return os.path.join('/chart/', 'studio', obj.studio.alias)
+        return Path('/chart/', 'studio', obj.studio.alias)
 
     def get_description(self, obj):
         self.description = obj.studio.description
@@ -96,7 +96,7 @@ class ChartItemListSerializer(serializers.Serializer):
     studios = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
-        ret = cache.get('chart_item_{}'.format(instance.visual_novel.alias))
+        ret = cache.get(f'chart_item_{instance.visual_novel.alias}')
         if ret:
             return ret
 
@@ -115,7 +115,7 @@ class ChartItemListSerializer(serializers.Serializer):
             else:
                 ret[field.field_name] = field.to_representation(attribute)
 
-        cache.set('chart_item_{}'.format(instance.visual_novel.alias), ret, config.REDIS_CACHE_TIME_LIFE)
+        cache.set(f'chart_item_{instance.visual_novel.alias}', ret, config.REDIS_CACHE_TIME_LIFE)
         return ret
 
     def get_title(self, obj):
@@ -134,7 +134,7 @@ class ChartItemListSerializer(serializers.Serializer):
         return obj.visual_novel.vndb_id
 
     def get_chart_link(self, obj):
-        return os.path.join('/chart/', obj.visual_novel.alias)
+        return Path('/chart/', obj.visual_novel.alias)
 
     def get_vndb_mark(self, obj):
         return obj.visual_novel.get_rate()

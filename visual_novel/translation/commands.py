@@ -6,9 +6,6 @@ from django.conf import settings
 from django.template import loader
 from django.urls import reverse
 
-from core.commands import Command
-from notifications.vk import VK
-
 from .mixins import (
     TranslationChapterExistsValidator,
     TranslationExistsValidator,
@@ -24,6 +21,8 @@ from .mixins import (
 
 from .errors import InvalidMoveToChildElement, TranslationNotFound, InvalidMoveParent, CannotBeSiblingOfBaseTreeNode
 from .models import TranslationStatisticsChapter, TranslationBetaLink
+from core.commands import Command
+from notifications.vk import VK
 
 
 class EditTranslationPartChapter(

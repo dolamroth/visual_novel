@@ -1,10 +1,7 @@
 import urllib3
 import json
 import logging
-import time
 from timeit import default_timer as timer
-
-from django.conf import settings
 
 
 def addr_query_yandex(query):
@@ -28,7 +25,6 @@ def addr_query_yandex(query):
     )
     end = timer()
 
-    yandex_logger.info('Query to yandex with query "{}" took {} seconds to proceed with status {}'
-                       .format(query, end - start, r.status))
+    yandex_logger.info(f'Query to yandex with query "{query}" took {end - start} seconds to proceed with status {r.status}')
 
     return json.loads(r.data.decode('utf-8'))

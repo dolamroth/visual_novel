@@ -1,10 +1,11 @@
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
+from django.utils.deprecation import MiddlewareMixin
 
-from translation.models import TranslationItem
+from .admin import TranslationItem
 
 
-class HasPermissionToEditVNMiddleware(object):
+class HasPermissionToEditVNMiddleware(MiddlewareMixin):
     def process_view(self, request, view_func, view_args, view_kwargs):
         vn_alias = view_kwargs.get('vn_alias', None)
         try:
