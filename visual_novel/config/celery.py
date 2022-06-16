@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from celery import Celery
 
-app = Celery('visual_novel')
+app = Celery('config')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

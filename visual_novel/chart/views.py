@@ -2,31 +2,50 @@ import os
 
 from constance import config
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.urls import reverse
 from django.core.cache import caches
+from django.core.exceptions import ObjectDoesNotExist
 
 from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
 from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
 
 from core.utils import printable_russian_date
 
-from .models import ChartItem, ChartItemTranslator
+from .models import ChartItem, ChartItemTranslator, ChartItemToUser
 from .serializers import ChartItemListSerializer
+
 
 cache = caches['default']
 
 
-def chart_index_page(
-        request,
-        genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None,
-        translator_alias=None
-    ):
+def add_favorite_chart(request, vn_title: str):
+    try:
+        user = ChartItemToUser.objects.get(user__id=request.user.id)
+    except ObjectDoesNotExist as error:
+        print(error)
+        user = ChartItemToUser.objects.create(user=request.user)
+    new_vn = ChartItem.objects.get(visual_novel__title=vn_title)
+    user.chart_item.add(new_vn)
+    return HttpResponseRedirect('/chart')
+
+
+def remove_favorite_chart(request, vn_title: str):
+    user = ChartItemToUser.objects.get(user_id__id=request.user.id)
+    new_vn = ChartItem.objects.get(visual_novel__title=vn_title)
+    user.chart_item.remove(new_vn)
+    return redirect('/chart/favorites')
+
+
+def chart_context(
+        request, genre_alias, tag_alias, studio_alias, staff_alias, duration_alias,
+        translator_alias, title, additional_breadcumb
+    ) -> dict:
     context = dict()
-    context['additional_breadcumb'] = '&nbsp;&#47; Чарт'
-    chart_breadcumb_with_link = '&nbsp;&#47; <a href="/chart/">Чарт</a>&nbsp;&#47; '
+    context['additional_breadcumb'] = f'&nbsp;&#47; {additional_breadcumb}'
+    chart_breadcumb_with_link = f'&nbsp;&#47; <a href="/chart/">{additional_breadcumb}</a>&nbsp;&#47; '
     context['additional_description'] = ''
 
     rows = list()
@@ -41,6 +60,17 @@ def chart_index_page(
     context['all_durations'] = Longevity.objects.filter(is_published=True).order_by('max_length').values()
     context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
     context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
+
+    try:
+        favorites_charts = ChartItemToUser.objects.get(user__id=request.user.id)
+    except ObjectDoesNotExist:
+        favorites_charts = ChartItemToUser.objects.create(user=request.user)
+    favorites_charts = [chart.visual_novel for chart in favorites_charts.chart_item.all()]
+
+    if additional_breadcumb == 'Избранное':
+        all_chart_items = all_chart_items.filter(visual_novel__in=favorites_charts)
+    else:
+        context['added_favorites_items'] = [chart_item.title for chart_item in favorites_charts]
 
     # Optional endpoint parameters
     if genre_alias:
@@ -95,13 +125,13 @@ def chart_index_page(
         all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
             duration = Longevity.objects.get(alias=duration_alias)
-            cache_key += '_duration_{}'.format(duration_alias)
+            cache_key += f'_duration_{duration_alias}'
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
             pass
 
     if translator_alias:
-        translators_ids = ChartItemTranslator.objects.filter(translator__alias=translator_alias)\
+        translators_ids = ChartItemTranslator.objects.filter(translator__alias=translator_alias) \
             .values_list('item__id', flat=True)
         all_chart_items = all_chart_items.filter(id__in=translators_ids)
         try:
@@ -114,9 +144,7 @@ def chart_index_page(
                 if translator.description:
                     translator_description.append(translator.description)
                 if translator.url:
-                    translator_description.append('<a href="{}">Ссылка на сайт переводчика.</a>'.format(
-                        translator.url
-                    ))
+                    translator_description.append(f'<a href="{translator.url}">Ссылка на сайт переводчика.</a>')
                 context['additional_description'] = '<br /><br />'.join(translator_description)
 
         except Translator.DoesNotExist:
@@ -151,7 +179,7 @@ def chart_index_page(
     context['rate_icon'] = ''
     context['date_of_release'] = '-visual_novel__date_of_release'
     context['date_of_release_icon'] = ''
-    context['title'] = 'visual_novel__title'
+    context['title'] = title
     context['title_icon'] = ''
     context['popularity'] = '-visual_novel__popularity'
     context['popularity_icon'] = ''
@@ -160,12 +188,12 @@ def chart_index_page(
     if sort_by and sort_by in all_sortings:
         all_chart_items = all_chart_items.order_by(sort_by)
         idx = all_sortings.index(sort_by)
-        context['date_of_translation_icon'] = '' # Removing icon for default sort in order to prevent multiple icons
+        context['date_of_translation_icon'] = ''  # Removing icon for default sort in order to prevent multiple icons
         context[all_sortings_context_links[idx][0]] = all_sortings_context_links[idx][1]
         context[all_sortings_context_links[idx][0] + '_icon'] = all_sortings_context_links[idx][2]
         cache_key += '_sort_{}'.format(sort_by)
     else:
-        cache_key += '_sort_{}'.format(base_sort_by)
+        cache_key += f'_sort_{base_sort_by}'
         all_chart_items = all_chart_items.order_by(base_sort_by)
 
     all_chart_items_data = cache.get(cache_key)
@@ -176,7 +204,15 @@ def chart_index_page(
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
+
+    if additional_breadcumb == 'Избранное':
+        all_chart_items_title = [chart_item.visual_novel.title for chart_item in all_chart_items]
+        for chart_item in all_chart_items_data.copy():
+            if chart_item.get('title') not in all_chart_items_title:
+                all_chart_items_data.remove(chart_item)
+
     for chart_item in all_chart_items_data:
+        print(chart_item.get('title'))
         row.append(chart_item)
         k += 1
         if k % max_vn_by_row == 0:
@@ -189,9 +225,35 @@ def chart_index_page(
     context['rows'] = rows
     context['no_rows'] = (len(context['rows']) == 0)
     if context['no_rows']:
-        context['additional_breadcumb'] = '&nbsp;&#47;&nbsp;<a href="/chart/">Чарт</a>'
+        context['additional_breadcumb'] = f'&nbsp;&#47;&nbsp;<a href="/chart/">{additional_breadcumb}</a>'
 
+    return context
+
+
+def chart_index_page(
+        request,
+        genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None,
+        translator_alias=None
+    ):
+    context = chart_context(
+        request,
+        genre_alias=genre_alias, tag_alias=tag_alias, studio_alias=studio_alias, staff_alias=staff_alias,
+        duration_alias=duration_alias, translator_alias=translator_alias, title='Чарт визуальных новелл', additional_breadcumb='Чарт'
+    )
     return render(request, 'chart/index.html', context)
+
+
+def chart_favorite_page(
+        request,
+        genre_alias=None, tag_alias=None, studio_alias=None, staff_alias=None, duration_alias=None,
+        translator_alias=None
+    ):
+    context = chart_context(
+        request,
+        genre_alias=genre_alias, tag_alias=tag_alias, studio_alias=studio_alias, staff_alias=staff_alias,
+        duration_alias=duration_alias, translator_alias=translator_alias, title='Избранные новеллы', additional_breadcumb='Избранное'
+    )
+    return render(request, 'chart/favorites.html', context)
 
 
 def chart_page(request, vn_alias):

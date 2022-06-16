@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator
+from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator, ChartItemToUser
 
 
 class ChartItemTranslatorInline(admin.TabularInline):
@@ -32,4 +32,9 @@ class ChartItemAdmin(admin.ModelAdmin):
     )
 
 
+class ChartItemToUserAdmin(admin.ModelAdmin):
+    filter_horizontal = ('chart_item',)
+
+
 admin.site.register(ChartItem, ChartItemAdmin)
+admin.site.register(ChartItemToUser, ChartItemToUserAdmin)

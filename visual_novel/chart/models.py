@@ -5,6 +5,7 @@ from cinfo.translation_languages.models import TranslationLanguage
 from cinfo.translators.models import Translator
 from core.models import PublishModel
 from vn_core.models import VisualNovel, VNScreenshot
+from django.contrib.auth.models import User
 
 
 class ChartItem(PublishModel):
@@ -37,7 +38,7 @@ class ChartItemScreenshot(VNScreenshot):
         verbose_name_plural = 'Скриншоты'
 
     def __str__(self):
-        return 'Скриншот для {}'.format(self.item.visual_novel.title)
+        return f'Скриншот для {self.item.visual_novel.title}'
 
 
 class ChartItemTranslator(models.Model):
@@ -54,3 +55,15 @@ class ChartItemTranslator(models.Model):
 
     def __str__(self):
         return f'Перевод {self.item.visual_novel.title} командой {self.translator.title}'
+
+
+class ChartItemToUser(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    chart_item = models.ManyToManyField(ChartItem, verbose_name='Итемы чарта')
+
+    class Meta:
+        verbose_name = 'Избранные новеллы'
+        verbose_name_plural = 'Избранные новеллы'
+
+    def __str__(self):
+        return f'user {self.user_id}'

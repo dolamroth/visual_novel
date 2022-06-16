@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block title %}
-    Чарт визуальных новелл
+    {{ title }}
 {% endblock %}
 
 {% block content %}
@@ -71,12 +71,18 @@
                                 <a href="{{ visual_novel.chart_link }}" class="btn btn-xs btn-primary">Подробнее</a>
                                 <a href="https://vndb.org/v{{ visual_novel.vndb_id }}" class="btn btn-xs btn-default" target="_blank">VNDb&nbsp;&nbsp;<i class="glyphicon glyphicon-share"></i></a>
                             </div>
+                            {% if visual_novel.title not in added_favorites_items %}
+                                <div class="p-main-vn-links btn-group btn-group-justified">
+                                    <a href="{% url 'chart:chart_favorites_add' visual_novel.title %}" class="btn btn-xs btn-primary">Добавить в избранное</a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endfor %}
+
     {% if no_rows %}
         <div class="row text-center">
             <h4>По вашему запросу ничего не найдено.</h4>

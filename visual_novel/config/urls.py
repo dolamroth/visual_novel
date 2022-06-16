@@ -24,6 +24,8 @@ from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap,
 from chart.sitemap import ChartItemSitemap
 from translation.sitemap import TranslationItemSitemap
 
+from chart.views import chart_favorite_page
+
 sitemaps = {
     'static': StaticViewsSitemap,
     'genres': GenreSitemap,
@@ -87,6 +89,7 @@ urlpatterns = [
     # Apps views
     path('offers/', include(offer_service.urls)),
     path('translation/', include(translation.urls)),
+    path('chart/favorites', chart_favorite_page, name='chart_favorites'),
     path('chart/', include(chart.urls)),
     path('news/', include(news.urls)),
 

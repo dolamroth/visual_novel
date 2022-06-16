@@ -1,4 +1,5 @@
-from pathlib import Path
+import os
+
 from constance import config
 from collections import OrderedDict
 
@@ -33,7 +34,7 @@ class ChartItemGenreSerializer(serializers.Serializer):
         return obj.genre.title
 
     def get_link(self, obj):
-        return Path('/chart/', 'genre', obj.genre.alias)
+        return os.path.join('/chart/', 'genre', obj.genre.alias)
 
     def get_description(self, obj):
         self.description = obj.genre.description
@@ -64,7 +65,7 @@ class ChartItemStudioSerializer(serializers.Serializer):
         return obj.studio.title
 
     def get_link(self, obj):
-        return Path('/chart/', 'studio', obj.studio.alias)
+        return os.path.join('/chart/', 'studio', obj.studio.alias)
 
     def get_description(self, obj):
         self.description = obj.studio.description
@@ -134,7 +135,7 @@ class ChartItemListSerializer(serializers.Serializer):
         return obj.visual_novel.vndb_id
 
     def get_chart_link(self, obj):
-        return Path('/chart/', obj.visual_novel.alias)
+        return os.path.join('/chart/', obj.visual_novel.alias)
 
     def get_vndb_mark(self, obj):
         return obj.visual_novel.get_rate()
