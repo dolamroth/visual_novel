@@ -12,8 +12,8 @@ class ChartItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT, verbose_name='Визуальная новелла')
     date_of_translation = models.DateField(verbose_name='дата перевода на русский (первого)')
     comment = models.TextField(verbose_name='комментарий', max_length=5000, default='', blank=True)
-    translations = models.ManyToManyField(Translator, through='ChartItemTranslator',
-                                          blank=True, verbose_name='Переводы')
+    translations = models.ManyToManyField(Translator, through='ChartItemTranslator', blank=True, verbose_name='Переводы')
+    favorites = models.ManyToManyField(User, through='ChartItemToUser', )
 
     class Meta:
         db_table = 'chart_items'
@@ -59,11 +59,11 @@ class ChartItemTranslator(models.Model):
 
 class ChartItemToUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    chart_item = models.ManyToManyField(ChartItem, verbose_name='Итемы чарта')
+    chart_item = models.ForeignKey(ChartItem, on_delete=models.CASCADE, verbose_name='Итем чарта')
 
     class Meta:
         verbose_name = 'Избранные новеллы'
         verbose_name_plural = 'Избранные новеллы'
 
     def __str__(self):
-        return f'user {self.user_id}'
+        return f'{self.user.id} - {self.chart_item.visual_novel.title}'

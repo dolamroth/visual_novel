@@ -13,7 +13,6 @@ urlpatterns = [
     path('duration/<str:duration_alias>', chart_views.chart_index_page, name='chart_index_with_duration'),
     path('translator/<str:translator_alias>', chart_views.chart_index_page, name='chart_index_with_translator'),
 
-    # path('favorites/', chart_views.chart_favorite_page, name='chart_favorites'),
     path('favorites/add/<str:vn_title>', chart_views.add_favorite_chart, name='chart_favorites_add'),
     path('favorites/remove/<str:vn_title>', chart_views.remove_favorite_chart, name='chart_favorites_remove'),
     path('favorites/genre/<str:genre_alias>', chart_views.chart_favorite_page, name='chart_index_with_genre'),

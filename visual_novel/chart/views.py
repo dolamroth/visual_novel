@@ -1,13 +1,14 @@
 import os
+from pprint import pprint
 
 from constance import config
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.conf import settings
-from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.core.cache import caches
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import OuterRef, Exists, Count
 
 from vn_core.models import VNGenre, VNTag, VNStudio, VNStaff
 from cinfo.models import Genre, Tag, Studio, Staff, Longevity, Translator
@@ -22,21 +23,16 @@ cache = caches['default']
 
 
 def add_favorite_chart(request, vn_title: str):
-    try:
-        user = ChartItemToUser.objects.get(user__id=request.user.id)
-    except ObjectDoesNotExist as error:
-        print(error)
-        user = ChartItemToUser.objects.create(user=request.user)
-    new_vn = ChartItem.objects.get(visual_novel__title=vn_title)
-    user.chart_item.add(new_vn)
+    chart_item = ChartItem.objects.get(visual_novel__title=vn_title)
+    user, _ = ChartItemToUser.objects.get_or_create(user=request.user, chart_item=chart_item)
     return HttpResponseRedirect('/chart')
 
 
 def remove_favorite_chart(request, vn_title: str):
-    user = ChartItemToUser.objects.get(user_id__id=request.user.id)
-    new_vn = ChartItem.objects.get(visual_novel__title=vn_title)
-    user.chart_item.remove(new_vn)
-    return redirect('/chart/favorites')
+    ChartItemToUser.objects.filter(user__id=request.user.id, chart_item__visual_novel__title=vn_title).delete()
+    if request.META['HTTP_REFERER'].split('/')[-2] == 'chart':
+        return HttpResponseRedirect('/chart')
+    return HttpResponseRedirect('/chart/favorites')
 
 
 def chart_context(
@@ -52,7 +48,10 @@ def chart_context(
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
     # Lazy computed, so no caching here
-    all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
+    user_favorites_charts = ChartItemToUser.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
+    all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)\
+                                       .annotate(is_favorite=Exists(user_favorites_charts))
+
     cache_key = 'chart'
 
     context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
@@ -61,17 +60,6 @@ def chart_context(
     context['all_studios'] = Studio.objects.filter(is_published=True).order_by('title').values()
     context['all_staff'] = Staff.objects.filter(is_published=True).order_by('title').values()
 
-    try:
-        favorites_charts = ChartItemToUser.objects.get(user__id=request.user.id)
-    except ObjectDoesNotExist:
-        favorites_charts = ChartItemToUser.objects.create(user=request.user)
-    favorites_charts = [chart.visual_novel for chart in favorites_charts.chart_item.all()]
-
-    if additional_breadcumb == 'Избранное':
-        all_chart_items = all_chart_items.filter(visual_novel__in=favorites_charts)
-    else:
-        context['added_favorites_items'] = [chart_item.title for chart_item in favorites_charts]
-
     # Optional endpoint parameters
     if genre_alias:
         vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
@@ -79,7 +67,7 @@ def chart_context(
         try:
             genre = Genre.objects.get(alias=genre_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
-            cache_key += '_genre_{}'.format(genre_alias)
+            cache_key += f'_genre_{genre_alias}'
             if genre.description:
                 context['additional_description'] = genre.description
         except Genre.DoesNotExist:
@@ -103,7 +91,7 @@ def chart_context(
         try:
             studio = Studio.objects.get(alias=studio_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
-            cache_key += '_studio_{}'.format(studio_alias)
+            cache_key += f'_studio_{studio_alias}'
             if studio.description:
                 context['additional_description'] = studio.description
         except Studio.DoesNotExist:
@@ -134,6 +122,7 @@ def chart_context(
         translators_ids = ChartItemTranslator.objects.filter(translator__alias=translator_alias) \
             .values_list('item__id', flat=True)
         all_chart_items = all_chart_items.filter(id__in=translators_ids)
+
         try:
             translator = Translator.objects.get(alias=translator_alias)
             cache_key += '_translator_{}'.format(translator_alias)
@@ -191,28 +180,21 @@ def chart_context(
         context['date_of_translation_icon'] = ''  # Removing icon for default sort in order to prevent multiple icons
         context[all_sortings_context_links[idx][0]] = all_sortings_context_links[idx][1]
         context[all_sortings_context_links[idx][0] + '_icon'] = all_sortings_context_links[idx][2]
-        cache_key += '_sort_{}'.format(sort_by)
+        cache_key += f'_sort_{sort_by}'
     else:
         cache_key += f'_sort_{base_sort_by}'
         all_chart_items = all_chart_items.order_by(base_sort_by)
 
-    all_chart_items_data = cache.get(cache_key)
-    if all_chart_items_data is None:
-        all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
-        cache.set(cache_key, all_chart_items_data, config.REDIS_CACHE_TIME_LIFE)
+    if additional_breadcumb == 'Избранное':
+        all_chart_items = all_chart_items.filter(is_favorite=True)
+
+    all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
 
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
     row = list()
 
-    if additional_breadcumb == 'Избранное':
-        all_chart_items_title = [chart_item.visual_novel.title for chart_item in all_chart_items]
-        for chart_item in all_chart_items_data.copy():
-            if chart_item.get('title') not in all_chart_items_title:
-                all_chart_items_data.remove(chart_item)
-
     for chart_item in all_chart_items_data:
-        print(chart_item.get('title'))
         row.append(chart_item)
         k += 1
         if k % max_vn_by_row == 0:
@@ -251,7 +233,7 @@ def chart_favorite_page(
     context = chart_context(
         request,
         genre_alias=genre_alias, tag_alias=tag_alias, studio_alias=studio_alias, staff_alias=staff_alias,
-        duration_alias=duration_alias, translator_alias=translator_alias, title='Избранные новеллы', additional_breadcumb='Избранное'
+        duration_alias=duration_alias, translator_alias=translator_alias, title='Избранное', additional_breadcumb='Избранное'
     )
     return render(request, 'chart/favorites.html', context)
 

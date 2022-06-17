@@ -71,9 +71,14 @@
                                 <a href="{{ visual_novel.chart_link }}" class="btn btn-xs btn-primary">Подробнее</a>
                                 <a href="https://vndb.org/v{{ visual_novel.vndb_id }}" class="btn btn-xs btn-default" target="_blank">VNDb&nbsp;&nbsp;<i class="glyphicon glyphicon-share"></i></a>
                             </div>
-                            {% if visual_novel.title not in added_favorites_items %}
+
+                            {% if visual_novel.is_favorite %}
                                 <div class="p-main-vn-links btn-group btn-group-justified">
-                                    <a href="{% url 'chart:chart_favorites_add' visual_novel.title %}" class="btn btn-xs btn-primary">Добавить в избранное</a>
+                                    <a href="{% url 'chart:chart_favorites_remove' visual_novel.title %}" class="btn btn-xs btn-primary">Удалить <i class="glyphicon glyphicon-remove"></i></a>
+                                </div>
+                            {% else %}
+                                <div class="p-main-vn-links btn-group btn-group-justified">
+                                    <a href="{% url 'chart:chart_favorites_add' visual_novel.title %}" class="btn btn-xs btn-primary">Добавить в избранное <i class="glyphicon glyphicon-star"></i></a>
                                 </div>
                             {% endif %}
                         </div>

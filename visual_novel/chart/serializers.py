@@ -83,7 +83,7 @@ class ChartItemListSerializer(serializers.Serializer):
     class Meta:
         model = ChartItem
         fields = ('title', 'poster_url', 'description', 'alias', 'genres', 'vndb_id', 'vndb_id', 'chart_link',
-                  'vndb_mark', 'vndb_popularity', 'studios', )
+                  'vndb_mark', 'vndb_popularity', 'studios', 'is_favorite',)
 
     title = serializers.SerializerMethodField()
     poster_url = serializers.SerializerMethodField()
@@ -95,29 +95,7 @@ class ChartItemListSerializer(serializers.Serializer):
     vndb_mark = serializers.SerializerMethodField()
     vndb_popularity = serializers.SerializerMethodField()
     studios = serializers.SerializerMethodField()
-
-    def to_representation(self, instance):
-        ret = cache.get(f'chart_item_{instance.visual_novel.alias}')
-        if ret:
-            return ret
-
-        ret = OrderedDict()
-        fields = self._readable_fields
-
-        for field in fields:
-            try:
-                attribute = field.get_attribute(instance)
-            except SkipField:
-                continue
-
-            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
-            if check_for_none is None:
-                ret[field.field_name] = None
-            else:
-                ret[field.field_name] = field.to_representation(attribute)
-
-        cache.set(f'chart_item_{instance.visual_novel.alias}', ret, config.REDIS_CACHE_TIME_LIFE)
-        return ret
+    is_favorite = serializers.BooleanField()
 
     def get_title(self, obj):
         return obj.visual_novel.title

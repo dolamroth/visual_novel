@@ -33,7 +33,7 @@ class ChartItemAdmin(admin.ModelAdmin):
 
 
 class ChartItemToUserAdmin(admin.ModelAdmin):
-    filter_horizontal = ('chart_item',)
+    pass
 
 
 admin.site.register(ChartItem, ChartItemAdmin)
