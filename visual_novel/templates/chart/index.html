@@ -45,7 +45,7 @@
                                 <span class="sh-desc">Жанры:&nbsp;</span>
                                 {% for genre in visual_novel.genres %}
                                     {% if genre.has_description %}
-                                        <a href="{{ genre.link }}" class="tooltip" data-tooltip-content="#{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.title|safe }}<span class="tooltip_templates"><span id="{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.description|safe }}</span></span>{% include "includes/comma.html" %}
+                                        <a href="{{ genre.link }}" class="tooltip" data-tooltip-content="#{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.title|safe }}<span class="tooltip_templates"></span><span id="{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.description|safe }}</span></a>{% include "includes/comma.html" %}
                                     {% else %}
                                         <a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}
                                     {% endif %}

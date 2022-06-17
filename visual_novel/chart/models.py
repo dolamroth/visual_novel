@@ -64,6 +64,9 @@ class ChartItemToUser(models.Model):
     class Meta:
         verbose_name = 'Избранные новеллы'
         verbose_name_plural = 'Избранные новеллы'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'chart_item'], name='favorite')
+        ]
 
     def __str__(self):
         return f'{self.user.id} - {self.chart_item.visual_novel.title}'

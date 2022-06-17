@@ -25,14 +25,12 @@ cache = caches['default']
 def add_favorite_chart(request, vn_title: str):
     chart_item = ChartItem.objects.get(visual_novel__title=vn_title)
     user, _ = ChartItemToUser.objects.get_or_create(user=request.user, chart_item=chart_item)
-    return HttpResponseRedirect('/chart')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def remove_favorite_chart(request, vn_title: str):
     ChartItemToUser.objects.filter(user__id=request.user.id, chart_item__visual_novel__title=vn_title).delete()
-    if request.META['HTTP_REFERER'].split('/')[-2] == 'chart':
-        return HttpResponseRedirect('/chart')
-    return HttpResponseRedirect('/chart/favorites')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def chart_context(

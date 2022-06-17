@@ -25,16 +25,17 @@ class ScreenshotInline(admin.TabularInline):
         return qs.exclude(image__exact='')
 
 
+class ChartItemToUserInline(admin.TabularInline):
+    model = ChartItemToUser
+    extra = 3
+
+
 class ChartItemAdmin(admin.ModelAdmin):
-    inlines = (ScreenshotInline, ChartItemTranslatorInline, )
+    inlines = (ChartItemToUserInline, ChartItemTranslatorInline, ScreenshotInline, )
     list_display = (
         'visual_novel', 'is_published', 'date_of_translation'
     )
 
 
-class ChartItemToUserAdmin(admin.ModelAdmin):
-    pass
-
-
 admin.site.register(ChartItem, ChartItemAdmin)
-admin.site.register(ChartItemToUser, ChartItemToUserAdmin)
+
