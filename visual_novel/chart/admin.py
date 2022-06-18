@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator
+from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator, ChartItemToUser
 
 
 class ChartItemTranslatorInline(admin.TabularInline):
@@ -25,11 +25,17 @@ class ScreenshotInline(admin.TabularInline):
         return qs.exclude(image__exact='')
 
 
+class ChartItemToUserInline(admin.TabularInline):
+    model = ChartItemToUser
+    extra = 3
+
+
 class ChartItemAdmin(admin.ModelAdmin):
-    inlines = (ScreenshotInline, ChartItemTranslatorInline, )
+    inlines = (ChartItemToUserInline, ChartItemTranslatorInline, ScreenshotInline, )
     list_display = (
         'visual_novel', 'is_published', 'date_of_translation'
     )
 
 
 admin.site.register(ChartItem, ChartItemAdmin)
+

@@ -5,14 +5,15 @@ from cinfo.translation_languages.models import TranslationLanguage
 from cinfo.translators.models import Translator
 from core.models import PublishModel
 from vn_core.models import VisualNovel, VNScreenshot
+from django.contrib.auth.models import User
 
 
 class ChartItem(PublishModel):
     visual_novel = models.ForeignKey(VisualNovel, on_delete=models.PROTECT, verbose_name='Визуальная новелла')
     date_of_translation = models.DateField(verbose_name='дата перевода на русский (первого)')
     comment = models.TextField(verbose_name='комментарий', max_length=5000, default='', blank=True)
-    translations = models.ManyToManyField(Translator, through='ChartItemTranslator',
-                                          blank=True, verbose_name='Переводы')
+    translations = models.ManyToManyField(Translator, through='ChartItemTranslator', blank=True, verbose_name='Переводы')
+    favorites = models.ManyToManyField(User, through='ChartItemToUser', )
 
     class Meta:
         db_table = 'chart_items'
@@ -37,7 +38,7 @@ class ChartItemScreenshot(VNScreenshot):
         verbose_name_plural = 'Скриншоты'
 
     def __str__(self):
-        return 'Скриншот для {}'.format(self.item.visual_novel.title)
+        return f'Скриншот для {self.item.visual_novel.title}'
 
 
 class ChartItemTranslator(models.Model):
@@ -54,3 +55,18 @@ class ChartItemTranslator(models.Model):
 
     def __str__(self):
         return f'Перевод {self.item.visual_novel.title} командой {self.translator.title}'
+
+
+class ChartItemToUser(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    chart_item = models.ForeignKey(ChartItem, on_delete=models.CASCADE, verbose_name='Итем чарта')
+
+    class Meta:
+        verbose_name = 'Избранные новеллы'
+        verbose_name_plural = 'Избранные новеллы'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'chart_item'], name='favorite')
+        ]
+
+    def __str__(self):
+        return f'{self.user.id} - {self.chart_item.visual_novel.title}'

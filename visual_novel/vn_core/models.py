@@ -4,7 +4,7 @@ from PIL import Image
 from django.conf import settings
 from django.db import models
 
-from core.models import PublishModel, PublishFileModel
+from core.models import PublishFileModel
 from core.fields import ImageFieldWithEnhancedUploadTo
 from cinfo.models import Longevity, Genre, Tag, Studio, Staff, StaffRole
 
@@ -86,7 +86,7 @@ class VisualNovelStats(models.Model):
         verbose_name_plural = 'Оценки визуальных новелл'
 
     def __str__(self):
-        return 'Оценка для {}'.format(self.visual_novel.title)
+        return f'Оценка для {self.visual_novel.title}'
 
 
 class VNGenre(models.Model):

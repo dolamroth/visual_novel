@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block title %}
-    Чарт визуальных новелл
+    {{ title }}
 {% endblock %}
 
 {% block content %}
@@ -45,7 +45,7 @@
                                 <span class="sh-desc">Жанры:&nbsp;</span>
                                 {% for genre in visual_novel.genres %}
                                     {% if genre.has_description %}
-                                        <a href="{{ genre.link }}" class="tooltip" data-tooltip-content="#{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.title|safe }}<span class="tooltip_templates"><span id="{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.description|safe }}</span></span>{% include "includes/comma.html" %}
+                                        <a href="{{ genre.link }}" class="tooltip" data-tooltip-content="#{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.title|safe }}<span class="tooltip_templates"></span><span id="{{ visual_novel.alias }}{{ genre.alias }}">{{ genre.description|safe }}</span></a>{% include "includes/comma.html" %}
                                     {% else %}
                                         <a href="{{ genre.link }}">{{ genre.title|safe }}</a>{% include "includes/comma.html" %}
                                     {% endif %}
@@ -71,12 +71,23 @@
                                 <a href="{{ visual_novel.chart_link }}" class="btn btn-xs btn-primary">Подробнее</a>
                                 <a href="https://vndb.org/v{{ visual_novel.vndb_id }}" class="btn btn-xs btn-default" target="_blank">VNDb&nbsp;&nbsp;<i class="glyphicon glyphicon-share"></i></a>
                             </div>
+
+                            {% if visual_novel.is_favorite %}
+                                <div class="p-main-vn-links btn-group btn-group-justified">
+                                    <a href="{% url 'chart:chart_favorites_remove' visual_novel.title %}" class="btn btn-xs btn-primary">Удалить <i class="glyphicon glyphicon-remove"></i></a>
+                                </div>
+                            {% else %}
+                                <div class="p-main-vn-links btn-group btn-group-justified">
+                                    <a href="{% url 'chart:chart_favorites_add' visual_novel.title %}" class="btn btn-xs btn-primary">Добавить в избранное <i class="glyphicon glyphicon-star"></i></a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endfor %}
+
     {% if no_rows %}
         <div class="row text-center">
             <h4>По вашему запросу ничего не найдено.</h4>

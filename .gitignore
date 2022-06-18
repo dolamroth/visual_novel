@@ -115,6 +115,6 @@ secrets.json
 **/static/admin
 **/static/rest_framework
 
-**/visual_novel/wsgi.py
+visual_novel/config/wsgi.py
 **/favicon.ico
 **/google*.html
