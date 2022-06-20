@@ -1,19 +1,12 @@
 import os
 
-from constance import config
-from collections import OrderedDict
-
 from rest_framework import serializers
-from rest_framework.fields import empty, SkipField
-from rest_framework.relations import PKOnlyObject
+from rest_framework.fields import empty
 
 from django.core.cache import caches
 from django.conf import settings
 
 from .models import ChartItem
-
-
-cache = caches['default']
 
 
 class ChartItemGenreSerializer(serializers.Serializer):
