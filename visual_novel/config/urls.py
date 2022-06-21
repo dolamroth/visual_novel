@@ -41,6 +41,9 @@ urlpatterns = [
     # Admin panel views
     path('admin/', admin.site.urls),
 
+    # debug_toolbar
+    path('__debug__/', include('debug_toolbar.urls')),
+
     # API urls
     path('api/', include(api_urls)),
 

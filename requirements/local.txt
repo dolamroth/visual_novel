@@ -1,2 +1,3 @@
 -r base.txt
 eventlet==0.24.1
+django-debug-toolbar-3.4.0

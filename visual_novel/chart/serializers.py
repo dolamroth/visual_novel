@@ -1,19 +1,12 @@
 import os
 
-from constance import config
-from collections import OrderedDict
-
 from rest_framework import serializers
-from rest_framework.fields import empty, SkipField
-from rest_framework.relations import PKOnlyObject
+from rest_framework.fields import empty
 
 from django.core.cache import caches
 from django.conf import settings
 
 from .models import ChartItem
-
-
-cache = caches['default']
 
 
 class ChartItemGenreSerializer(serializers.Serializer):
@@ -123,12 +116,12 @@ class ChartItemListSerializer(serializers.Serializer):
 
     def get_genres(self, obj):
         return ChartItemGenreSerializer(
-            obj.visual_novel.vngenre_set.all().order_by('-weight'),
+            obj.visual_novel.vngenre_set.all(),
             many=True
         ).data
 
     def get_studios(self, obj):
         return ChartItemStudioSerializer(
-            obj.visual_novel.vnstudio_set.all().order_by('-weight'),
+            obj.visual_novel.vnstudio_set.all(),
             many=True
         ).data
