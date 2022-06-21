@@ -95,7 +95,8 @@ def chart_page(request, vn_alias):
         vn_context['genres'].append({
             'title': genre.genre.title,
             'description': genre.genre.description,
-            'link': reverse('chart_index_with_genre', kwargs={'genre_alias': genre.genre.alias}),
+            # 'link': reverse('chart_index_with_genre', kwargs={'genre_alias': genre.genre.alias}),
+            'link': f'genre/{genre.genre.alias}',
             'has_description': not not genre.genre.description,
             'alias': genre.genre.alias
         })
@@ -108,7 +109,8 @@ def chart_page(request, vn_alias):
         vn_context['studios'].append({
             'title': studio.studio.title,
             'description': studio.studio.description,
-            'link': reverse('chart_index_with_studio', kwargs={'studio_alias': studio.studio.alias}),
+            # 'link': reverse('chart_index_with_studio', kwargs={'studio_alias': studio.studio.alias}),
+            'link': 'studio',
             'has_description': not not studio.studio.description,
             'alias': studio.studio.alias
         })
@@ -121,7 +123,8 @@ def chart_page(request, vn_alias):
         vn_context['tags'].append({
             'title': tag.tag.title,
             'description': tag.tag.description.replace('\"', '\''),
-            'link': reverse('chart_index_with_tag', kwargs={'tag_alias': tag.tag.alias}),
+            # 'link': reverse('chart_index_with_tag', kwargs={'tag_alias': tag.tag.alias}),
+            'link': 'tags',
             'has_description': not not tag.tag.description,
             'alias': tag.tag.alias
         })
@@ -139,7 +142,8 @@ def chart_page(request, vn_alias):
         roles = [vnstaffs[i].role for i in range(len(vnstaffs))]
         vn_context['staffs'].append({
             'title': staff.title,
-            'link': reverse('chart_index_with_staff', kwargs={'staff_alias': staff.alias}),
+            # 'link': reverse('chart_index_with_staff', kwargs={'staff_alias': staff.alias}),
+            'link': 'staff',
             'description': staff.description,
             'has_description': not not staff.description,
             'roles': roles,
@@ -154,7 +158,8 @@ def chart_page(request, vn_alias):
         vn_context['translators'].append({
             'title': translator.translator.title,
             'description': translator.translator.description.replace('\"', '\''),
-            'link': reverse('chart_index_with_translator', kwargs={'translator_alias': translator.translator.alias}),
+            # 'link': reverse('chart_index_with_translator', kwargs={'translator_alias': translator.translator.alias}),
+            'link': 'translator',
             'has_description': not not translator.translator.description,
             'alias': translator.translator.alias,
             'language': translator.language.title,

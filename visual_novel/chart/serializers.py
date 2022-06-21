@@ -116,12 +116,12 @@ class ChartItemListSerializer(serializers.Serializer):
 
     def get_genres(self, obj):
         return ChartItemGenreSerializer(
-            obj.visual_novel.vngenre_set.all().order_by('-weight'),
+            obj.visual_novel.vngenre_set.all(),
             many=True
         ).data
 
     def get_studios(self, obj):
         return ChartItemStudioSerializer(
-            obj.visual_novel.vnstudio_set.all().order_by('-weight'),
+            obj.visual_novel.vnstudio_set.all(),
             many=True
         ).data

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Exists, OuterRef, QuerySet
+from django.db.models import Exists, OuterRef, QuerySet, Prefetch
 
 from constance import config
 
@@ -49,7 +49,7 @@ class ChartViewContext:
         self.context = {}
 
         # Sorting list of visual novels
-        self.sort_by = request.GET.get('sort')
+        self.sort_by_str = request.GET.get('sort')
 
         self.chart_breadcumb_with_link = f'&nbsp;&#47; <a href="/chart/">{additional_breadcumb}</a>&nbsp;&#47; '
 
@@ -95,21 +95,41 @@ class ChartViewContext:
     def init_chart_items(self, request, page) -> QuerySet:
         user_favorites_charts = ChartItemToUser.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
         if page == 'Чарт':
-            return ChartItem.objects.filter(is_published=True, visual_novel__is_published=True) \
+            return ChartItem.objects.select_related('visual_novel') \
+                                    .filter(is_published=True, visual_novel__is_published=True) \
                                     .annotate(is_favorite=Exists(user_favorites_charts))
         elif page == 'Избранное':
-            all_charts = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True) \
-                                    .annotate(is_favorite=Exists(user_favorites_charts))
+            all_charts = ChartItem.objects.select_related('visual_novel') \
+                                          .filter(is_published=True, visual_novel__is_published=True) \
+                                          .annotate(is_favorite=Exists(user_favorites_charts))
             return all_charts.filter(is_favorite=True)
 
     def sort(self, genre_alias = None, tag_alias = None, studio_alias = None,
             staff_alias = None, duration_alias = None, translator_alias = None):
         if genre_alias:
-            self.sort_by_genre(genre_alias=genre_alias)
+            self.sort_by(
+                vn_model=VNGenre,
+                model=Genre,
+                lookup={'genre__alias': genre_alias},
+                alias=genre_alias,
+                value='жанр'
+            )
         if tag_alias:
-            self.sort_by_tag(tag_alias=tag_alias)
+            self.sort_by(
+                vn_model=VNTag,
+                model=Tag,
+                lookup={'tag__alias': tag_alias},
+                alias=tag_alias,
+                value='тег'
+            )
         if studio_alias:
-            self.sort_by_studio(studio_alias=studio_alias)
+            self.sort_by(
+                vn_model=VNStudio,
+                model=Studio,
+                lookup={'studio__alias': studio_alias},
+                alias=studio_alias,
+                value='студия'
+            )
         if staff_alias:
             self.sort_by_staff(staff_alias=staff_alias)
         if duration_alias:
@@ -117,9 +137,9 @@ class ChartViewContext:
         if translator_alias:
             self.sort_by_translator(translator_alias=translator_alias)
 
-        if self.sort_by and self.sort_by in self.all_sortings:
-            self.all_chart_items = self.all_chart_items.order_by(self.sort_by)
-            idx = self.all_sortings.index(self.sort_by)
+        if self.sort_by_str and self.sort_by_str in self.all_sortings:
+            self.all_chart_items = self.all_chart_items.order_by(self.sort_by_str)
+            idx = self.all_sortings.index(self.sort_by_str)
             self.context[
                 'date_of_translation_icon'] = ''  # Removing icon for default sort in order to prevent multiple icons
             self.context[self.all_sortings_context_links[idx][0]] = self.all_sortings_context_links[idx][1]
@@ -127,44 +147,26 @@ class ChartViewContext:
         else:
             self.all_chart_items = self.all_chart_items.order_by(self.base_sort_by)
 
-    def sort_by_genre(self, genre_alias: str):
-        vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
-        self.all_chart_items = self.all_chart_items.filter(visual_novel__in=vn_with_genre)
+    def sort_by(self, **kwargs):
+        vn_with_instance = kwargs.get('vn_model').objects.filter(**kwargs.get('lookup'))\
+                                                         .select_related('genre')\
+                                                         .values_list('visual_novel_id')
+        self.all_chart_items = self.all_chart_items.filter(visual_novel_id__in=vn_with_instance)
         try:
-            genre = Genre.objects.get(alias=genre_alias).values('title', 'description')
-            self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + 'жанр: ' + genre.title
-            if genre.description:
-                self.context['additional_description'] = genre.description
-        except Genre.DoesNotExist:
-            pass
-
-    def sort_by_tag(self, tag_alias: str):
-        vn_with_tag = VNTag.objects.filter(tag__alias=tag_alias).values('visual_novel')
-        self.all_chart_items = self.all_chart_items.filter(visual_novel__in=vn_with_tag)
-        try:
-            tag = Tag.objects.get(alias=tag_alias).values('title', 'description')
-            self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + 'тэг: ' + tag.title
-            if tag.description:
-                self.context['additional_description'] = tag.description
-        except Tag.DoesNotExist:
-            pass
-
-    def sort_by_studio(self, studio_alias: str):
-        vn_with_studio = VNStudio.objects.filter(studio__alias=studio_alias).values('visual_novel')
-        self.all_chart_items = self.all_chart_items.filter(visual_novel__in=vn_with_studio)
-        try:
-            studio = Studio.objects.get(alias=studio_alias).values('title', 'description')
-            self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + 'студия: ' + studio.title
-            if studio.description:
-                self.context['additional_description'] = studio.description
-        except Studio.DoesNotExist:
+            instance = kwargs.get('model').objects.only('title', 'description').get(alias=kwargs.get('alias'))
+            self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + \
+                                                   f"{kwargs.get('value')}: " + \
+                                                   instance.title
+            if instance.description:
+                self.context['additional_description'] = instance.description
+        except kwargs.get('model').DoesNotExist:
             pass
 
     def sort_by_staff(self, staff_alias: str):
         vn_with_staff = VNStaff.objects.filter(staff__alias=staff_alias).values('visual_novel')
         self.all_chart_items = self.all_chart_items.filter(visual_novel__in=vn_with_staff)
         try:
-            staff = Staff.objects.get(alias=staff_alias).values('title', 'description')
+            staff = Staff.objects.only('title', 'description').get(alias=staff_alias)
             self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + 'персона: ' + staff.title
             if staff.description:
                 self.context['additional_description'] = staff.description
@@ -174,7 +176,7 @@ class ChartViewContext:
     def sort_by_duration(self, duration_alias: str):
         self.all_chart_items = self.all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
-            duration = Longevity.objects.get(alias=duration_alias).values('title', 'description')
+            duration = Longevity.objects.only('title', 'description').get(alias=duration_alias)
             self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
             pass
@@ -184,7 +186,7 @@ class ChartViewContext:
                                                      .values_list('item__id', flat=True)
         self.all_chart_items = self.all_chart_items.filter(id__in=translators_ids)
         try:
-            translator = Translator.objects.get(alias=translator_alias).values('title', 'description', 'url')
+            translator = Translator.objects.only('title', 'description', 'url').get(alias=translator_alias)
             self.context['additional_breadcumb'] = self.chart_breadcumb_with_link + 'переводчик: ' + translator.title
             if translator.description or translator.url:
                 self.context['additional_description'] = ''
@@ -198,6 +200,17 @@ class ChartViewContext:
             pass
 
     def serialize(self):
+        genres_prefetch = Prefetch(
+            'visual_novel__vngenre_set',
+            queryset=VNGenre.objects.order_by('-weight').select_related('genre'),
+        )
+        studios_prefetch = Prefetch(
+            'visual_novel__vnstudio_set',
+            queryset=VNStudio.objects.order_by('-weight').select_related('studio'),
+        )
+
+        self.all_chart_items = self.all_chart_items.prefetch_related(genres_prefetch)
+        self.all_chart_items = self.all_chart_items.prefetch_related(studios_prefetch)
         all_chart_items_data = ChartItemListSerializer(self.all_chart_items, many=True).data
 
         # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
