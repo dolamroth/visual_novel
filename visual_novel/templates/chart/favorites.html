@@ -74,6 +74,21 @@
                             <div class="p-main-vn-links btn-group btn-group-justified">
                                 <a href="{% url 'chart:chart_favorites_remove' visual_novel.title %}" class="btn btn-xs btn-primary">Удалить из избранного <i class="glyphicon glyphicon-remove"></i></a>
                             </div>
+
+                            {% if not visual_novel.is_rated %}
+                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
+                                    <a href="{% url 'rating' visual_novel.title 1 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 2 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 3 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 4 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 5 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                </div>
+                            {% else %}
+                                <div class="p-main-vn-links btn-group btn-group-center">
+                                    <button class="btn btn-xs btn-primary">{{ visual_novel.average_rating }} <i class="glyphicon glyphicon-star"></i></button>
+                                </div>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>

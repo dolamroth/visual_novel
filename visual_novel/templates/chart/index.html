@@ -7,6 +7,7 @@
     хоррор, денпа, adv, nvl, моэге, нукиге, сториге, чуниге, кяраге, звуковая новелла, clannad, angel beats, хигураши,
     higurashi, steins gate, fate stay night, tomoyo after, saya no uta, ever 17, sharin no kuni, rewrite">
     <meta name="description" content="Чарт визуальных новелл" />
+    <link rel="stylesheet" href="{% static 'css/chart_style.css' %}">
 {% endblock %}
 
 {% block title %}
@@ -21,11 +22,11 @@
     </div>
 
     {% if additional_description %}
-    <div class="row">
-        <div class="col-lg-12" style="margin-bottom: 8px;">
-            <blockquote style="font-size: 14px; border-left: 5px solid #51b7d8;">{{ additional_description|safe }}</blockquote>
+        <div class="row">
+            <div class="col-lg-12" style="margin-bottom: 8px;">
+                <blockquote style="font-size: 14px; border-left: 5px solid #51b7d8;">{{ additional_description|safe }}</blockquote>
+            </div>
         </div>
-    </div>
     {% endif %}
 
     {% include "chart/index-sort-include.html" %}
@@ -79,6 +80,20 @@
                             {% else %}
                                 <div class="p-main-vn-links btn-group btn-group-justified">
                                     <a href="{% url 'chart:chart_favorites_add' visual_novel.title %}" class="btn btn-xs btn-primary">Добавить в избранное <i class="glyphicon glyphicon-star"></i></a>
+                                </div>
+                            {% endif %}
+
+                            {% if not visual_novel.is_rated %}
+                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
+                                    <a href="{% url 'rating' visual_novel.title 1 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 2 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 3 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 4 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    <a href="{% url 'rating' visual_novel.title 5 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                </div>
+                            {% else %}
+                                <div class="p-main-vn-links btn-group btn-group-center">
+                                    <button class="btn btn-xs btn-primary">{{ visual_novel.average_rating }} <i class="glyphicon glyphicon-star"></i></button>
                                 </div>
                             {% endif %}
                         </div>

@@ -1,0 +1,1 @@
+.block-stars .btn {    background: none;    border: none;}.block-stars .btn:hover {    background: none;    border: none;}.block-stars .btn:active {    background: none;    border: none;}.block-stars .glyphicon-star {    color: gold;    transition-duration: .5s;}.block-stars .glyphicon-star:hover {    transform: scale(1.5);}

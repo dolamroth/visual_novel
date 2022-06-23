@@ -3,13 +3,12 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse
 
 from vn_core.models import VNStaff
 
 from core.utils import printable_russian_date
 
-from .models import ChartItem, ChartItemToUser
+from .models import ChartItem, ChartItemToUser, ChartRating
 
 from .utils import ChartViewContext
 
@@ -22,6 +21,12 @@ def add_favorite_chart(request, vn_title: str):
 
 def remove_favorite_chart(request, vn_title: str):
     ChartItemToUser.objects.filter(user__id=request.user.id, chart_item__visual_novel__title=vn_title).delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+def register_rating(request, vn_title: str, rating: int):
+    chart_item = ChartItem.objects.get(visual_novel__title=vn_title)
+    user, _ = ChartRating.objects.get_or_create(user=request.user, chart_item=chart_item, rating=rating)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 

@@ -1,12 +1,12 @@
 import os
 
+from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.fields import empty
 
-from django.core.cache import caches
 from django.conf import settings
 
-from .models import ChartItem
+from .models import ChartItem, ChartRating
 
 
 class ChartItemGenreSerializer(serializers.Serializer):
@@ -76,7 +76,7 @@ class ChartItemListSerializer(serializers.Serializer):
     class Meta:
         model = ChartItem
         fields = ('title', 'poster_url', 'description', 'alias', 'genres', 'vndb_id', 'vndb_id', 'chart_link',
-                  'vndb_mark', 'vndb_popularity', 'studios', 'is_favorite',)
+                  'vndb_mark', 'vndb_popularity', 'studios', 'is_favorite', 'is_rated')
 
     title = serializers.SerializerMethodField()
     poster_url = serializers.SerializerMethodField()
@@ -89,6 +89,8 @@ class ChartItemListSerializer(serializers.Serializer):
     vndb_popularity = serializers.SerializerMethodField()
     studios = serializers.SerializerMethodField()
     is_favorite = serializers.BooleanField()
+    is_rated = serializers.BooleanField()
+    average_rating = serializers.SerializerMethodField()
 
     def get_title(self, obj):
         return obj.visual_novel.title
@@ -125,3 +127,7 @@ class ChartItemListSerializer(serializers.Serializer):
             obj.visual_novel.vnstudio_set.all(),
             many=True
         ).data
+
+    def get_average_rating(self, obj):
+        average = ChartRating.objects.filter(chart_item=obj).aggregate(average_rating=Avg('rating'))
+        return average.get('average_rating')

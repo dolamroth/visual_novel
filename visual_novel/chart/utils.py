@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.db.models import Exists, OuterRef, QuerySet, Prefetch
+from django.db.models import Exists, OuterRef, QuerySet, Prefetch, Avg, Value
 
 from constance import config
 
-from chart.models import ChartItemToUser, ChartItem, ChartItemTranslator
+from chart.models import ChartItemToUser, ChartItem, ChartItemTranslator, ChartRating
 from chart.serializers import ChartItemListSerializer
 from cinfo.genres.models import Genre
 from cinfo.longevity.models import Longevity
@@ -94,14 +94,16 @@ class ChartViewContext:
 
     def init_chart_items(self, request, page) -> QuerySet:
         user_favorites_charts = ChartItemToUser.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
+        user_rated_charts = ChartRating.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
+
+        all_charts = ChartItem.objects.select_related('visual_novel') \
+            .filter(is_published=True, visual_novel__is_published=True) \
+            .annotate(is_favorite=Exists(user_favorites_charts)) \
+            .annotate(is_rated=Exists(user_rated_charts))
+
         if page == 'Чарт':
-            return ChartItem.objects.select_related('visual_novel') \
-                                    .filter(is_published=True, visual_novel__is_published=True) \
-                                    .annotate(is_favorite=Exists(user_favorites_charts))
+            return all_charts
         elif page == 'Избранное':
-            all_charts = ChartItem.objects.select_related('visual_novel') \
-                                          .filter(is_published=True, visual_novel__is_published=True) \
-                                          .annotate(is_favorite=Exists(user_favorites_charts))
             return all_charts.filter(is_favorite=True)
 
     def sort(self, genre_alias = None, tag_alias = None, studio_alias = None,

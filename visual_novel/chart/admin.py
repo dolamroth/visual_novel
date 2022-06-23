@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator, ChartItemToUser
+from .models import ChartItem, ChartItemScreenshot, ChartItemTranslator, ChartItemToUser, ChartRating
 
 
 class ChartItemTranslatorInline(admin.TabularInline):
@@ -37,5 +37,10 @@ class ChartItemAdmin(admin.ModelAdmin):
     )
 
 
+class ChartRatingAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(ChartItem, ChartItemAdmin)
+admin.site.register(ChartRating, ChartRatingAdmin)
 
