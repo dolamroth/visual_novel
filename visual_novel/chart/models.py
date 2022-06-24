@@ -29,6 +29,11 @@ class ChartItem(PublishModel):
         return reverse('detail_chart', kwargs={'vn_alias': self.visual_novel.alias})
 
 
+    def get_average_rating(self):
+        all_rated = self.rating.values_list('chart_rating')
+        return round(sum([rating[0] for rating in all_rated]) / len(all_rated), 2)
+
+
 class ChartItemScreenshot(VNScreenshot):
     item = models.ForeignKey(ChartItem, on_delete=models.CASCADE)
     order = models.IntegerField(verbose_name='порядок', default=0)

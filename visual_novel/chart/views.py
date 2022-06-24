@@ -26,7 +26,12 @@ def remove_favorite_chart(request, vn_title: str):
 
 def register_rating(request, vn_title: str, rating: int):
     chart_item = ChartItem.objects.get(visual_novel__title=vn_title)
-    user, _ = ChartRating.objects.get_or_create(user=request.user, chart_item=chart_item, rating=rating)
+    try:
+        user = ChartRating.objects.get(user=request.user, chart_item=chart_item)
+        user.rating = rating
+        user.save()
+    except ChartRating.DoesNotExist:
+        ChartRating.objects.create(user=request.user, chart_item=chart_item, rating=rating)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 

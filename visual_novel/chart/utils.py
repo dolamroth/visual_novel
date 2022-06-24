@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Exists, OuterRef, QuerySet, Prefetch, Avg, Value
+from django.db.models import Exists, OuterRef, QuerySet, Prefetch, Value
 
 from constance import config
 
@@ -85,6 +85,8 @@ class ChartViewContext:
         self.context['popularity_icon'] = ''
         self.context['base_poster_url'] = config.CHART_POSTER_NOT_LOADED_IMAGE or settings.POSTER_STOPPER_URL
 
+        self.context['stars_count'] = [n for n in range(1, 11)]
+
         self.context['rows'] = self.rows
         self.context['no_rows'] = (len(self.context['rows']) == 0)
         if self.context['no_rows']:
@@ -95,6 +97,7 @@ class ChartViewContext:
     def init_chart_items(self, request, page) -> QuerySet:
         user_favorites_charts = ChartItemToUser.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
         user_rated_charts = ChartRating.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
+
 
         all_charts = ChartItem.objects.select_related('visual_novel') \
             .filter(is_published=True, visual_novel__is_published=True) \

@@ -1,1 +1,30 @@
-.block-stars .btn {    background: none;    border: none;}.block-stars .btn:hover {    background: none;    border: none;}.block-stars .btn:active {    background: none;    border: none;}.block-stars .glyphicon-star {    color: gold;    transition-duration: .5s;}.block-stars .glyphicon-star:hover {    transform: scale(1.5);}
+.white-stars .btn, .gold-stars .btn {
+    border: none;
+    background: none;
+}
+
+.white-stars .btn:hover, .gold-stars .btn:hover {
+    border: none;
+    background: none;
+}
+
+.white-stars .btn:active, .gold-stars .btn:active {
+    border: none;
+    background: none;
+}
+
+.white-stars .glyphicon-star, .gold-stars .glyphicon-star {
+    transition-duration: .5s;
+}
+
+.white-stars .glyphicon-star:hover, .gold-stars .glyphicon-star:hover {
+    transform: scale(1.5);
+}
+
+.white-stars .glyphicon-star {
+    color: gray;
+}
+
+.gold-stars .glyphicon-star {
+    color: gold;
+}

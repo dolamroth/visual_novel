@@ -38,7 +38,8 @@ class ChartItemAdmin(admin.ModelAdmin):
 
 
 class ChartRatingAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'chart_item', 'rating',)
+    ordering = ('rating',)
 
 
 admin.site.register(ChartItem, ChartItemAdmin)

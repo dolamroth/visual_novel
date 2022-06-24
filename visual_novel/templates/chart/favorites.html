@@ -7,6 +7,7 @@
     хоррор, денпа, adv, nvl, моэге, нукиге, сториге, чуниге, кяраге, звуковая новелла, clannad, angel beats, хигураши,
     higurashi, steins gate, fate stay night, tomoyo after, saya no uta, ever 17, sharin no kuni, rewrite">
     <meta name="description" content="Чарт визуальных новелл" />
+    <link rel="stylesheet" href="{% static 'css/chart_style.css' %}">
 {% endblock %}
 
 {% block title %}
@@ -76,16 +77,16 @@
                             </div>
 
                             {% if not visual_novel.is_rated %}
-                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
-                                    <a href="{% url 'rating' visual_novel.title 1 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
-                                    <a href="{% url 'rating' visual_novel.title 2 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
-                                    <a href="{% url 'rating' visual_novel.title 3 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
-                                    <a href="{% url 'rating' visual_novel.title 4 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
-                                    <a href="{% url 'rating' visual_novel.title 5 %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                <div class="p-main-vn-links btn-group btn-group-center white-stars">
+                                    {% for star in stars_count %}
+                                        <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    {% endfor %}
                                 </div>
                             {% else %}
-                                <div class="p-main-vn-links btn-group btn-group-center">
-                                    <button class="btn btn-xs btn-primary">{{ visual_novel.average_rating }} <i class="glyphicon glyphicon-star"></i></button>
+                                <div class="p-main-vn-links btn-group btn-group-center gold-stars">
+                                    {% for star in stars_count %}
+                                        <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                    {% endfor %}
                                 </div>
                             {% endif %}
 
