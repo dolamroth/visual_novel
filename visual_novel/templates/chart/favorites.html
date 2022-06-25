@@ -77,15 +77,19 @@
                             </div>
 
                             {% if not visual_novel.is_rated %}
-                                <div class="p-main-vn-links btn-group btn-group-center white-stars">
+                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
                                     {% for star in stars_count %}
-                                        <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                        <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star white-stars"></i></a>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <div class="p-main-vn-links btn-group btn-group-center gold-stars">
+                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
                                     {% for star in stars_count %}
-                                        <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star"></i></a>
+                                        {% if star <= visual_novel.user_rating %}
+                                            <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star gold-stars"></i></a>
+                                        {% else %}
+                                            <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star white-stars"></i></a>
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             {% endif %}

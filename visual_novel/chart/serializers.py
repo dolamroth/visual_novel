@@ -75,7 +75,7 @@ class ChartItemListSerializer(serializers.Serializer):
     class Meta:
         model = ChartItem
         fields = ('title', 'poster_url', 'description', 'alias', 'genres', 'vndb_id', 'vndb_id', 'chart_link',
-                  'vndb_mark', 'vndb_popularity', 'studios', 'is_favorite', 'is_rated', 'avg')
+                  'vndb_mark', 'vndb_popularity', 'studios', 'is_favorite', 'is_rated', 'user_rating', 'avg')
 
     title = serializers.SerializerMethodField()
     poster_url = serializers.SerializerMethodField()
@@ -88,7 +88,8 @@ class ChartItemListSerializer(serializers.Serializer):
     vndb_popularity = serializers.SerializerMethodField()
     studios = serializers.SerializerMethodField()
     is_favorite = serializers.BooleanField()
-    is_rated = serializers.IntegerField()
+    is_rated = serializers.BooleanField()
+    user_rating = serializers.IntegerField()
     avg = serializers.SerializerMethodField()
 
     def get_title(self, obj):
