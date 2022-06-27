@@ -3,6 +3,7 @@ from bitfield import BitField
 from django.contrib import admin
 
 from .models import TranslationItem, TranslationBetaLink, TranslationItemSendToVK, TranslationBetaLinkSendToVK
+
 from .widgets import StatusBitFieldWidget
 
 

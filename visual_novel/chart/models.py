@@ -13,7 +13,8 @@ class ChartItem(PublishModel):
     date_of_translation = models.DateField(verbose_name='дата перевода на русский (первого)')
     comment = models.TextField(verbose_name='комментарий', max_length=5000, default='', blank=True)
     translations = models.ManyToManyField(Translator, through='ChartItemTranslator', blank=True, verbose_name='Переводы')
-    favorites = models.ManyToManyField(User, through='ChartItemToUser', )
+    favorites = models.ManyToManyField(User, through='ChartItemToUser', related_name='chart_favorites')
+    rating = models.ManyToManyField(User, through='ChartRating', related_name='chart_rating')
 
     class Meta:
         db_table = 'chart_items'
@@ -26,6 +27,11 @@ class ChartItem(PublishModel):
 
     def get_absolute_url(self):
         return reverse('detail_chart', kwargs={'vn_alias': self.visual_novel.alias})
+
+
+    def get_average_rating(self):
+        all_rated = self.rating.values_list('chart_rating')
+        return round(sum([rating[0] for rating in all_rated]) / len(all_rated), 2)
 
 
 class ChartItemScreenshot(VNScreenshot):
@@ -70,3 +76,20 @@ class ChartItemToUser(models.Model):
 
     def __str__(self):
         return f'{self.user.id} - {self.chart_item.visual_novel.title}'
+
+
+class ChartRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    chart_item = models.ForeignKey(ChartItem, on_delete=models.CASCADE, verbose_name='Итем чарта')
+    rating = models.PositiveIntegerField(null=True, blank=True, default=0)
+
+    class Meta:
+        verbose_name = 'Рейтинг новеллы'
+        verbose_name_plural = 'Рейтинг новеллы'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'chart_item'], name='rating')
+        ]
+
+    def __str__(self):
+        return f'{self.user.id} - {self.chart_item.visual_novel.title} | {self.rating}'
+

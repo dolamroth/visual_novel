@@ -24,7 +24,7 @@ from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap,
 from chart.sitemap import ChartItemSitemap
 from translation.sitemap import TranslationItemSitemap
 
-from chart.views import chart_favorite_page
+from chart.views import chart_favorite_page, register_rating
 
 sitemaps = {
     'static': StaticViewsSitemap,
@@ -94,6 +94,7 @@ urlpatterns = [
     path('translation/', include(translation.urls)),
     path('chart/favorites', chart_favorite_page, name='chart_favorites'),
     path('chart/', include(chart.urls)),
+    path('chart/rating/<str:vn_title>/<int:rating>', register_rating, name='rating'),
     path('news/', include(news.urls)),
 
     path('yandex/', yandex_view, name='yandex_maps'),

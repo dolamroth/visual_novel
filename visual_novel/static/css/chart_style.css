@@ -1,0 +1,23 @@
+.block-stars .btn {
+    background: none;
+    border: none;
+}
+
+.block-stars .btn:hover, .block-stars .btn:active {
+    background: none;
+    border: none;
+}
+
+.gold-stars {
+    color: gold;
+    transition-duration: .5s;
+}
+
+.white-stars {
+    color: gray;
+    transition-duration: .5s;
+}
+
+.gold-stars:hover, .white-stars:hover {
+    transform: scale(1.5);
+}

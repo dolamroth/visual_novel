@@ -7,6 +7,7 @@
     хоррор, денпа, adv, nvl, моэге, нукиге, сториге, чуниге, кяраге, звуковая новелла, clannad, angel beats, хигураши,
     higurashi, steins gate, fate stay night, tomoyo after, saya no uta, ever 17, sharin no kuni, rewrite">
     <meta name="description" content="Чарт визуальных новелл" />
+    <link rel="stylesheet" href="{% static 'css/chart_style.css' %}">
 {% endblock %}
 
 {% block title %}
@@ -74,6 +75,25 @@
                             <div class="p-main-vn-links btn-group btn-group-justified">
                                 <a href="{% url 'chart:chart_favorites_remove' visual_novel.title %}" class="btn btn-xs btn-primary">Удалить из избранного <i class="glyphicon glyphicon-remove"></i></a>
                             </div>
+
+                            {% if not visual_novel.is_rated %}
+                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
+                                    {% for star in stars_count %}
+                                        <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star white-stars"></i></a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="p-main-vn-links btn-group btn-group-center block-stars">
+                                    {% for star in stars_count %}
+                                        {% if star <= visual_novel.user_rating %}
+                                            <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star gold-stars"></i></a>
+                                        {% else %}
+                                            <a href="{% url 'rating' visual_novel.title star %}" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-star white-stars"></i></a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>

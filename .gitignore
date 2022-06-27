@@ -114,6 +114,8 @@ secrets.json
 # static files
 **/static/admin
 **/static/rest_framework
+**/static/mptt
+**/static/debug_toolbar
 
 visual_novel/config/wsgi.py
 **/favicon.ico
