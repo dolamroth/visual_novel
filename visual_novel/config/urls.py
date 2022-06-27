@@ -26,6 +26,8 @@ from translation.sitemap import TranslationItemSitemap
 
 from chart.views import chart_favorite_page, register_rating
 
+from rest_framework.authtoken import views
+
 sitemaps = {
     'static': StaticViewsSitemap,
     'genres': GenreSitemap,
@@ -98,4 +100,9 @@ urlpatterns = [
     path('news/', include(news.urls)),
 
     path('yandex/', yandex_view, name='yandex_maps'),
+
+    # system_api urls
+    path('api-token-auth/', views.obtain_auth_token),
+    path('api_vn/', include('system_api.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,16 +5,11 @@ from rest_framework.fields import empty
 
 from django.conf import settings
 
-from .models import ChartItem, ChartRating
-
 
 class ChartItemGenreSerializer(serializers.Serializer):
     def __init__(self, instance=None, data=empty, **kwargs):
         super(ChartItemGenreSerializer, self).__init__(instance=instance, data=data, **kwargs)
         self.description = None
-
-    class Meta:
-        fields = ('title', 'description', 'alias', 'link', 'has_description')
 
     title = serializers.SerializerMethodField()
     link = serializers.SerializerMethodField()
@@ -44,9 +39,6 @@ class ChartItemStudioSerializer(serializers.Serializer):
         super(ChartItemStudioSerializer, self).__init__(instance=instance, data=data, **kwargs)
         self.description = None
 
-    class Meta:
-        fields = ('title', 'description', 'alias', 'link', 'has_description')
-
     title = serializers.SerializerMethodField()
     link = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -71,12 +63,6 @@ class ChartItemStudioSerializer(serializers.Serializer):
 
 
 class ChartItemListSerializer(serializers.Serializer):
-
-    class Meta:
-        model = ChartItem
-        fields = ('title', 'poster_url', 'description', 'alias', 'genres', 'vndb_id', 'vndb_id', 'chart_link',
-                  'vndb_mark', 'vndb_popularity', 'studios', 'is_favorite', 'is_rated', 'user_rating', 'avg')
-
     title = serializers.SerializerMethodField()
     poster_url = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
