@@ -1,7 +1,8 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import ListModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
 
 from vn_core.models import VisualNovel, VisualNovelStats
 from django.contrib.auth.models import User
@@ -28,3 +29,12 @@ class VNStatsAPIView(ListModelMixin, GenericViewSet):
 	permission_classes = [IsAuthenticated]
 	authentication_classes = [TokenAuthentication]
 	serializer_class = VNStatsSerializer
+
+
+class RemoveTokenAPIView(DestroyModelMixin, GenericViewSet):
+	queryset = Token.objects.all()
+	permission_classes = [IsAuthenticated]
+	authentication_classes = [TokenAuthentication]
+
+	def get_object(self):
+		return self.queryset.get(user=self.request.user)
