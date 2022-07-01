@@ -20,4 +20,3 @@ class VNStatsSerializer(ModelSerializer):
 	class Meta:
 		model = VisualNovelStats
 		fields = '__all__'
-
