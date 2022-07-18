@@ -98,4 +98,8 @@ urlpatterns = [
     path('news/', include(news.urls)),
 
     path('yandex/', yandex_view, name='yandex_maps'),
+
+    # system_api urls
+    path('api_vn/', include('system_api.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
