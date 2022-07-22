@@ -110,6 +110,7 @@ secrets.json
 **/db.sqlite3
 **/media
 **/vk_config*.*
+media
 
 # static files
 **/static/admin
