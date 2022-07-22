@@ -95,6 +95,10 @@ class ChartViewContext:
 		return self.context
 
 	def init_chart_items(self, request, page) -> QuerySet:
+		all_charts = ChartItem.objects.select_related('visual_novel')
+		if not request.user.is_authenticated:
+			return all_charts
+
 		user_favorites_charts = ChartItemToUser.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
 		user_rated_charts = ChartRating.objects.filter(user=request.user, chart_item_id=OuterRef('id'))
 

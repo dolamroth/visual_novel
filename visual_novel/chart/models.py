@@ -28,9 +28,11 @@ class ChartItem(PublishModel):
     def get_absolute_url(self):
         return reverse('detail_chart', kwargs={'vn_alias': self.visual_novel.alias})
 
-
     def get_average_rating(self):
         all_rated = self.rating.values_list('chart_rating')
+        if not all_rated:
+            return 0
+
         return round(sum([rating[0] for rating in all_rated]) / len(all_rated), 2)
 
 

@@ -11,7 +11,7 @@
     {% if user.is_authenticated %}
         <li style="margin: 0 0 1em 0;"><a href="/profile/{{ user.username }}">Профиль {{ user.username }}</a></li>
         {% if user.is_staff %}
-            <li style="margin: 0 0 1em 0;"><a href="/static/admin/">Администрирование</a></li>
+            <li style="margin: 0 0 1em 0;"><a href="/admin/">Администрирование</a></li>
         {% endif %}
         <li style="margin: 0 0 1em 0;"><a href="/logout">Выйти</a></li>
     {% else %}

@@ -1,23 +1,15 @@
+from captcha.fields import ReCaptchaField
+
 from django.shortcuts import render, HttpResponseRedirect
-from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 from django.forms import forms
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import decorator_from_middleware
 
 from core.middlewares import IsAuthenticatedMiddleware
-
 from .models import Offer
 
 
 class CaptchaForm(forms.Form):
-    captcha = ReCaptchaField(
-        widget=ReCaptchaWidget(),
-        label='Проверка',
-        error_messages={
-            'required': _('Обязательное поле.'),
-        }
-    )
+    captcha = ReCaptchaField()
 
 
 @decorator_from_middleware(IsAuthenticatedMiddleware)
@@ -34,4 +26,3 @@ def send_offer(request, *args, **kwargs):
             return HttpResponseRedirect('/') # redirect if success
         else:
             return render(request, 'support/offer.html', {'form': form, **kwargs}) # redirect if fail
-
