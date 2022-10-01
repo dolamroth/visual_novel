@@ -1,4 +1,6 @@
 from django.contrib import admin
+from bitfield import BitField
+from bitfield.forms import BitFieldCheckboxSelectMultiple
 
 from translation.models import TranslationSubscription
 
@@ -11,6 +13,9 @@ class TranslationSubscriptionInline(admin.TabularInline):
 
 
 class ProfileAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+            BitField: {'widget': BitFieldCheckboxSelectMultiple},
+    }
     inlines = (TranslationSubscriptionInline,)
     list_display = (
         '__str__', 'is_staff', 'is_superuser', 'email_confirmed',
