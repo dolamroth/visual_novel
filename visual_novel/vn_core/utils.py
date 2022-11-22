@@ -36,9 +36,9 @@ class VndbStats(object):
     class VndbTypeError(VndbError):
         message = 'Передано значение неверного типа'
 
-    def __assert(self, param, type):
+    def __assert(self, param, expected_type):
         try:
-            assert type(param), type
+            assert type(param) == expected_type
         except AssertionError:
             raise self.VndbTypeError()
 
@@ -146,9 +146,9 @@ class YandexMetrica(object):
         def __str__(self):
             return self.message
 
-    def __assert(self, param, type):
+    def __assert(self, param, expected_type):
         try:
-            assert type(param), str
+            assert type(param) == expected_type
         except AssertionError:
             raise self.YandexMetrikaError('Параметр неверного типа')
 
