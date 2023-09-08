@@ -91,4 +91,4 @@ urlpatterns = [
     path('news/', include(news.urls)),
 
     path('yandex/', yandex_view, name='yandex_maps'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
