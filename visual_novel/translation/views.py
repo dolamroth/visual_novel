@@ -4,7 +4,6 @@ import pytz
 from django.conf import settings
 from django.shortcuts import render
 from django.http import Http404
-from django.utils.decorators import decorator_from_middleware
 
 from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
@@ -14,8 +13,8 @@ from .models import TranslationItem, TranslationStatisticsChapter, TranslationSu
 from .utils import statistics_name, select_like_statistics_name, get_status_tuple_for_translation_item
 
 
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 def edit_statistics(request, vn_alias):
 
     try:

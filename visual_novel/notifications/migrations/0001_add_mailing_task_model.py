@@ -9,9 +9,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('django_celery_beat', '0006_auto_20180210_1226'),
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
@@ -20,7 +18,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('send_hour', models.IntegerField(validators=[django.core.validators.MaxValueValidator(23), django.core.validators.MinValueValidator(0)], verbose_name='Час рассылки')),
                 ('send_weekday', models.IntegerField(validators=[django.core.validators.MaxValueValidator(6), django.core.validators.MinValueValidator(0)], verbose_name='Час рассылки')),
-                ('mailing_task', models.OneToOneField(editable=False, null=True, on_delete=django.db.models.deletion.PROTECT, to='django_celery_beat.PeriodicTask', verbose_name='Задача автоматичесой рассылки')),
             ],
             options={
                 'verbose_name': 'Рассылка статистики',

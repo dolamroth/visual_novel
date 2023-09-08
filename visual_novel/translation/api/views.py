@@ -5,7 +5,6 @@ from constance import config
 from django.conf import settings
 from django.core.cache import caches
 from django.db.models import Q
-from django.utils.decorators import decorator_from_middleware
 
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
@@ -58,9 +57,9 @@ def get_data(request):
     return data, is_chapter
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def edit_chapter(request, vn_alias):
 
     data, is_chapter = get_data(request)
@@ -108,9 +107,9 @@ def edit_chapter(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def add_chapter(request, vn_alias):
 
     data, is_chapter = get_data(request)
@@ -155,9 +154,9 @@ def add_chapter(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def get_chapter_children(request, vn_alias):
     translation_chapter_id = request.GET.get('translation_chapter_id', None)
     try:
@@ -180,9 +179,9 @@ def get_chapter_children(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def delete_translation_chapter(request, vn_alias):
 
     data, is_chapter = get_data(request)
@@ -204,9 +203,9 @@ def delete_translation_chapter(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def get_current_statistics_for_translation_item(request, vn_alias):
 
     data, is_chapter = get_data(request)
@@ -233,9 +232,9 @@ def get_current_statistics_for_translation_item(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def get_edit_pictures_tech_comment_statistics(request, vn_alias):
 
     description = request.GET.get('description', None)
@@ -294,57 +293,9 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-def subscribe_statistics(request, vn_alias):
-    try:
-        translation_item = TranslationItem.objects.get(
-            visual_novel__alias=vn_alias,
-            visual_novel__is_published=True,
-            is_published=True
-        )
-    except (TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
-        return Response(data={
-            'message': 'Перевод с указанным идентификатором не найден.'
-        }, status=404)
-
-    subscription, _ = TranslationSubscription.objects.get_or_create(
-        profile=request.user.profile,
-        translation=translation_item
-    )
-
-    return Response(data={
-        'message': 'Операция проведена успешно.'
-    }, status=200)
-
-
-@api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-def unsubscribe_statistics(request, vn_alias):
-    try:
-        translation_item = TranslationItem.objects.get(
-            visual_novel__alias=vn_alias,
-            visual_novel__is_published=True,
-            is_published=True
-        )
-    except (TranslationItem.DoesNotExist, TranslationStatistics.DoesNotExist):
-        return Response(data={
-            'message': 'Перевод с указанным идентификатором не найден.'
-        }, status=404)
-
-    TranslationSubscription.objects.filter(
-        profile=request.user.profile,
-        translation=translation_item
-    ).delete()
-
-    return Response(data={
-        'message': 'Операция проведена успешно.'
-    }, status=200)
-
-
-@api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def manage_betalink(request, vn_alias):
 
     data = {
@@ -382,9 +333,9 @@ def manage_betalink(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def delete_betalink(request, vn_alias):
 
     data = {
@@ -402,9 +353,9 @@ def delete_betalink(request, vn_alias):
     }, status=200)
 
 
+@IsAuthenticatedMiddleware
+@HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditVNMiddleware)
 def change_status(request, vn_alias):
 
     status_key = request.GET.get('status', None)

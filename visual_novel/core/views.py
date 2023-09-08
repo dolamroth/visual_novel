@@ -4,12 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
-from django.utils.encoding import force_text, force_bytes
+from django.utils.encoding import force_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.conf import settings
-from django.utils.decorators import decorator_from_middleware
 
 from notifications.service import send_email
 from translation.models import TranslationItem
@@ -18,8 +17,6 @@ from .forms import CustomSignUpForm
 from .utils import offset_to_timezone
 from .tokens import account_activation_token
 from .middlewares import IsAuthenticatedMiddleware, HasPermissionToEditProfile
-from .models import Profile
-import requests
 
 
 def signup(request):
@@ -55,7 +52,7 @@ def signup(request):
 
 def activate(request, uidb64, token):
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
@@ -74,8 +71,8 @@ def account_activation_sent(request):
     return render(request, 'pages/account_activation_sent.html')
 
 
-@decorator_from_middleware(IsAuthenticatedMiddleware)
-@decorator_from_middleware(HasPermissionToEditProfile)
+@IsAuthenticatedMiddleware
+@HasPermissionToEditProfile
 def profile_page(request, username):
     context = dict()
     user = request.user
@@ -94,7 +91,7 @@ def profile_page(request, username):
         visual_novel = translation.visual_novel
         context['moderated_translations'].append({
             'title': visual_novel.title,
-            'alias': visual_novel.alias
+            'alias': visual_novel.alias,
         })
     context['has_moderated_translations'] = (len(context['moderated_translations']) > 0)
 
@@ -129,7 +126,3 @@ def favicon(request):
         return HttpResponse(image_data, content_type="image/png")
     except FileNotFoundError:
         raise Http404
-
-
-def google_site_verification(request, google_key):
-    return render(request, 'google{}.html'.format(google_key), {})

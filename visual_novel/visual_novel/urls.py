@@ -7,7 +7,6 @@ from django.urls import path, include
 
 from django.contrib.auth import views as auth_views
 from core import views as core_views
-from .views import yandex_view
 
 from core.forms import (
     CustomAuthentificationForm, CustomPasswordResetForm, CustomSetPasswordForm
@@ -16,7 +15,6 @@ from core.forms import (
 from . import api_urls
 import chart.urls
 import news.urls
-import offer_service.urls
 import translation.urls
 
 from core.sitemap import StaticViewsSitemap
@@ -81,14 +79,10 @@ urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name="includes/robots.txt"),
          {'http_domain': settings.VN_HTTP_DOMAIN}, name='robots'),
     path('favicon.ico', core_views.favicon, name='favicon'),
-    path('google<str:google_key>.html', core_views.google_site_verification, name='google-site-verification'),
     path('about', TemplateView.as_view(template_name="pages/about.html"), name='about'),
 
     # Apps views
-    path('offers/', include(offer_service.urls)),
     path('translation/', include(translation.urls)),
     path('chart/', include(chart.urls)),
     path('news/', include(news.urls)),
-
-    path('yandex/', yandex_view, name='yandex_maps'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

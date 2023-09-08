@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='mailingtask',
-            name='mailing_task',
-        ),
         migrations.DeleteModel(
             name='MailingTask',
         ),

@@ -2,6 +2,9 @@
 import os
 import sys
 
+import django.utils.encoding
+django.utils.encoding.smart_text = django.utils.encoding.smart_str
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "visual_novel.settings")
     try:
