@@ -39,7 +39,7 @@ VN_HTTP_DOMAIN = VN_PROTOCOL + '://' + VN_DOMAIN
 ALLOWED_HOSTS = sorted(set([VN_DOMAIN] + ['www.vn-russian.ru', 'vn-russian.ru']))
 CSRF_TRUSTED_ORIGINS = [VN_HTTP_DOMAIN]
 
-PRODUCTION_FLAG = False
+PRODUCTION_FLAG = True
 DEBUG = False
 
 # Application definition
@@ -273,16 +273,12 @@ VK_GROUP_ID = get_secret(section='VK', setting='GROUP_ID')
 VK_ADMIN_LOGIN = get_secret(section='VK', setting='ADMIN_LOGIN')
 VK_API_KEY_MESSAGES = get_secret(section='VK', setting='API_KEY_MESSAGES')
 
-REDIS_HOST = get_secret(section='REDIS', setting='HOST')
-REDIS_PORT = get_secret(section='REDIS', setting='PORT')
-REDIS_CACHE_DB = get_secret(section='REDIS', setting='CACHE_DB')
+REDIS_CACHE_URL = get_secret(section='REDIS', setting='CACHE_URL')
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://{}:{}/{}".format(
-            REDIS_HOST, REDIS_PORT, REDIS_CACHE_DB
-        ),
+        "LOCATION": REDIS_CACHE_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
