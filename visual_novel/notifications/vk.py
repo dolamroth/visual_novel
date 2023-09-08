@@ -1,13 +1,14 @@
 import json
 import logging
 import urllib3
+from datetime import timedelta, datetime
 
 from django.conf import settings
 
 __version__ = '0.1'
 
 # last version as of 2018-04-26, api changelog can be viewed at https://vk.com/dev/versions
-VK_API_VERSION = '5.78'
+VK_API_VERSION = '5.131'
 
 vk_logger = logging.getLogger('vk_logger')
 
@@ -63,10 +64,12 @@ class VK(object):
         return r['response']
 
     def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID, attachments=None, close_comments=0):
+        publish_date = str((datetime.now() + timedelta(days=3)).timestamp())
         self.__assert(msg, str)
         self.__assert(group_id, str)
         context = {
             'owner_id': group_id,
+            'publish_date': publish_date,
             'message': msg,
             'friends_only': 0,
             'from_group': 1,
