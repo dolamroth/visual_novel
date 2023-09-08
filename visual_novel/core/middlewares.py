@@ -15,6 +15,18 @@ class IsAuthenticatedMiddleware:
         return response
 
 
+class IsSuperuserMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request, **kwargs):
+        if not (request.user.is_authenticated and request.user.is_superuser):
+            raise PermissionDenied
+
+        response = self.get_response(request, **kwargs)
+        return response
+
+
 class HasPermissionToEditProfile:
     def __init__(self, get_response):
         self.get_response = get_response

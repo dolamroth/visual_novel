@@ -16,6 +16,7 @@ from . import api_urls
 import chart.urls
 import news.urls
 import translation.urls
+from vn_core.views import clear_cache_view
 
 from core.sitemap import StaticViewsSitemap
 from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap, TranslatorSitemap
@@ -80,6 +81,7 @@ urlpatterns = [
          {'http_domain': settings.VN_HTTP_DOMAIN}, name='robots'),
     path('favicon.ico', core_views.favicon, name='favicon'),
     path('about', TemplateView.as_view(template_name="pages/about.html"), name='about'),
+    path('clear-cache', clear_cache_view, name='clear_cache'),
 
     # Apps views
     path('translation/', include(translation.urls)),
