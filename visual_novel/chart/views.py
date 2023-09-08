@@ -33,7 +33,10 @@ def chart_index_page(
     max_vn_by_row = settings.CHART_NUMBER_OF_VN_IN_ROW
 
     # Lazy computed, so no caching here
-    all_chart_items = ChartItem.objects.filter(is_published=True, visual_novel__is_published=True)
+    all_chart_items = ChartItem.objects\
+        .filter(is_published=True, visual_novel__is_published=True)\
+        .select_related("visual_novel")
+
     cache_key = 'chart'
 
     context['all_genres'] = Genre.objects.filter(is_published=True).order_by('title').values()
@@ -44,8 +47,8 @@ def chart_index_page(
 
     # Optional endpoint parameters
     if genre_alias:
-        vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel')
-        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_genre)
+        vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel_id')
+        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_genre)
         try:
             genre = Genre.objects.get(alias=genre_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
@@ -56,8 +59,8 @@ def chart_index_page(
             pass
 
     if tag_alias:
-        vn_with_tag = VNTag.objects.filter(tag__alias=tag_alias).values('visual_novel')
-        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_tag)
+        vn_with_tag = VNTag.objects.filter(tag__alias=tag_alias).values('visual_novel_id')
+        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_tag)
         try:
             tag = Tag.objects.get(alias=tag_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
@@ -68,8 +71,8 @@ def chart_index_page(
             pass
 
     if studio_alias:
-        vn_with_studio = VNStudio.objects.filter(studio__alias=studio_alias).values('visual_novel')
-        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_studio)
+        vn_with_studio = VNStudio.objects.filter(studio__alias=studio_alias).values('visual_novel_id')
+        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_studio)
         try:
             studio = Studio.objects.get(alias=studio_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
@@ -80,8 +83,8 @@ def chart_index_page(
             pass
 
     if staff_alias:
-        vn_with_staff = VNStaff.objects.filter(staff__alias=staff_alias).values('visual_novel')
-        all_chart_items = all_chart_items.filter(visual_novel__in=vn_with_staff)
+        vn_with_staff = VNStaff.objects.filter(staff__alias=staff_alias).values('visual_novel_id')
+        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_staff)
         try:
             staff = Staff.objects.get(alias=staff_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
