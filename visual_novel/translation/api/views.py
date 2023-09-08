@@ -79,7 +79,7 @@ def edit_chapter(request, vn_alias):
 
     try:
         if settings.PRODUCTION_FLAG:
-            with cache.lock('translation_item_{}'.format(data['translation_item_id'])):
+            with cache.lock('translation_item_{}'.format(data['translation_item_id']), timeout=10, blocking_timeout=20):
                 if is_chapter:
                     translation_chapter, movement = EditTranslationPartChapter(serializer.data).execute()
                 else:
@@ -130,7 +130,7 @@ def add_chapter(request, vn_alias):
 
     try:
         if settings.PRODUCTION_FLAG:
-            with cache.lock('translation_item_{}'.format(data['translation_item_id'])):
+            with cache.lock('translation_item_{}'.format(data['translation_item_id']), timeout=10, blocking_timeout=20):
                 if is_chapter:
                     translation_chapter = AddTranslationPartChapter(serializer.data).execute()
                 else:
@@ -188,7 +188,7 @@ def delete_translation_chapter(request, vn_alias):
 
     try:
         if settings.PRODUCTION_FLAG:
-            with cache.lock('translation_item_{}'.format(data['translation_item_id'])):
+            with cache.lock('translation_item_{}'.format(data['translation_item_id']), timeout=10, blocking_timeout=20):
                 deleted_n = DeleteTranslationChapter(data).execute()
         else:
             deleted_n = DeleteTranslationChapter(data).execute()

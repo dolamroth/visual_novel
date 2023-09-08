@@ -100,21 +100,7 @@ class ChartItemListSerializer(serializers.Serializer):
         if ret:
             return ret
 
-        ret = OrderedDict()
-        fields = self._readable_fields
-
-        for field in fields:
-            try:
-                attribute = field.get_attribute(instance)
-            except SkipField:
-                continue
-
-            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
-            if check_for_none is None:
-                ret[field.field_name] = None
-            else:
-                ret[field.field_name] = field.to_representation(attribute)
-
+        ret = super().to_representation(instance)
         cache.set('chart_item_{}'.format(instance.visual_novel.alias), ret, config.REDIS_CACHE_TIME_LIFE)
         return ret
 
