@@ -297,7 +297,6 @@ def get_edit_pictures_tech_comment_statistics(request, vn_alias):
 @HasPermissionToEditVNMiddleware
 @api_view(['GET', 'POST', ])
 def manage_betalink(request, vn_alias):
-
     data = {
         'translation_item_id': request.GET.get('data_translation_item', None),
         'title': request.GET.get('title', None),

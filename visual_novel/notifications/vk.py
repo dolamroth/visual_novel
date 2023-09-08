@@ -7,7 +7,6 @@ from django.conf import settings
 
 __version__ = '0.1'
 
-# last version as of 2018-04-26, api changelog can be viewed at https://vk.com/dev/versions
 VK_API_VERSION = '5.131'
 
 vk_logger = logging.getLogger('vk_logger')
@@ -15,14 +14,14 @@ vk_logger = logging.getLogger('vk_logger')
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class VK(object):
+class VK:
     def __init__(self,api_key=settings.VK_API_KEY, api_key_messages=settings.VK_API_KEY_MESSAGES):
         self.api_key = api_key
         self.api_url = 'https://api.vk.com/method/'
         self.METHOD = 'POST'
         self.api_key_messages = api_key_messages
 
-    def __execute_query(self, method, params_q):
+    def _execute_query(self, method, params_q):
         params = dict(params_q)
         params['access_token'] = self.api_key_messages if method.find('message')>-1 else self.api_key
         params['v'] = VK_API_VERSION
@@ -36,37 +35,38 @@ class VK(object):
             vk_logger.error('VK API returned {}'.format(r.data))
 
     # TODO: authorization check inside __query() & raising corresponding exceptions
-    def __query(self, method, params_q):
-        return self.__execute_query(method, params_q)
+    def _query(self, method, params_q):
+        return self._execute_query(method, params_q)
 
     def _get_user_id(self, user_alias=''):
         try:
-            return (self.__query('users.get', {'user_ids': user_alias}))['response'][0]['id']
+            return (self._query('users.get', {'user_ids': user_alias}))['response'][0]['id']
         except (IndexError, KeyError):
             raise self.VkGetUserError()
 
-    def __assert(self, param, type):
+    def _assert(self, param, type):
         try:
             assert type(param), type
         except AssertionError:
             raise self.VkWrongTypeError()
 
     def send_to_user(self, msg='', user_id=None):
-        self.__assert(msg, str)
-        self.__assert(user_id, str)
+        self._assert(msg, str)
+        self._assert(user_id, str)
         user_id = str(self._get_user_id(user_alias=user_id.strip()))
         context = {
             'user_id': user_id,
-            'message': msg
+            'message': msg,
+            'random_id': 0,
         }
-        r = self.__query('messages.send', context)
+        r = self._query('messages.send', context)
         vk_logger.info('Message id {}'.format(r['response']))
         return r['response']
 
     def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID, attachments=None, close_comments=0):
         publish_date = str((datetime.now() + timedelta(days=3)).timestamp())
-        self.__assert(msg, str)
-        self.__assert(group_id, str)
+        self._assert(msg, str)
+        self._assert(group_id, str)
         context = {
             'owner_id': group_id,
             'publish_date': publish_date,
@@ -76,9 +76,9 @@ class VK(object):
             'close_comments': close_comments
         }
         if attachments is not None:
-            self.__assert(attachments, str)
+            self._assert(attachments, str)
             context['attachments'] = attachments
-        r = self.__query('wall.post', context)
+        r = self._query('wall.post', context)
         vk_logger.info('Wall Post id {}'.format(r['response']))
         return r['response']
 
