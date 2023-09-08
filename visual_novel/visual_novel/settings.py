@@ -37,6 +37,7 @@ VN_DOMAIN = get_secret('DOMAIN')
 VN_PROTOCOL = get_secret('PROTOCOL')
 VN_HTTP_DOMAIN = VN_PROTOCOL + '://' + VN_DOMAIN
 ALLOWED_HOSTS = sorted(set([VN_DOMAIN] + ['www.vn-russian.ru', 'vn-russian.ru']))
+CSRF_TRUSTED_ORIGINS = [VN_HTTP_DOMAIN]
 
 PRODUCTION_FLAG = False
 DEBUG = False
