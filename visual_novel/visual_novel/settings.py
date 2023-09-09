@@ -288,6 +288,7 @@ CACHES = {
 YANDEX_METRIKA_TOKEN = get_secret(section='YANDEX_METRICA_API', setting='TOKEN')
 YANDEX_METRIKA_CLIENT_ID = get_secret(section='YANDEX_METRICA_API', setting='CLIENT_ID')
 YANDEX_METRIKA_URL = 'https://api-metrika.yandex.ru/'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 if not PRODUCTION_FLAG:
     STATIC_ROOT = os.path.join(BASE_DIR, '')

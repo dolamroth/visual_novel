@@ -1,11 +1,15 @@
 import datetime
 
 from django.core.management.base import BaseCommand
+from django.core.cache import caches
 
 from cinfo.models import Genre, Tag, Studio, Staff
 from vn_core.models import VisualNovelStats, VisualNovel
 
 from vn_core.utils import YandexMetrica
+
+
+cache = caches["default"]
 
 
 class Command(BaseCommand):
@@ -52,7 +56,14 @@ class Command(BaseCommand):
                     # metrika.get_novels_by_popularity has inner check that all aliases
                     # correspond to VisualNovel objects in the database
                     visual_novel = VisualNovel.objects.get(alias=alias)
-                    today_vn_stats = VisualNovelStats.objects.get(visual_novel=visual_novel, date=today)
-                    today_vn_stats.rank_by_visits = k
-                    today_vn_stats.save()
-                    k += 1
+
+                    try:
+                        with cache.lock(f"visual_novel_stats_{visual_novel.alias}_{today}", timeout=10, blocking_timeout=20):
+                            today_vn_stats, _ = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
+
+                        today_vn_stats.rank_by_visits = k
+                        today_vn_stats.save(update_fields=["rank_by_visits"])
+                    except VisualNovelStats.DoesNotExist:
+                        pass
+                    finally:
+                        k += 1
