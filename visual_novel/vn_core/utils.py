@@ -152,10 +152,6 @@ class YandexMetrica:
         except AssertionError:
             raise self.YandexMetrikaError('Параметр неверного типа')
 
-    def __check_page_url_for_non_empty(self, url):
-        self._assert(url, str)
-        return not(url == '') and not(url[0] == '?')
-
     def _shorten_url(self, url):
         if url.find('?') > -1:
             return url[:url.find('?')]
