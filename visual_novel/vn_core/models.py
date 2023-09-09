@@ -25,7 +25,7 @@ class VisualNovel(PublishFileModel):
     tags = models.ManyToManyField(Tag, through='VNTag', verbose_name='тэги', blank=True)
     studios = models.ManyToManyField(Studio, through='VNStudio', verbose_name='студии', blank=True)
     staff = models.ManyToManyField(Staff, through='VNStaff', verbose_name='создатели', blank=True)
-    alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='')
+    alias = models.TextField(verbose_name='алиас (до 30 символов)', max_length=30, default='', unique=True)
     rate = models.IntegerField(verbose_name='оценка на VNDb', default=0)
     popularity = models.IntegerField(verbose_name='популярность на VNDb', default=0)
     vote_count = models.IntegerField(verbose_name='число голосов на VNDb', default=0)
