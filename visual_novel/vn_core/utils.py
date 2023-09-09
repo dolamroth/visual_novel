@@ -14,7 +14,7 @@ vn_logger = logging.getLogger('vn_logger')
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class VndbStats(object):
+class VndbStats:
     def __init__(self):
         self.sock = None
         self.protocol = settings.VNDB_API_PROTOCOL
@@ -87,7 +87,7 @@ class VndbStats(object):
         return rating, popularity, vote_count
 
 
-class YandexMetrica(object):
+class YandexMetrica:
     def __init__(self):
         self.token = settings.YANDEX_METRIKA_TOKEN
         self.client_id = settings.YANDEX_METRIKA_CLIENT_ID
@@ -105,7 +105,7 @@ class YandexMetrica(object):
         # Yandex Metrika API allows for such hack, returning all queries, even if they are fewer.
         self.max_results = 5000
 
-    def __execute_query(self, query, params_q):
+    def _execute_query(self, query, params_q):
         params = dict(params_q)
         params['ids'] = self.client_id
         url = self.api_url + query
@@ -134,7 +134,7 @@ class YandexMetrica(object):
         params['metrics'] = 'ym:pv:pageviews'
         params['dimensions'] = 'ym:pv:URLPathFull,ym:pv:title'
         params['sort'] = '-ym:pv:pageviews'
-        self.list_of_top_pages_dict = self.__execute_query(query=query_url, params_q=params)
+        self.list_of_top_pages_dict = self._execute_query(query=query_url, params_q=params)
         return self.list_of_top_pages_dict
 
     class YandexMetrikaError(Exception):
@@ -146,17 +146,17 @@ class YandexMetrica(object):
         def __str__(self):
             return self.message
 
-    def __assert(self, param, expected_type):
+    def _assert(self, param, expected_type):
         try:
             assert type(param) == expected_type
         except AssertionError:
             raise self.YandexMetrikaError('Параметр неверного типа')
 
     def __check_page_url_for_non_empty(self, url):
-        self.__assert(url, str)
+        self._assert(url, str)
         return not(url == '') and not(url[0] == '?')
 
-    def __shorten_url(self, url):
+    def _shorten_url(self, url):
         if url.find('?') > -1:
             return url[:url.find('?')]
         return url
@@ -170,7 +170,7 @@ class YandexMetrica(object):
         list_of_urls = list()
         l = 0
         for link in (self.list_of_top_pages_dict)['data']:
-            short_url = self.__shorten_url(link['dimensions'][0]['name'])
+            short_url = self._shorten_url(link['dimensions'][0]['name'])
             try:
                 index = list_of_urls.index(short_url)
             except ValueError:
