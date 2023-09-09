@@ -34,6 +34,8 @@ sitemaps = {
     'translators': TranslatorSitemap,
 }
 
+admin.site.enable_nav_sidebar = False
+
 urlpatterns = [
     # Admin panel views
     path('admin/', admin.site.urls),
