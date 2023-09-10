@@ -35,6 +35,7 @@ footer {
 .vnhome-poster{
     height: 450px !important;
     width: auto !important;
+    max-width: 350px;
 }
 
 .vn-header-title{
