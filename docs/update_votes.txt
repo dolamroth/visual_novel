@@ -1,4 +1,4 @@
 Update of visual novel estimates from the site vndb.org
 Running the script hung on the cron, under the user visual_novel 
 Need to run several times a day.
-Located in visual_novel/vn_core/management/commands/
+Located in visual_novel/vn_core/management/commands/111111
