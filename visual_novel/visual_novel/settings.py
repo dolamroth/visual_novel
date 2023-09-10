@@ -3,9 +3,10 @@ import json
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
+BASE_DIR = Path(__file__).parent.parent
 
 # JSON-based secrets module
-secrets_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../visual_novel/secrets.json')
+secrets_path = BASE_DIR / 'visual_novel' / 'secrets.json'
 with open(secrets_path) as f:
     secrets = json.loads(f.read())
 
@@ -23,7 +24,6 @@ def get_secret(setting, section=None, secrets=secrets):
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = Path(__file__).parent.parent
 os.makedirs(os.path.join(BASE_DIR, 'logs'), exist_ok=True)
 
 # Quick-start development settings - unsuitable for production

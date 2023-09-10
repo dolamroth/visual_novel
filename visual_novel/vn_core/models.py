@@ -175,7 +175,7 @@ class VNScreenshot(PublishFileModel):
         image = Image.open(self.image.path)
         th_image = image.copy()
         size = (mini_width, int(float(mini_width) * float(self.image.height) / float(self.image.width)))
-        th_image.thumbnail(size, Image.ANTIALIAS)
+        th_image.thumbnail(size, Image.LANCZOS)
         th_image.save(new_path)
         self.miniature = path
         return path
