@@ -181,9 +181,9 @@ class Command(BaseCommand):
                 #     '' if not translator.url else ' – {}'.format(translator.url)
                 # )
 
-                post_text_by_translation += "Переводчики: @{} ({})".format(
+                post_text_by_translation += "Переводчики: @{} ({})\n".format(
                     translator.url,
-                    translator.title) if translator.title and translator.url else "Переводчики: {}".format(translator.title)
+                    translator.title) if translator.title and translator.url else "Переводчики: {}\n".format(translator.title)
 
             post_flag = post_flag or notify_translation
             if notify_translation:
