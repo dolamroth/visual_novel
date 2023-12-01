@@ -171,10 +171,7 @@ def chart_index_page(
         cache_key += '_sort_{}'.format(base_sort_by)
         all_chart_items = all_chart_items.order_by(base_sort_by)
 
-    all_chart_items_data = cache.get(cache_key)
-    if all_chart_items_data is None:
-        all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
-        cache.set(cache_key, all_chart_items_data, config.REDIS_CACHE_TIME_LIFE)
+    all_chart_items_data = ChartItemListSerializer(all_chart_items, many=True).data
 
     # Visual novels are grouped in list in groups of settings.CHART_NUMBER_OF_VN_IN_ROW
     k = 0
