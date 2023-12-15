@@ -208,7 +208,10 @@ def translation_item_view(request, vn_alias):
     if translator:
         context['translator'] = translator.title
         if translator.url:
-            context['translator_link'] = translator.url
+            if translator.url.startswith("club") and translator.url[4:].isdigit():
+                context['translator_link'] = "https://vk.com/" + translator.url
+            elif translator.url.startswith("https://"):
+                context['translator_link'] = translator.url
 
     context['items'] = list()
 
