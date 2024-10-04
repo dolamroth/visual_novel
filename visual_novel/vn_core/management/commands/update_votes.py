@@ -3,7 +3,7 @@ import time
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.core.cache import caches
+from django.db.models import Exists, OuterRef
 
 from vn_core.models import VisualNovel, VisualNovelStats
 from vn_core.utils import VndbStats
@@ -36,7 +36,9 @@ class Command(BaseCommand):
                     continue
 
                 seen_vndb_id.add(vndb_id)
-                visual_novels = VisualNovel.objects.filter(vndb_id=vndb_id)
+                today = datetime.date.today()
+                sq = VisualNovelStats.objects.filter(visual_novel_id=OuterRef("id"), date=today).values_list("id")
+                all_visual_novels = VisualNovel.objects.filter(~Exists(sq)).values_list('vndb_id', flat=True)
 
                 for visual_novel in visual_novels:
                     stats, created = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
