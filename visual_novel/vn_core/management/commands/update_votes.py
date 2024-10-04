@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -39,7 +40,10 @@ class Command(BaseCommand):
 
                 for visual_novel in visual_novels:
                     with cache.lock(f"visual_novel_stats_{visual_novel.alias}_{today}", timeout=10, blocking_timeout=20):
-                        stats, _ = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
+                        stats, created = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
+
+                    if created:
+                        continue
 
                     rating, popularity, vote_count = vndb.update_vn(vndb_id)
 
@@ -52,5 +56,6 @@ class Command(BaseCommand):
                     stats.popularity = popularity
                     stats.vote_count = vote_count
                     stats.save(update_fields=["rate", "popularity", "vote_count"])
+                    time.sleep(5)
         finally:
             vndb.logout()
