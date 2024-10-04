@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'mptt',
     'sanitizer',
     'timezone_field',
+    'django_crontab',
 
     'core.apps.CoreConfig',
     'cinfo.apps.CinfoConfig',
@@ -73,6 +74,12 @@ INSTALLED_APPS = [
     'notifications.apps.NotificationsConfig',
     'uploads.apps.UploadsConfig',
 ]
+
+CRONJOBS = [
+    ('1 * * * *', 'django.core.management.call_command', ['update_votes']),
+    ('0 13 * * sat', 'django.core.management.call_command', ['send_translation_statistics_to_vk_group', '--group_id=-54523753']),
+]
+CRONTAB_LOCK_JOBS = True
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
