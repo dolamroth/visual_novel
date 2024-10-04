@@ -39,8 +39,7 @@ class Command(BaseCommand):
                 visual_novels = VisualNovel.objects.filter(vndb_id=vndb_id)
 
                 for visual_novel in visual_novels:
-                    with cache.lock(f"visual_novel_stats_{visual_novel.alias}_{today}", timeout=10, blocking_timeout=20):
-                        stats, created = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
+                    stats, created = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
 
                     if created:
                         continue
