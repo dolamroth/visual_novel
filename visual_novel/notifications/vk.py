@@ -64,7 +64,7 @@ class VK:
         return r['response']
 
     def post_to_wall(self, msg='', group_id=settings.VK_GROUP_ID, attachments=None, close_comments=0):
-        publish_date = str((datetime.now() + timedelta(days=3)).timestamp())
+        publish_date = str(int((datetime.now() + timedelta(days=3)).timestamp()))
         self._assert(msg, str)
         self._assert(group_id, str)
         context = {
