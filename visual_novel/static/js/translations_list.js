@@ -147,11 +147,11 @@ var reloadTranslationsOnPage = function(translations){
 var UploadTranslation = function(){
     $.ajax({
         url: '/api/translation/all',
-        method: 'GET',
-        data: {
-            'statuses': JSON.stringify(window.statuses_list),
-            'translators': JSON.stringify(window.translators_list)
-        },
+        method: 'POST',
+        data: JSON.stringify({
+            'statuses': window.statuses_list,
+            'translators': window.translators_list,
+        }),
         type: 'json'
     }).always(function(data){
         if(data['translations']){
