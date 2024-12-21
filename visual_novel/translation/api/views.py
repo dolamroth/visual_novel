@@ -10,10 +10,12 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError as restValidationError
 from rest_framework.renderers import JSONRenderer
+from django.http import JsonResponse
 
 from core.middlewares import IsAuthenticatedMiddleware
 from ..middlewares import HasPermissionToEditVNMiddleware
 from ..utils import select_like_statistics_name, get_status_tuple_for_translation_item
+from django.views.decorators.csrf import csrf_exempt
 
 from ..choices import TRANSLATION_ITEMS_STATUSES
 from ..commands import (
@@ -370,15 +372,15 @@ def change_status(request, vn_alias):
     }, status=200)
 
 
-@api_view(['GET', 'POST', ])
-@renderer_classes((JSONRenderer,))
+@csrf_exempt
 def translation_list(request):
+    data = json.loads(request.body.decode("utf-8"))
 
     try:
-        selected_statuses = json.loads(request.GET.get('statuses', '[]'))
-        selected_translators = json.loads(request.GET.get('translators', '[]'))
+        selected_statuses = data.get('statuses', '[]')
+        selected_translators = data.get('translators', '[]')
     except json.decoder.JSONDecodeError:
-        return Response({})
+        return JsonResponse({})
 
     all_status_keys = list(TranslationItem.status)
     all_status_int_keys = list()
@@ -410,7 +412,7 @@ def translation_list(request):
 
     serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
 
-    return Response({'translations': serializer.data})
+    return JsonResponse({'translations': serializer.data})
 
 
 @api_view(['GET', 'POST', ])
