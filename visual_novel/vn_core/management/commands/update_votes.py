@@ -1,5 +1,6 @@
 import datetime
 import time
+import random
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -29,7 +30,10 @@ class Command(BaseCommand):
             all_visual_novels = VisualNovel.objects.filter(~Exists(sq)).values_list('vndb_id', flat=True)
             seen_vndb_ids = dict()
 
-            for vndb_id in set(all_visual_novels):
+            all_visual_novels_ids = list(set(all_visual_novels))
+            random.shuffle(all_visual_novels_ids)
+
+            for vndb_id in set(all_visual_novels_ids):
                 for visual_novel in VisualNovel.objects.filter(vndb_id=vndb_id):
                     try:
                         stats = VisualNovelStats.objects.get(visual_novel=visual_novel, date=today)
