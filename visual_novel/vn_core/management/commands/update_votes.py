@@ -27,13 +27,18 @@ class Command(BaseCommand):
             today = datetime.date.today()
             sq = VisualNovelStats.objects.filter(visual_novel_id=OuterRef("id"), date=today).values_list("id")
             all_visual_novels = VisualNovel.objects.filter(~Exists(sq)).values_list('vndb_id', flat=True)
+            seen_vndb_ids = dict()
 
             for vndb_id in set(all_visual_novels):
                 for visual_novel in VisualNovel.objects.filter(vndb_id=vndb_id):
                     try:
                         stats = VisualNovelStats.objects.get(visual_novel=visual_novel, date=today)
                     except:
-                        rating, popularity, vote_count = vndb.update_vn(vndb_id)
+                        if vndb_id in seen_vndb_ids:
+                            rating, popularity, vote_count = seen_vndb_ids[vndb_id]
+                        else:
+                            rating, popularity, vote_count = vndb.update_vn(vndb_id)
+                            seen_vndb_ids[vndb_id] = (rating, popularity, vote_count)
 
                         stats, created = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
 
