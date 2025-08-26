@@ -132,7 +132,7 @@ def chart_index_page(
     # This array shows all the possible GET parameters for "sort"
     all_sortings = ['-date_of_translation', 'date_of_translation', 'visual_novel__rate', '-visual_novel__rate',
                     '-visual_novel__date_of_release', 'visual_novel__date_of_release', '-visual_novel__title',
-                    'visual_novel__title', 'visual_novel__popularity', '-visual_novel__popularity']
+                    'visual_novel__title', 'visual_novel__vote_count', '-visual_novel__vote_count']
     # This array provides alternative sorting for one selected parameter, which is chosen by user,
     # and a title of glyphoicon from Bootstrap
     all_sortings_context_links = [
@@ -144,8 +144,8 @@ def chart_index_page(
         ('date_of_release', '-visual_novel__date_of_release', 'glyphicon glyphicon-arrow-up'),
         ('title', 'visual_novel__title', 'glyphicon glyphicon-arrow-down'),
         ('title', '-visual_novel__title', 'glyphicon glyphicon-arrow-up'),
-        ('popularity', '-visual_novel__popularity', 'glyphicon glyphicon-arrow-up'),
-        ('popularity', 'visual_novel__popularity', 'glyphicon glyphicon-arrow-down'),
+        ('popularity', '-visual_novel__vote_count', 'glyphicon glyphicon-arrow-up'),
+        ('popularity', 'visual_novel__vote_count', 'glyphicon glyphicon-arrow-down'),
     ]
     # This is base data for providing icons and links, in case nothing is selected by user
     context['date_of_translation'] = '-date_of_translation'
@@ -156,7 +156,7 @@ def chart_index_page(
     context['date_of_release_icon'] = ''
     context['title'] = 'visual_novel__title'
     context['title_icon'] = ''
-    context['popularity'] = '-visual_novel__popularity'
+    context['popularity'] = '-visual_novel__vote_count'
     context['popularity_icon'] = ''
     context['base_poster_url'] = config.CHART_POSTER_NOT_LOADED_IMAGE or settings.POSTER_STOPPER_URL
     # In case of sort selected, sort and provide respective links and icons
@@ -221,7 +221,7 @@ def chart_page(request, vn_alias):
     vn_context['date_of_release'] = printable_russian_date(visual_novel.date_of_release)
     vn_context['date_of_translation'] = printable_russian_date(chart_item.date_of_translation)
     vn_context['vndb_mark'] = visual_novel.get_rate()
-    vn_context['vndb_popularity'] = visual_novel.get_popularity()
+    vn_context['vndb_popularity'] = visual_novel.vote_count
     vn_context['vndb_vote_count'] = visual_novel.vote_count
 
     vn_context['description'] = visual_novel.description

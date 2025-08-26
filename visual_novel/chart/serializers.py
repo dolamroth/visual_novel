@@ -126,7 +126,7 @@ class ChartItemListSerializer(serializers.Serializer):
         return obj.visual_novel.get_rate()
 
     def get_vndb_popularity(self, obj):
-        return obj.visual_novel.get_popularity()
+        return obj.visual_novel.vote_count
 
     def get_genres(self, obj):
         return ChartItemGenreSerializer(

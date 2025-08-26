@@ -14,10 +14,11 @@ from notifications.vk import VK
 class Command(BaseCommand):
     def handle(self, *args, **options):
         vndb = VndbStats()
+        vk = VK()
+
         try:
             vndb.login()
         except VndbStats.VndbAuthError:
-            vk = VK()
             vk.send_to_user(
                 msg='Проблема с подключением к VNDb',
                 user_id=settings.VK_ADMIN_LOGIN
@@ -41,7 +42,15 @@ class Command(BaseCommand):
                         if vndb_id in seen_vndb_ids:
                             rating, popularity, vote_count = seen_vndb_ids[vndb_id]
                         else:
-                            rating, popularity, vote_count = vndb.update_vn(vndb_id)
+                            try:
+                                rating, popularity, vote_count = vndb.update_vn(vndb_id)
+                            except VndbStats.VndbAuthError as exc:
+                                vk.send_to_user(
+                                    msg=f'Проблема с получением статистики новеллы v{vndb_id}: {exc}',
+                                    user_id=settings.VK_ADMIN_LOGIN
+                                )
+                                continue
+
                             seen_vndb_ids[vndb_id] = (rating, popularity, vote_count)
 
                         stats, created = VisualNovelStats.objects.get_or_create(visual_novel=visual_novel, date=today)
