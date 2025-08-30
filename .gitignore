@@ -114,6 +114,7 @@ secrets.json
 # static files
 **/static/admin
 **/static/rest_framework
+**/static/drf-yasg
 
 **/favicon.ico
 **/google*.html

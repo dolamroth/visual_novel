@@ -188,3 +188,8 @@ class VNScreenshot(PublishFileModel):
             self.update_miniature()
         except ValueError:
             return
+
+
+class ExternalAPIUser(PublishModel):
+    title = models.SlugField()
+    token = models.CharField(max_length=64)

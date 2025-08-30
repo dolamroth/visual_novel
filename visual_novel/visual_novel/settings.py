@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'sanitizer',
     'timezone_field',
     'django_crontab',
+    "drf_yasg",
 
     'core.apps.CoreConfig',
     'cinfo.apps.CinfoConfig',
@@ -296,6 +297,16 @@ YANDEX_METRIKA_TOKEN = get_secret(section='YANDEX_METRICA_API', setting='TOKEN')
 YANDEX_METRIKA_CLIENT_ID = get_secret(section='YANDEX_METRICA_API', setting='CLIENT_ID')
 YANDEX_METRIKA_URL = 'https://api-metrika.yandex.ru/'
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Token': {
+        'type': 'apiKey',
+        'name': 'Authorization',
+        'in': 'header',
+      }
+   }
+}
 
 if not PRODUCTION_FLAG:
     STATIC_ROOT = os.path.join(BASE_DIR, '')

@@ -22,6 +22,7 @@ from core.sitemap import StaticViewsSitemap
 from cinfo.sitemap import GenreSitemap, TagSitemap, StudioSitemap, StaffSitemap, TranslatorSitemap
 from chart.sitemap import ChartItemSitemap
 from translation.sitemap import TranslationItemSitemap
+from .openapi import schema_view
 
 sitemaps = {
     'static': StaticViewsSitemap,
@@ -89,4 +90,5 @@ urlpatterns = [
     path('translation/', include(translation.urls)),
     path('chart/', include(chart.urls)),
     path('news/', include(news.urls)),
+    path('openapi', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

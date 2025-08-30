@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import VisualNovel, VNGenre, VNStaff, VNStudio, VNTag
+from .models import VisualNovel, VNGenre, VNStaff, VNStudio, VNTag, ExternalAPIUser
 
 
 class GenreInline(admin.TabularInline):
@@ -41,4 +41,9 @@ class VisualNovelAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
+class ExternalAPIUserAdmin(admin.ModelAdmin):
+    list_display = ("title", "token", "is_published")
+
+
 admin.site.register(VisualNovel, VisualNovelAdmin)
+admin.site.register(ExternalAPIUser, ExternalAPIUserAdmin)
