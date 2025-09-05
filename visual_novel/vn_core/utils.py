@@ -87,7 +87,7 @@ class YandexMetrica:
 
     def _execute_query(self, query, params_q):
         params = dict(params_q)
-        params['ids'] = self.client_id
+        params['id'] = self.client_id
         url = self.api_url + query
 
         http = urllib3.PoolManager()

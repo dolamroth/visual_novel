@@ -79,6 +79,7 @@ INSTALLED_APPS = [
 CRONJOBS = [
     ('1 * * * *', 'django.core.management.call_command', ['update_votes']),
     ('0 13 * * sat', 'django.core.management.call_command', ['send_translation_statistics_to_vk_group', '--group_id=-54523753']),
+    ('0 0 * * *', 'django.core.management.call_command', ['update_ranks_by_visits']),
 ]
 CRONTAB_LOCK_JOBS = True
 
