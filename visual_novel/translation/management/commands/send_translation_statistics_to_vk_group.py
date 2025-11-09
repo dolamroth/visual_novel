@@ -43,7 +43,7 @@ class Command(BaseCommand):
         # (long posts become partially hidden)
         all_translations = TranslationItem.objects.filter(
             visual_novel__is_published=True
-        ).order_by('-visual_novel__popularity')
+        ).order_by('-visual_novel__vote_count')
 
         post_flag = False
         post_text = 'Прогресс перевода визуальных новелл:\n'
