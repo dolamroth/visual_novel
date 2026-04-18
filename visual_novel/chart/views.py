@@ -47,68 +47,67 @@ def chart_index_page(
 
     # Optional endpoint parameters
     if genre_alias:
-        vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel_id')
-        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_genre)
         try:
-            genre = Genre.objects.get(alias=genre_alias)
+            genre = Genre.objects.get(alias=genre_alias, is_published=True)
+            vn_with_genre = VNGenre.objects.filter(genre__alias=genre_alias).values('visual_novel_id')
+            all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_genre)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'жанр: ' + genre.title
             cache_key += '_genre_{}'.format(genre_alias)
             if genre.description:
                 context['additional_description'] = genre.description
         except Genre.DoesNotExist:
-            pass
+            raise Http404
 
     if tag_alias:
-        vn_with_tag = VNTag.objects.filter(tag__alias=tag_alias).values('visual_novel_id')
-        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_tag)
         try:
-            tag = Tag.objects.get(alias=tag_alias)
+            tag = Tag.objects.get(alias=tag_alias, is_published=True)
+            vn_with_tag = VNTag.objects.filter(tag__alias=tag_alias).values('visual_novel_id')
+            all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_tag)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'тэг: ' + tag.title
             cache_key += '_tag_{}'.format(tag_alias)
             if tag.description:
                 context['additional_description'] = tag.description
         except Tag.DoesNotExist:
-            pass
+            raise Http404
 
     if studio_alias:
-        vn_with_studio = VNStudio.objects.filter(studio__alias=studio_alias).values('visual_novel_id')
-        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_studio)
         try:
-            studio = Studio.objects.get(alias=studio_alias)
+            studio = Studio.objects.get(alias=studio_alias, is_published=True)
+            vn_with_studio = VNStudio.objects.filter(studio__alias=studio_alias).values('visual_novel_id')
+            all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_studio)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'студия: ' + studio.title
             cache_key += '_studio_{}'.format(studio_alias)
             if studio.description:
                 context['additional_description'] = studio.description
         except Studio.DoesNotExist:
-            pass
+            raise Http404
 
     if staff_alias:
-        vn_with_staff = VNStaff.objects.filter(staff__alias=staff_alias).values('visual_novel_id')
-        all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_staff)
         try:
-            staff = Staff.objects.get(alias=staff_alias)
+            staff = Staff.objects.get(alias=staff_alias, is_published=True)
+            vn_with_staff = VNStaff.objects.filter(staff__alias=staff_alias).values('visual_novel_id')
+            all_chart_items = all_chart_items.filter(visual_novel_id__in=vn_with_staff)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'персона: ' + staff.title
             cache_key += '_staff_{}'.format(staff_alias)
             if staff.description:
                 context['additional_description'] = staff.description
         except Staff.DoesNotExist:
-            pass
+            raise Http404
 
     if duration_alias:
-        all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
         try:
-            duration = Longevity.objects.get(alias=duration_alias)
+            duration = Longevity.objects.get(alias=duration_alias, is_published=True)
+            all_chart_items = all_chart_items.filter(visual_novel__longevity__alias=duration_alias)
             cache_key += '_duration_{}'.format(duration_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'продолжительность: ' + duration.title
         except Longevity.DoesNotExist:
-            pass
+            raise Http404
 
     if translator_alias:
-        translators_ids = ChartItemTranslator.objects.filter(translator__alias=translator_alias)\
-            .values_list('item__id', flat=True)
-        all_chart_items = all_chart_items.filter(id__in=translators_ids)
         try:
-            translator = Translator.objects.get(alias=translator_alias)
+            translator = Translator.objects.get(alias=translator_alias, is_published=True)
+            translators_ids = ChartItemTranslator.objects.filter(translator__alias=translator_alias).values_list('item__id', flat=True)
+            all_chart_items = all_chart_items.filter(id__in=translators_ids)
             cache_key += '_translator_{}'.format(translator_alias)
             context['additional_breadcumb'] = chart_breadcumb_with_link + 'переводчик: ' + translator.title
             if translator.description or translator.url:
@@ -123,7 +122,7 @@ def chart_index_page(
                 context['additional_description'] = '<br /><br />'.join(translator_description)
 
         except Translator.DoesNotExist:
-            pass
+            raise Http404
 
     # Sorting list of visual novels
     sort_by = request.GET.get('sort')

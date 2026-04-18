@@ -338,8 +338,8 @@ a.tooltip{
         float: left;
     }
     .navbar-nav>li>a {
-        padding-top: 15px;
-        padding-bottom: 15px;
+        padding-top: 6px;
+        padding-bottom: 6px;
     }
 }
 
@@ -351,5 +351,18 @@ a.tooltip{
      .navbar-header {
         display: block;
      }
+}
+
+@media only screen and (min-width: 660px) {
+    .navbar-nav>li>a {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}
+
+@media only screen and (max-width: 659px) {
+    .navbar {
+        border: 0px;
+    }
 }
 /* Media selectors */
