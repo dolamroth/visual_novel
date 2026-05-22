@@ -4,7 +4,9 @@ import pytz
 from django.conf import settings
 from django.shortcuts import render
 from django.http import Http404
+from django.db.models import OuterRef
 
+from core.contrib.postgres.subqueries import SubqueryJson
 from core.middlewares import IsAuthenticatedMiddleware
 from translation.middlewares import HasPermissionToEditVNMiddleware
 
@@ -102,9 +104,16 @@ def edit_statistics(request, vn_alias):
 
 
 def all_translations(request, **kwargs):
+    translation_chapter_sq = TranslationStatisticsChapter.objects.filter(
+        tree_id=OuterRef("statistics__tree_id"),
+        lft=1,
+    )[:1].values()
+
     all_translations = TranslationItem.objects.filter(
         is_published=True,
-        visual_novel__is_published=True
+        visual_novel__is_published=True,
+    ).select_related("visual_novel", "statistics").annotate(
+        translations_chapter=SubqueryJson(translation_chapter_sq),
     ).order_by('visual_novel__title')
 
     context = dict()
@@ -131,15 +140,12 @@ def all_translations(request, **kwargs):
                 'name': translation_status[1],
                 'style': translation_status[2],
                 'mailing_inform': translation_status[4],
-                'description': translation_status[5]
+                'description': translation_status[5],
             })
 
     for translation in all_translations:
         visual_novel = translation.visual_novel
-        statistics = TranslationStatisticsChapter.objects.get(
-            tree_id=translation.statistics.tree_id,
-            lft=1
-        )
+        statistics = TranslationStatisticsChapter(**translation.translations_chapter)
 
         user_timezone = pytz.timezone(settings.DEFAULT_TIME_ZONE) \
             if not hasattr(request.user, 'profile') \
@@ -180,7 +186,7 @@ def translation_item_view(request, vn_alias):
         translation = TranslationItem.objects.get(
             is_published=True,
             visual_novel__is_published=True,
-            visual_novel__alias=vn_alias
+            visual_novel__alias=vn_alias,
         )
     except TranslationItem.DoesNotExist:
         return render(request, 'translation/item_does_not_exist.html')

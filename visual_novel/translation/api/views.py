@@ -4,7 +4,8 @@ from constance import config
 
 from django.conf import settings
 from django.core.cache import caches
-from django.db.models import Q
+from django.db.models import Q, OuterRef, Exists
+from django.contrib.postgres.aggregates import BitOr
 
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
@@ -13,6 +14,7 @@ from rest_framework.renderers import JSONRenderer
 from django.http import JsonResponse
 
 from core.middlewares import IsAuthenticatedMiddleware
+from core.contrib.postgres.subqueries import SubqueryJson
 from ..middlewares import HasPermissionToEditVNMiddleware
 from ..utils import select_like_statistics_name, get_status_tuple_for_translation_item
 from django.views.decorators.csrf import csrf_exempt
@@ -32,7 +34,7 @@ from .serializers import (
     AddTranslationChapterPartSerializer, StatisticsDescription, BetaLinkSerializer, TranslationListShortSerializer
 )
 from ..models import (
-    TranslationStatisticsChapter, TranslationItem, TranslationStatistics, TranslationSubscription
+    TranslationStatisticsChapter, TranslationItem, TranslationStatistics, Translator,
 )
 
 cache = caches['default']
@@ -386,7 +388,7 @@ def translation_list(request):
     all_status_int_keys = list()
     k = 1
     for status in all_status_keys:
-        selected_status = [d for d in selected_statuses if d['key']==status]
+        selected_status = [d for d in selected_statuses if d['key'] == status]
         if len(selected_status) == 0:
             continue
         selected_status = selected_status[0]
@@ -396,10 +398,17 @@ def translation_list(request):
 
     selected_translators_ids = [d['id'] for d in selected_translators if d['checked']]
 
+    translation_chapter_sq = TranslationStatisticsChapter.objects.filter(
+        tree_id=OuterRef("statistics__tree_id"),
+        lft=1,
+    )[:1].values()
+
     all_translations = TranslationItem.objects.filter(
         is_published=True,
         visual_novel__is_published=True,
-        status__in=all_status_int_keys
+        status__in=all_status_int_keys,
+    ).select_related("visual_novel", "statistics").annotate(
+        translations_chapter=SubqueryJson(translation_chapter_sq)
     )
 
     if 0 in selected_translators_ids:
@@ -433,14 +442,24 @@ def translation_list_data_selects(request):
 
     # List of all translators
     context['translators'] = list()
-    all_translators = list(
-        TranslationItem.objects.filter(is_published=True)
-            .values_list('translator', 'translator__title').distinct().order_by('translator__title')
+
+    translations_sq = TranslationItem.objects.filter(
+        translator_id=OuterRef("id"),
+        is_published=True,
+        visual_novel__is_published=True,
     )
-    for translator in all_translators:
+    translators = Translator.objects.filter(is_published=True).filter(Exists(translations_sq)).annotate(
+        statuses=BitOr(
+            "translationitem__status",
+            filter=Q(translationitem__is_published=True, translationitem__visual_novel__is_published=True)
+        )
+    ).values("id", "title", "statuses")
+
+    for translator in translators:
         context['translators'].append({
-            'id': translator[0] or 0,
-            'name': translator[1] or 'Не указано'
+            'id': translator["id"] or 0,
+            'name': translator["title"] or 'Не указано',
+            'statuses': translator["statuses"],
         })
 
     return Response(context)

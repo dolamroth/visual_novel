@@ -8,7 +8,7 @@ from django.db import models
 from django.urls import reverse
 
 from rest_framework import serializers
-from rest_framework.fields import empty
+from rest_framework.fields import empty, SkipField
 from rest_framework.relations import PKOnlyObject
 
 from ..models import TranslationItem, TranslationStatisticsChapter, TranslationBetaLink, TranslationSubscription
@@ -73,7 +73,6 @@ class BetaLinkSerializer(serializers.Serializer):
 
 
 class TranslationListShortSerializer(serializers.Serializer):
-
     def __init__(self, instance=None, data=empty, **kwargs):
         super(TranslationListShortSerializer, self).__init__(instance=instance, data=data, **kwargs)
         self.visual_novel = None
@@ -84,10 +83,13 @@ class TranslationListShortSerializer(serializers.Serializer):
     def initialize_self_fields(self, instance):
         self.visual_novel = instance.visual_novel
         self.translation_statistics = instance.statistics
-        self.statistics = TranslationStatisticsChapter.objects.get(
-            tree_id=(self.translation_statistics).tree_id,
-            lft=1
-        )
+        try:
+            self.statistics = TranslationStatisticsChapter(**self.translation_statistics.translations_chapter)
+        except:
+            self.statistics = TranslationStatisticsChapter.objects.get(
+                tree_id=(self.translation_statistics).tree_id,
+                lft=1
+            )
         self.total = (self.statistics).total_rows if (self.statistics).total_rows > 0 else 1
         self.status_tuple = get_status_tuple_for_translation_item(instance)
 

@@ -27,6 +27,7 @@ var GetListOfData = function(){
                 .trigger('create')
                 .removeAttr('id');
             li_tag.find('a').attr('data_id', val['key']);
+            li_tag.find('a').attr('data_statuses', val?.statuses || 127);
             li_tag.find('span.li-text').html( val['name'] );
             li_tag.find('span.li-text').addClass( 'text-' + val['style'] );
             li_tag.find('input').prop('checked', val['checked']);
@@ -69,8 +70,20 @@ var bindEventsToDropdownsElements = function(){
 
         for (i=0; i<(window.statuses_list).length; i++){
             if( (window.statuses_list)[i]['key'] === val ){
-                (window.statuses_list)[i]['checked'] = !($inp.prop( 'checked'));
-                $inp.prop('checked', !($inp.prop( 'checked')) );
+                var newChecked = !($inp.prop( 'checked'));
+                (window.statuses_list)[i]['checked'] = newChecked;
+                $inp.prop('checked', newChecked );
+
+                $('.dropdown-menu#translators-ul a').each((idx, val2) => {
+                    var hasIntersection = ( +($(val2).attr("data_statuses")) & (1<<i));
+
+                    if (hasIntersection && !newChecked){
+                        $(val2).closest("li").addClass("hidden");
+                    }
+                    if (hasIntersection && newChecked){
+                        $(val2).closest("li").removeClass("hidden");
+                    }
+                });
             }
         }
 
