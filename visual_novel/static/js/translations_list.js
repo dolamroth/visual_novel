@@ -13,21 +13,26 @@ var GetListOfData = function(){
     }).always(function(data){
         window.statuses_list = data['statuses'];
         window.translators_list = data['translators'];
+        window.sort_by = "last_update";
 
         if ((typeof window.statuses_list === undefined) || (typeof window.translators_list === undefined)){
             return false;
         }
 
+        var defaultStatuses = 0;
+
         var li_tag_example = $("#translation-statuses-li-example");
         for (i=0; i<(window.statuses_list).length; i++){
             var val = (window.statuses_list)[i];
             (window.statuses_list)[i]['checked'] = val['default'];
+            if (val['default']){
+                defaultStatuses = defaultStatuses + (1<<i);
+            }
             var li_tag = li_tag_example
                 .clone(true, true)
                 .trigger('create')
                 .removeAttr('id');
             li_tag.find('a').attr('data_id', val['key']);
-            li_tag.find('a').attr('data_statuses', val?.statuses || 127);
             li_tag.find('span.li-text').html( val['name'] );
             li_tag.find('span.li-text').addClass( 'text-' + val['style'] );
             li_tag.find('input').prop('checked', val['checked']);
@@ -43,8 +48,14 @@ var GetListOfData = function(){
                 .trigger('create')
                 .removeAttr('id');
             li_tag.find('a').attr('data_id', val['id']);
+            li_tag.find('a').attr('data_statuses', val?.statuses || 127);
             li_tag.find('span.li-text').html( val['name'] );
             li_tag.find('input').prop('checked', val['checked']);
+
+            if (((val?.statuses || 127) & defaultStatuses) === 0){
+                li_tag.addClass("hidden");
+            }
+
             $('#translators-ul').append( li_tag );
         }
 
@@ -62,19 +73,19 @@ var bindEventsToDropdownsElements = function(){
     });
 
     $( '.dropdown-menu#statuses-ul a' ).on( 'click', function( event ) {
-        var $target = $( event.currentTarget ),
-            val = $target.attr( 'data_id' ),
-            $inp = $target.find( 'input' );
+        var $target = $( event.currentTarget );
+        var val = $target.attr( 'data_id' );
+        var $inp = $target.find( 'input' );
 
         clearInterval(window.translations_interval);
 
-        for (i=0; i<(window.statuses_list).length; i++){
+        for (var i=0; i<(window.statuses_list).length; i++){
             if( (window.statuses_list)[i]['key'] === val ){
                 var newChecked = !($inp.prop( 'checked'));
                 (window.statuses_list)[i]['checked'] = newChecked;
                 $inp.prop('checked', newChecked );
 
-                $('.dropdown-menu#translators-ul a').each((idx, val2) => {
+                $('.dropdown-menu#translators-ul a:not(li#translator-li-example a)').each((idx, val2) => {
                     var hasIntersection = ( +($(val2).attr("data_statuses")) & (1<<i));
 
                     if (hasIntersection && !newChecked){
@@ -104,6 +115,18 @@ var bindEventsToDropdownsElements = function(){
                 $inp.prop('checked', !($inp.prop( 'checked')) );
             }
         }
+
+        window.translations_interval = setTimeout(function(){ UploadTranslation(); }, 0);
+        return false;
+    });
+
+    $( '.dropdown-menu#sorting-ul a' ).on( 'click', function( event ) {
+        var $target = $( event.currentTarget );
+        var val = $target.attr( 'data_id' );
+
+        clearInterval(window.translations_interval);
+        window.sort_by = val;
+        $target.closest(".btn-group-chart-main-page").removeClass("open");
 
         window.translations_interval = setTimeout(function(){ UploadTranslation(); }, 0);
         return false;
@@ -164,6 +187,7 @@ var UploadTranslation = function(){
         data: JSON.stringify({
             'statuses': window.statuses_list,
             'translators': window.translators_list,
+            'sort_by': window.sort_by,
         }),
         type: 'json'
     }).always(function(data){

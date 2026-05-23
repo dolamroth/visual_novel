@@ -36,7 +36,7 @@ class VisualNovelAdmin(admin.ModelAdmin):
         'vndb_id', 'steam_link', 'alias'
     )
     fields = ('is_published', 'title', 'photo_tag', 'photo', 'alternative_title', 'description', 'date_of_release',
-              'vndb_id', 'steam_link', 'longevity', 'alias', 'rate', 'popularity', 'vote_count')
+              'vndb_id', 'steam_link', 'nvn_link', 'longevity', 'alias', 'rate', 'popularity', 'vote_count')
     readonly_fields = ['photo_tag']
     list_per_page = 20
 

@@ -19,6 +19,7 @@ class VisualNovel(PublishFileModel):
     date_of_release = models.DateField(verbose_name='дата релиза')
     vndb_id = models.IntegerField(verbose_name='id на VNDb')
     steam_link = models.CharField(verbose_name='ссылка в Steam', max_length=400, null=True, blank=True)
+    nvn_link = models.CharField(verbose_name='ссылка на НВН', max_length=400, null=True, blank=True)
     longevity = models.ForeignKey(Longevity, verbose_name='продолжительность', on_delete=models.PROTECT,
                                   null=True, blank=True)
     genres = models.ManyToManyField(Genre, through='VNGenre', verbose_name='жанры', blank=True)

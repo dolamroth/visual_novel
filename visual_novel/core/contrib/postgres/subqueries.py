@@ -1,4 +1,4 @@
-from django.db.models import Subquery
+from django.db.models import Subquery, IntegerField
 
 from .fields import PostgresqlJsonField
 
@@ -34,3 +34,8 @@ class SubqueryJson(OrderableSubquery):
 class SubqueryJsonAgg(OrderableSubquery):
     template = "(SELECT array_to_json(coalesce(array_agg(row_to_json(_subquery)), array[]::json[])) FROM (%(subquery)s) _subquery)"
     output_field = PostgresqlJsonField()
+
+
+class SubqueryCount(Subquery):
+    template = "(SELECT count(*) FROM (%(subquery)s) _count)"
+    output_field = IntegerField()

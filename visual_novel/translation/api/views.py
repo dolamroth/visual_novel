@@ -14,7 +14,7 @@ from rest_framework.renderers import JSONRenderer
 from django.http import JsonResponse
 
 from core.middlewares import IsAuthenticatedMiddleware
-from core.contrib.postgres.subqueries import SubqueryJson
+from core.contrib.postgres.subqueries import SubqueryJson, SubqueryCount
 from ..middlewares import HasPermissionToEditVNMiddleware
 from ..utils import select_like_statistics_name, get_status_tuple_for_translation_item
 from django.views.decorators.csrf import csrf_exempt
@@ -379,9 +379,10 @@ def translation_list(request):
     data = json.loads(request.body.decode("utf-8"))
 
     try:
-        selected_statuses = data.get('statuses', '[]')
-        selected_translators = data.get('translators', '[]')
-    except json.decoder.JSONDecodeError:
+        selected_statuses = data.get('statuses', [])
+        selected_translators = data.get('translators', [])
+        sort_by = data.get("sort_by", "last_update")
+    except ValueError:
         return JsonResponse({})
 
     all_status_keys = list(TranslationItem.status)
@@ -403,12 +404,19 @@ def translation_list(request):
         lft=1,
     )[:1].values()
 
+    if sort_by == "title":
+        order_by_args = ["visual_novel__title"]
+    else:
+        order_by_args = ["-statistics__last_update", "visual_novel__title"]
+
     all_translations = TranslationItem.objects.filter(
         is_published=True,
         visual_novel__is_published=True,
         status__in=all_status_int_keys,
-    ).select_related("visual_novel", "statistics").annotate(
-        translations_chapter=SubqueryJson(translation_chapter_sq)
+    ).select_related("visual_novel", "statistics").order_by(
+        *order_by_args,
+    ).annotate(
+        translations_chapter=SubqueryJson(translation_chapter_sq),
     )
 
     if 0 in selected_translators_ids:
@@ -416,8 +424,6 @@ def translation_list(request):
             .filter(Q(translator__in=selected_translators_ids)| Q(translator__isnull=True))
     else:
         all_translations = all_translations.filter(translator__in=selected_translators_ids)
-
-    all_translations = all_translations.order_by('visual_novel__title')
 
     serializer = TranslationListShortSerializer(all_translations, context={'user': request.user}, many=True)
 
@@ -452,7 +458,10 @@ def translation_list_data_selects(request):
         statuses=BitOr(
             "translationitem__status",
             filter=Q(translationitem__is_published=True, translationitem__visual_novel__is_published=True)
-        )
+        ),
+        total_translations=SubqueryCount(translations_sq.values("id")),
+    ).order_by(
+        "-total_translations", "title",
     ).values("id", "title", "statuses")
 
     for translator in translators:
