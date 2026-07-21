@@ -51,6 +51,9 @@ jQuery.fn.extend({
         translation_row_add
             .removeClass('add-row-expanded')
             .addClass('add-row-collapsed');
+        if (is_chapter){
+            translation_row_add.find("a.add-chapter").text("Добавить подраздел");
+        }
         return translation_row_add;
     },
     collapseAll: function(){
@@ -60,7 +63,8 @@ jQuery.fn.extend({
         }
         expanded = $('.add-row-expanded');
         if (expanded.length > 0){
-            expanded.first().collapseAC();
+            var is_chapter = expanded.attr("data_is_chapter") === "True";
+            expanded.first().collapseAC(is_chapter);
         }
         return this;
     },
@@ -316,9 +320,10 @@ $(function () {
 
     $('.add-chapter').on('click', function(e){
         var add_chapter_link = $( e.currentTarget );
-        add_chapter_link.collapseAll().closeAlertRows();
         var translation_row_old = add_chapter_link.closest('.add-row-collapsed');
-        var class_chapter = translation_row_old.attr('data_is_chapter') === "True" ? ".add-section-example" : ".add-chapter-example";
+        var is_chapter = translation_row_old.attr("data_is_chapter") === "True";
+        add_chapter_link.collapseAll(is_chapter).closeAlertRows();
+        var class_chapter = is_chapter ? ".add-section-example" : ".add-chapter-example";
         var example_row = $(class_chapter);
         translation_row_old.replaceWith( example_row.clone(true, true) );
         var translation_row = $(class_chapter).first();
@@ -336,7 +341,7 @@ $(function () {
     $('.btn-cancel-new-translation-chapter').on('click', function(e){
         var cancel_add_chapter_link = $( e.currentTarget );
         var translation_row_add = cancel_add_chapter_link.closest('.add-row-expanded');
-        var is_chapter = translation_row_add.attr('data_is_chapter');
+        var is_chapter = translation_row_add.attr('data_is_chapter') === "True";
         translation_row_add.collapseAC(is_chapter).closeAlertRows();
         return false;
     });
