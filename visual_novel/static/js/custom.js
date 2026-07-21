@@ -39,7 +39,7 @@ jQuery.fn.extend({
         return translation_row;
     },
     collapseAC: function(is_chapter){
-        var className = (is_chapter === "True") ? ".add-section-text-example" : ".add-chapter-text-example";
+        var className = is_chapter ? ".add-section-text-example" : ".add-chapter-text-example";
         var example_row = $(className);
         var translation_row_old = this;
         this.replaceWith( example_row.clone(true, true) );
@@ -51,9 +51,6 @@ jQuery.fn.extend({
         translation_row_add
             .removeClass('add-row-expanded')
             .addClass('add-row-collapsed');
-        if (is_chapter){
-            translation_row_add.find("a.add-chapter").text("Добавить подраздел");
-        }
         return translation_row_add;
     },
     collapseAll: function(){
